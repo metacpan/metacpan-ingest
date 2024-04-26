@@ -1,0 +1,56 @@
+# please alpha sort config items as you add them
+only = 1
+verbose = 11
+program-extensions = .t
+
+[BuiltinFunctions::ProhibitSleepViaSelect]
+
+[BuiltinFunctions::ProhibitStringyEval]
+
+[BuiltinFunctions::RequireGlobFunction]
+
+[ClassHierarchies::ProhibitOneArgBless]
+
+[CodeLayout::RequireTrailingCommas]
+
+[ControlStructures::ProhibitMutatingListFunctions]
+
+[InputOutput::ProhibitBarewordFileHandles]
+
+[InputOutput::ProhibitInteractiveTest]
+
+[InputOutput::ProhibitTwoArgOpen]
+
+[InputOutput::RequireEncodingWithUTF8Layer]
+
+[Modules::ProhibitEvilModules]
+
+[Modules::RequireBarewordIncludes]
+
+[Modules::RequireFilenameMatchesPackage]
+
+[Subroutines::ProhibitNestedSubs]
+
+[Subroutines::ProhibitReturnSort]
+
+[Subroutines::ProhibitSubroutinePrototypes]
+
+[TestingAndDebugging::RequireUseStrict]
+equivalent_modules = MetaCPAN::Moose
+
+[TestingAndDebugging::RequireUseWarnings]
+equivalent_modules = MetaCPAN::Moose
+
+[ValuesAndExpressions::ProhibitEmptyQuotes]
+
+[ValuesAndExpressions::ProhibitInterpolationOfLiterals]
+allow_if_string_contains_single_quote = 1
+allow = qq{} qq[]
+
+[ValuesAndExpressions::ProhibitLeadingZeros]
+
+[ValuesAndExpressions::ProhibitNoisyQuotes]
+
+[Variables::ProhibitConditionalDeclarations]
+
+[Variables::RequireLexicalLoopIterators]
