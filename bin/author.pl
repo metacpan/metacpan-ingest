@@ -15,9 +15,9 @@ use XML::Simple qw< XMLin >;
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     author_dir
+    config
     cpan_dir
     diff_struct
-    config
 >;
 
 # config
@@ -55,10 +55,10 @@ my @compare_fields = do {
 my $pauseid;
 GetOptions( "pauseid=s" => \$pauseid );
 
+# setup
 my $config = config();
 $config->init_logger;
 
-# setup
 my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( type => "author" );
 
@@ -161,12 +161,10 @@ sub _update_author {
     my $data = _author_data_from_cpan( $id, $whois_data );
 
     log_debug {
-        Encode::encode_utf8(
-            sprintf(
-                "Indexing %s: %s <%s>",
-                $id, $data->{name}, $data->{email}
-            )
-        )
+        Encode::encode_utf8( sprintf(
+            "Indexing %s: %s <%s>",
+            $id, $data->{name}, $data->{email}
+        ) )
     };
 
     ### validate data (previously ESX::Model)
@@ -181,13 +179,11 @@ sub _update_author {
 
     $data->{updated} = DateTime->now( time_zone => 'UTC' )->iso8601;
 
-    $bulk->update(
-        {
-            id            => $id,
-            doc           => $data,
-            doc_as_upsert => 1,
-        }
-    );
+    $bulk->update( {
+        id            => $id,
+        doc           => $data,
+        doc_as_upsert => 1,
+    } );
 
     push @author_ids_to_purge, $id;
 }

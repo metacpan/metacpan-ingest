@@ -15,12 +15,14 @@ use Sub::Exporter -setup => {
             author_dir
             cpan_dir
             diff_struct
+            minion
             ua
         >
     ]
 };
 
 my $config;
+
 sub config {
     $config //= do {
         MetaCPAN::Config->new(
@@ -47,8 +49,7 @@ sub cpan_dir {
     foreach my $dir ( grep {defined} @dirs ) {
         return path($dir) if -d $dir;
     }
-    die "Couldn't find a local cpan mirror. Please specify --cpan o\
-r set MINICPAN";
+    die "Couldn't find a local cpan mirror. Please specify --cpan or set MINICPAN";
 }
 
 sub diff_struct {
