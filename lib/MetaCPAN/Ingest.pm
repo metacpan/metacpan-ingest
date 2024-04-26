@@ -40,13 +40,10 @@ sub author_dir {
 }
 
 sub cpan_dir {
-    my @dirs = (
-        $ENV{MINICPAN},    '/home/metacpan/CPAN',
-        "$ENV{HOME}/CPAN", "$ENV{HOME}/minicpan",
-    );
-    foreach my $dir ( grep {defined} @dirs ) {
-        return path($dir) if -d $dir;
-    }
+    my $config = config();
+    my $cpan = $config->config->{cpan};
+
+    return path($cpan) if -d $cpan;
     die
         "Couldn't find a local cpan mirror. Please specify --cpan or set MINICPAN";
 }
