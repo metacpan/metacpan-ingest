@@ -7,28 +7,29 @@ use Path::Tiny qw< path >;
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
 use LWP::UserAgent;
 use MetaCPAN::Config;
+use MetaCPAN::Logger qw< :log :dlog >;
 
 use Sub::Exporter -setup => {
     exports => [ qw<
         config
         author_dir
         cpan_dir
+        cpan_file_map
         diff_struct
         minion
         ua
     > ]
 };
 
-my $config;
+my $config //= do {
+    MetaCPAN::Config->new(
+        name => __PACKAGE__,
+        path => path(__FILE__)->parent(3)->stringify,
+    );
+};
+$config->init_logger;
 
-sub config {
-    $config //= do {
-        MetaCPAN::Config->new(
-            name => __PACKAGE__,
-            path => path(__FILE__)->parent(3)->stringify,
-        );
-    };
-}
+sub config { $config }
 
 sub author_dir {
     my $pauseid = shift;
@@ -103,6 +104,28 @@ sub ua {
     $ua->agent('MetaCPAN');
 
     return $ua;
+}
+
+sub cpan_file_map {
+    my $cpan = cpan_dir();
+    my $ls = $cpan->child(qw< indices find-ls.gz >);
+    if ( !-e $ls ) {
+        die "File $ls does not exist";
+    }
+
+    log_info {"Reading $ls"};
+
+    my $ret = {};
+
+    open my $fh, "<:gzip", $ls;
+    while (<$fh>) {
+        my $path = ( split(/\s+/) )[-1];
+        next unless ( $path =~ /^authors\/id\/\w+\/\w+\/(\w+)\/(.*)$/ );
+        $ret->{$1}{$2} = 1;
+    }
+    close $fh;
+
+    return $ret;
 }
 
 1;

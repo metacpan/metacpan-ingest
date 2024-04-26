@@ -15,8 +15,8 @@ use XML::Simple qw< XMLin >;
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     author_dir
-    config
     cpan_dir
+    cpan_file_map
     diff_struct
 >;
 
@@ -56,9 +56,6 @@ my $pauseid;
 GetOptions( "pauseid=s" => \$pauseid );
 
 # setup
-my $config = config();
-$config->init_logger;
-
 my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( type => "author" );
 
@@ -132,27 +129,6 @@ sub _get_authors_data {
     }
 
     return $whois_data;
-}
-
-sub _get_cpan_file_map {
-    my $ls = $cpan->child(qw< indices find-ls.gz >);
-    if ( !-e $ls ) {
-        die "File $ls does not exist";
-    }
-
-    log_info {"Reading $ls"};
-
-    my $ret = {};
-
-    open my $fh, "<:gzip", $ls;
-    while (<$fh>) {
-        my $path = ( split(/\s+/) )[-1];
-        next unless ( $path =~ /^authors\/id\/\w+\/\w+\/(\w+)\/(.*)$/ );
-        $ret->{$1}{$2} = 1;
-    }
-    close $fh;
-
-    return $ret;
 }
 
 sub _update_author {
@@ -260,7 +236,7 @@ sub _author_config {
     return undef
         unless $dir->is_dir;
 
-    my $cpan_file_map     = _get_cpan_file_map();
+    my $cpan_file_map     = cpan_file_map();
     my $author_cpan_files = $cpan_file_map->{$id}
         or return undef;
 
