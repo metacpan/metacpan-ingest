@@ -5,10 +5,11 @@ use warnings;
 
 use PAUSE::Permissions ();
 use Getopt::Long;
-use Log::Contextual::Easy::Default qw< :log :dlog >;
+use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
+    config
     cpan_dir
 >;
 
@@ -16,10 +17,10 @@ use MetaCPAN::Ingest qw<
 my $cleanup;
 GetOptions( "cleanup" => \$cleanup );
 
-### TODO - move out
-$ENV{PERMISSION_UPTO} = "TRACE";
-
 # setup
+my $config = config();
+$config->init_logger;
+
 my $cpan   = cpan_dir();
 my $es     = MetaCPAN::ES->new( type => "permission" );
 my $bulk   = $es->bulk();
