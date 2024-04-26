@@ -1,15 +1,26 @@
 use strict;
 use warnings;
 
+requires 'CPAN::DistnameInfo', '0.12';
+requires 'Cpanel::JSON::XS';
+requires 'DateTime';
+requires 'Digest::SHA';
+requires 'Email::Valid';
+requires 'Encode';
+requires 'Getopt::Long';
+requires 'LWP::UserAgent';
+requires 'PAUSE::Permissions';
+requires 'Path::Tiny', '0.076';
+requires 'Ref::Util';
 requires 'Search::Elasticsearch';
 requires 'Search::Elasticsearch::Client::2_0';
+requires 'Sub::Exporter';
+requires 'URI';
 requires 'XML::Simple';
-requires 'CPAN::DistnameInfo', '0.12';
-requires 'Digest::SHA';
+
 requires 'MetaCPAN::Common',
     git => 'https://github.com/metacpan/MetaCPAN-Common',
-    ref => '5ba1b573f772d8b0ed2bc732370098986eee6556';
-requires 'Path::Tiny', '0.076';
+    ref => '48274b9cb890d7f76a8ba6e2fce78348ca1165ca';
 
 on test => sub {
     requires 'Code::TidyAll',                     '>= 0.74';
