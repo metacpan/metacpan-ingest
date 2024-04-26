@@ -9,16 +9,14 @@ use LWP::UserAgent;
 use MetaCPAN::Config;
 
 use Sub::Exporter -setup => {
-    exports => [
-        qw<
-            config
-            author_dir
-            cpan_dir
-            diff_struct
-            minion
-            ua
-        >
-    ]
+    exports => [ qw<
+        config
+        author_dir
+        cpan_dir
+        diff_struct
+        minion
+        ua
+    > ]
 };
 
 my $config;
@@ -49,7 +47,8 @@ sub cpan_dir {
     foreach my $dir ( grep {defined} @dirs ) {
         return path($dir) if -d $dir;
     }
-    die "Couldn't find a local cpan mirror. Please specify --cpan or set MINICPAN";
+    die
+        "Couldn't find a local cpan mirror. Please specify --cpan or set MINICPAN";
 }
 
 sub diff_struct {
@@ -86,6 +85,11 @@ sub diff_struct {
         }
     }
     return undef;
+}
+
+sub minion {
+    require 'Mojo::Server';
+    return Mojo::Server->new->build_app('MetaCPAN::API')->minion;
 }
 
 sub ua {
