@@ -8,7 +8,7 @@ use DateTime     ();
 use Email::Valid ();
 use Encode       ();
 use Getopt::Long;
-use Log::Contextual::Easy::Default qw< :log :dlog >;
+use MetaCPAN::Logger qw< :log :dlog >;
 use URI ();
 use XML::Simple qw< XMLin >;
 
@@ -17,6 +17,7 @@ use MetaCPAN::Ingest qw<
     author_dir
     cpan_dir
     diff_struct
+    config
 >;
 
 # config
@@ -54,8 +55,8 @@ my @compare_fields = do {
 my $pauseid;
 GetOptions( "pauseid=s" => \$pauseid );
 
-### TODO - move out
-$ENV{AUTHOR_UPTO} = "TRACE";
+my $config = config();
+$config->init_logger;
 
 # setup
 my $cpan = cpan_dir();

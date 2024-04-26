@@ -6,10 +6,12 @@ use warnings;
 use Path::Tiny qw< path >;
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
 use LWP::UserAgent;
+use MetaCPAN::Config;
 
 use Sub::Exporter -setup => {
     exports => [
         qw<
+            config
             author_dir
             cpan_dir
             diff_struct
@@ -17,6 +19,16 @@ use Sub::Exporter -setup => {
         >
     ]
 };
+
+my $config;
+sub config {
+    $config //= do {
+        MetaCPAN::Config->new(
+            name => __PACKAGE__,
+            path => path(__FILE__)->parent(3)->stringify,
+        );
+    };
+}
 
 sub author_dir {
     my $pauseid = shift;
