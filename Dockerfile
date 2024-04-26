@@ -22,6 +22,7 @@ EOT
 
 COPY bin bin
 COPY lib lib
+COPY *.conf .
 
 ENV PERL5LIB="/metacpan-ingest/local/lib/perl5:/metacpan-ingest/lib" PATH="/metacpan-ingest/local/bin:${PATH}"
 
