@@ -1,5 +1,3 @@
-package Permission;
-
 use strict;
 use warnings;
 

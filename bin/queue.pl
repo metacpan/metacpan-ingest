@@ -1,5 +1,3 @@
-package Queue;
-
 use strict;
 use warnings;
 

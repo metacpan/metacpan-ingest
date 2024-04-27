@@ -1,5 +1,3 @@
-package Author;
-
 use strict;
 use warnings;
 
