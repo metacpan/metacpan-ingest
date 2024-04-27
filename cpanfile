@@ -10,6 +10,7 @@ requires 'Email::Valid';
 requires 'Encode';
 requires 'Getopt::Long';
 requires 'LWP::UserAgent';
+requires 'LWP::Protocol::https';
 requires 'PAUSE::Permissions';
 requires 'Path::Iterator::Rule';
 requires 'Path::Tiny', '0.076';
