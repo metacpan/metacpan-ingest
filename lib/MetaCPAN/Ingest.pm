@@ -2,6 +2,7 @@ package MetaCPAN::Ingest;
 
 use strict;
 use warnings;
+use v5.36;
 
 use Path::Tiny qw< path >;
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
@@ -29,10 +30,9 @@ my $config //= do {
 };
 $config->init_logger;
 
-sub config { $config }
+sub config () { $config }
 
-sub author_dir {
-    my $pauseid = shift;
+sub author_dir ($pauseid) {
     my $dir     = 'id/'
         . sprintf( "%s/%s/%s",
         substr( $pauseid, 0, 1 ),
@@ -40,7 +40,7 @@ sub author_dir {
     return $dir;
 }
 
-sub cpan_dir {
+sub cpan_dir () {
     my $config = config();
     my $cpan = $config->config->{cpan};
 
@@ -49,8 +49,7 @@ sub cpan_dir {
         "Couldn't find a local cpan mirror. Please specify --cpan or set MINICPAN";
 }
 
-sub diff_struct {
-    my ( $old_root, $new_root, $allow_extra ) = @_;
+sub diff_struct ($old_root, $new_root, $allow_extra) {
     my (@queue) = [ $old_root, $new_root, '', $allow_extra ];
 
     while ( my $check = shift @queue ) {
@@ -85,14 +84,12 @@ sub diff_struct {
     return undef;
 }
 
-sub minion {
+sub minion () {
     require 'Mojo::Server';
     return Mojo::Server->new->build_app('MetaCPAN::API')->minion;
 }
 
-sub ua {
-    my ($proxy) = @_;
-
+sub ua ($proxy) {
     my $ua = LWP::UserAgent->new;
 
     if ($proxy) {
@@ -106,7 +103,7 @@ sub ua {
     return $ua;
 }
 
-sub cpan_file_map {
+sub cpan_file_map () {
     my $cpan = cpan_dir();
     my $ls = $cpan->child(qw< indices find-ls.gz >);
     if ( !-e $ls ) {

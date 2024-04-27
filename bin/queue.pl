@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use v5.36;
 
 use Getopt::Long;
 use Path::Tiny qw< path >;
