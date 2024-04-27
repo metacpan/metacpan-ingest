@@ -4,7 +4,6 @@ use v5.36;
 
 use CPAN::DistnameInfo ();
 use Getopt::Long;
-use IO::Uncompress::Gunzip ();
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
@@ -77,11 +76,9 @@ $es->index_refresh();
 
 # subs
 
-### TODO: fix reading
 sub _get_02packages_fh () {
-    my $file
-        = $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify;
-    return IO::Uncompress::Gunzip->new($file);
+    return $cpan->child(qw< modules 02packages.details.txt.gz >)
+        ->openr(':gzip');
 }
 
 sub run_cleanup ($seen) {
