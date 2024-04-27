@@ -10,6 +10,7 @@ requires 'Encode';
 requires 'Getopt::Long';
 requires 'LWP::UserAgent';
 requires 'PAUSE::Permissions';
+requires 'Path::Iterator::Rule';
 requires 'Path::Tiny', '0.076';
 requires 'Ref::Util';
 requires 'Search::Elasticsearch';

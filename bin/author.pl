@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use v5.36;
 
 use Cpanel::JSON::XS qw< decode_json >;
 use DateTime     ();
@@ -95,9 +96,7 @@ $es->index_refresh;
 
 log_info {"done"};
 
-sub _get_authors_data {
-    my ($authors_file) = @_;
-
+sub _get_authors_data ($authors_file) {
     my $data = XMLin(
         $authors_file,
         ForceArray    => 1,
@@ -129,9 +128,7 @@ sub _get_authors_data {
     return $whois_data;
 }
 
-sub _update_author {
-    my ( $id, $whois_data, $current_data ) = @_;
-
+sub _update_author ($id, $whois_data, $current_data) {
     my $data = _author_data_from_cpan( $id, $whois_data );
 
     log_debug {
@@ -162,9 +159,7 @@ sub _update_author {
     push @author_ids_to_purge, $id;
 }
 
-sub _author_data_from_cpan {
-    my ( $id, $whois_data ) = @_;
-
+sub _author_data_from_cpan ($id, $whois_data) {
     my $author_config = _author_config($id) || {};
 
     my $data = {
@@ -227,9 +222,7 @@ sub _author_data_from_cpan {
     return $data;
 }
 
-sub _author_config {
-    my ($id) = @_;
-
+sub _author_config ($id) {
     my $dir = $cpan->child( 'authors', author_dir($id) );
     return undef
         unless $dir->is_dir;
@@ -264,7 +257,7 @@ sub _author_config {
     };
 }
 
-sub update_authors {
+sub update_authors () {
     while ( my $doc = $scroll->next ) {
         my $id         = $doc->{_id};
         my $whois_data = delete $authors_data->{$id} || next;
@@ -272,7 +265,7 @@ sub update_authors {
     }
 }
 
-sub new_authors {
+sub new_authors () {
     for my $id ( keys %$authors_data ) {
         my $whois_data = delete $authors_data->{$id} || next;
         _update_author( $id, $whois_data );

@@ -2,11 +2,11 @@ package MetaCPAN::ES;
 
 use strict;
 use warnings;
+use v5.36;
 
 use Search::Elasticsearch;
 
-sub new {
-    my ( $class, %args ) = @_;
+sub new ($class, %args) {
     my $node  = $args{node}  // "elasticsearch:9200";
     my $index = $args{index} // "cpan";
 
@@ -20,13 +20,11 @@ sub new {
     }, $class;
 }
 
-sub index_refresh {
-    my ($self) = @_;
+sub index_refresh ($self) {
     $self->{es}->indices->refresh( index => $self->{index} );
 }
 
-sub bulk {
-    my ( $self, %args ) = @_;
+sub bulk ($self, %args) {
     return $self->{es}->bulk_helper(
         index     => $self->{index},
         type      => $self->{type},
@@ -35,8 +33,7 @@ sub bulk {
     );
 }
 
-sub scroll {
-    my ( $self, %args ) = @_;
+sub scroll ($self, %args) {
     return $self->{es}->scroll_helper(
         index       => $self->{index},
         type        => $self->{type},

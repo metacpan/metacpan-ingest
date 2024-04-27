@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use v5.36;
 
 use PAUSE::Permissions ();
 use Getopt::Long;
@@ -67,9 +68,7 @@ run_cleanup( \%seen ) if $cleanup;
 
 log_info {'done indexing 06perms'};
 
-sub _get_authors_data {
-    my ($authors_file) = @_;
-
+sub _get_authors_data ($authors_file) {
     my $data = XMLin(
         $authors_file,
         ForceArray    => 1,
@@ -101,9 +100,7 @@ sub _get_authors_data {
     return $whois_data;
 }
 
-sub run_cleanup {
-    my ($seen) = @_;
-
+sub run_cleanup ($seen) {
     log_debug {"checking permission data to remove"};
 
     my @remove;
