@@ -12,6 +12,7 @@ requires 'Email::Valid';
 requires 'Encode';
 requires 'File::Find::Rule';
 requires 'Getopt::Long';
+requires 'List::AllUtils';
 requires 'LWP::UserAgent';
 requires 'LWP::Protocol::https';
 requires 'PAUSE::Permissions';

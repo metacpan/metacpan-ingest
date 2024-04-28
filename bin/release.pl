@@ -242,37 +242,6 @@ $es->index_refresh unless $queue;
 
 # subs
 
-sub _import_archive {
-    my ( $archive_path, $dist ) = @_;
-
-    my $author = $dist->cpanid;
-    my $status
-        = $detect_backpan
-        ? _detect_status( $author, $archive_path )
-        : $status;
-
-    # move creation of arc_data into the module ?
-    my $release = MetaCPAN::Release->new(
-        always_no_index_dirs => \@always_no_index_dirs,
-        archive_path         => $archive_path,
-        author               => $author,
-        dist_info            => $dist,
-        status               => $status,
-    );
-
-$release->document_release();
-    my $files    = $release->files;
-    my $metadata = $release->{metadata};
-
-
-
-    _index_files($files);
-
-    use DDP;
-    &p( [ $files->[0] ] );
-    exit;
-}
-
 sub _index_files {
     my ($files) = @_;
 
@@ -338,10 +307,36 @@ sub _detect_status {
     }
 }
 
+sub _import_archive {
+    my ( $archive_path, $dist ) = @_;
+
+    my $author = $dist->cpanid;
+    my $status
+        = $detect_backpan
+        ? _detect_status( $author, $archive_path )
+        : $status;
+
+    # move creation of arc_data into the module ?
+    my $release = MetaCPAN::Release->new(
+        always_no_index_dirs => \@always_no_index_dirs,
+        archive_path         => $archive_path,
+        author               => $author,
+        dist_info            => $dist,
+        status               => $status,
+    );
+
+    my $files    = $release->files;
+    my $metadata = $release->{metadata};
+    my $document = $release->document_release();
+
+    _index_files($files);
+
+    use DDP;
+    &p( [ $files->[0] ] );
+    exit;
+}
+
 __END__
-
-
-
 
 sub import_archive {
     my ( $archive_path ) = @_;
@@ -350,14 +345,16 @@ sub import_archive {
 
     log_debug {'Gathering modules'};
 
+# DONE
     my $files    = $model->files;
     my $modules  = $model->modules;
     my $meta     = $model->metadata;
     my $document = $model->document;
 
-    foreach my $file ( @$files ) {
-        $file->set_indexed($meta);
-    }
+# DONE
+    # foreach my $file ( @$files ) {
+    #     $file->set_indexed($meta);
+    # }
 
     my %associated_pod;
     for ( grep { $_->indexed && $_->documentation } @$files ) {
@@ -453,40 +450,6 @@ sub import_archive {
 
 __END__
 
-
-
-sub _get_release_model {
-    my ( $archive_path ) = @_;
-
-    my $d = CPAN::DistnameInfo->new($archive_path);
-
-    my $model = MetaCPAN::Model::Release->new(
-        es       => $es,
-        bulk     => $bulk,
-        distinfo => $d,
-        file     => $archive_path,
-        index    => $es->{index},
-        level    => $self->level,
-        logger   => $self->logger,
-        status   => $self->detect_status( $d->cpanid, $d->filename ),
-    );
-
-    $model->run;
-
-    return $model;
-}
-
-
-
-
-
-my $warn = $SIG{__WARN__} || sub { warn $_[0] };
-local $SIG{__WARN__} = sub {
-    $warn->( $_[0] )
-        unless $_[0] =~ /Invalid header block at offset unknown at/;
-};
-
-
 =head1 SYNOPSIS
 
  # bin/metacpan ~/cpan/authors/id/A
@@ -511,34 +474,3 @@ a file. If the archive cannot be find in the cpan mirror, it tries the temporary
 folder. After a rsync this folder can be purged.
 
 =cut
-
-
-
-
-
-
-
-
-### DEBUG
-
-[
-    [0] "archive_path",
-    [1] "/CPAN/authors/id/L/LL/LLAP/Apache-AuthCookieNTLM.tar.gz"
-]
-[
-    [0] "D",
-    [1] CPAN::DistnameInfo  {
-            public methods (11): cpanid, dist, distname_info, distvname, extension, filename, maturity, new, pathname, properties, version
-            private methods (0)
-            internals: {
-                cpanid      "LLAP",
-                dist        "Apache-AuthCookieNTLM",
-                distvname   "Apache-AuthCookieNTLM",
-                extension   "tar.gz",
-                filename    "Apache-AuthCookieNTLM.tar.gz",
-                maturity    "released",
-                pathname    "/CPAN/authors/id/L/LL/LLAP/Apache-AuthCookieNTLM.tar.gz",
-                version     undef
-            }
-        }
-]
