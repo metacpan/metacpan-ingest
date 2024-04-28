@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use v5.36;
 
 use CPAN::Meta         ();
 use CPAN::DistnameInfo ();
@@ -20,17 +21,16 @@ use MetaCPAN::Ingest qw<
     cpan_dir
     cpan_file_map
     digest
+    extract_section
     fix_version
     handle_error
     minion
+    strip_pod
     tmp_dir
     ua
 >;
 
 use MetaCPAN::Release;
-
-#use MetaCPAN::Model::Release  ();
-#use MetaCPAN::Script::Runner  ();
 
 my @skip_dists = (
 
@@ -88,6 +88,10 @@ my @always_no_index_dirs = (
     # and add a few more
     qw< example blib examples eg >,
 );
+
+my $RE_SECTION = qr/^\s*(\S+)((\h+-+\h+(.+))|(\r?\n\h*\r?\n\h*(.+)))?/ms;
+
+my @NOT_PERL_FILES = qw(SIGNATURE);
 
 # args
 my ( $age, $bulk_size, $detect_backpan, $force_authorized, $latest, $queue,
@@ -242,9 +246,7 @@ $es->index_refresh unless $queue;
 
 # subs
 
-sub _index_files {
-    my ($files) = @_;
-
+sub _index_files ($files) {
     my $es   = MetaCPAN::ES->new( type => "file" );
     my $bulk = $es->bulk( size => $bulk_size );
 
@@ -262,7 +264,7 @@ sub _index_files {
     $bulk->flush;
 }
 
-sub _perms {
+sub _perms () {
     my $file = $cpan->child(qw< modules 06perms.txt >);
     my %authors;
     if ( -e $file ) {
@@ -295,8 +297,7 @@ sub _perms {
     return \%authors;
 }
 
-sub _detect_status {
-    my ( $author, $archive ) = @_;
+sub _detect_status ( $author, $archive ) {
     return $status unless $detect_backpan;
     if ( $cpan_file_map->{$author}{$archive} ) {
         return 'cpan';
@@ -307,8 +308,8 @@ sub _detect_status {
     }
 }
 
-sub _import_archive {
-    my ( $archive_path, $dist ) = @_;
+sub _import_archive ( $archive_path, $dist ) {
+    log_debug {'Gathering modules'};
 
     my $author = $dist->cpanid;
     my $status
@@ -326,74 +327,295 @@ sub _import_archive {
     );
 
     my $files    = $release->files;
+    my $modules  = $release->modules;
     my $metadata = $release->{metadata};
     my $document = $release->document_release();
 
     _index_files($files);
 
-    use DDP;
-    &p( [ $files->[0] ] );
-    exit;
-}
-
-__END__
-
-sub import_archive {
-    my ( $archive_path ) = @_;
-
-    my $model = $self->_get_release_model( $archive_path );
-
-    log_debug {'Gathering modules'};
-
-# DONE
-    my $files    = $model->files;
-    my $modules  = $model->modules;
-    my $meta     = $model->metadata;
-    my $document = $model->document;
-
-# DONE
-    # foreach my $file ( @$files ) {
-    #     $file->set_indexed($meta);
-    # }
+    ### TODO: check the effect of not running the builder for 'indexed'
+    ###       (we already set the flag in the logic creating the 'doc')
 
     my %associated_pod;
-    for ( grep { $_->indexed && $_->documentation } @$files ) {
 
-        # $file->clear_documentation to force a rebuild
-        my $documentation = $_->clear_documentation;
+    for my $f ( grep { $_->{indexed} } @$files ) {
+        my $documentation = _documentation($f);
+        next unless $documentation;
+
         $associated_pod{$documentation}
-            = [ @{ $associated_pod{$documentation} || [] }, $_ ];
+            = [ @{ $associated_pod{$documentation} || [] }, $f ];
     }
 
 # check for release deprecation in abstract of release or has x_deprecated in meta
     my $deprecated = (
-               $meta->{x_deprecated}
-            or $document->has_abstract
-            and $document->abstract =~ /DEPRECI?ATED/
+               $metadata->{x_deprecated}
+            or $document->{abstract}
+            and $document->{abstract} =~ /DEPRECI?ATED/
     ) ? 1 : 0;
 
-    $document->_set_deprecated($deprecated);
+    $document->{deprecated} = $deprecated;
 
-    log_debug { 'Indexing ', scalar @$modules, ' modules' };
-    my $perms = $self->perms;
+    log_debug { sprintf( 'Indexing %d modules', scalar(@$modules) ) };
+
+    my $perms = _perms();
     my @release_unauthorized;
     my @provides;
-    foreach my $file ( @$files ) {
-        $_->set_associated_pod( \%associated_pod ) for ( @{ $file->module } );
+
+    foreach my $file (@$files) {
+        _set_associated_pod( $_, \%associated_pod ) for @{ $file->{modules} };
+
+### CONTINUE FROM HERE -
 
      # NOTE: "The method returns a list of unauthorized, but indexed modules."
-        push( @release_unauthorized, $file->set_authorized($perms) )
-            if ( keys %$perms and !$force_authorized );
+     # push @release_unauthorized, _set_authorized($file, $perms)
+     #     if keys %$perms and !$force_authorized;
 
-        my $file_x_deprecated = 0;
+        # my $file_x_deprecated = 0;
 
-        for ( @{ $file->module } ) {
-            push( @provides, $_->name )
-                if $_->indexed
-                && ( $_->authorized || $force_authorized );
-            $file_x_deprecated = 1
-                if $meta->{provides}{ $_->name }{x_deprecated};
+        # for ( @{ $file->module } ) {
+        #     push( @provides, $_->name )
+        #         if $_->indexed
+        #         && ( $_->authorized || $force_authorized );
+        #     $file_x_deprecated = 1
+        #         if $meta->{provides}{ $_->name }{x_deprecated};
+        # }
+    }
+
+    use DDP;
+    &p( [@release_unauthorized] );
+
+###
+
+    use DDP;
+    &p( [ HERE => 1 ] );
+    exit;
+}
+
+=head2 set_authorized
+
+Expects a C<$perms> parameter which is a HashRef. The key is the module name
+and the value an ArrayRef of author names who are allowed to release
+that module.
+
+The method returns a list of unauthorized, but indexed modules.
+
+Unauthorized modules are modules that were uploaded in the name of a
+different author than stated in the C<06perms.txt.gz> file. One problem
+with this file is, that it doesn't record historical data. It may very
+well be that an author was authorized to upload a module at the time.
+But then his co-maintainer rights might have been revoked, making consecutive
+uploads of that release unauthorized. However, since this script runs
+with the latest version of C<06perms.txt.gz>, the former upload will
+be flagged as unauthorized as well. Same holds the other way round,
+a previously unauthorized release would be flagged authorized if the
+co-maintainership was added later on.
+
+If a release contains unauthorized modules, the whole release is marked
+as unauthorized as well.
+
+=cut
+
+# sub _set_authorized ( $file, $perms ) {
+#     # only authorized perl distributions make it into the CPAN
+#     return () if ( $file->{distribution} eq 'perl' );
+# ### CONTINUE HERE ---
+
+#     foreach my $module ( @{ $file->{modules} } ) {
+#         $module->_set_authorized(0)
+#             if ( $perms->{ $module->name } && !grep { $_ eq $file->author }
+#             @{ $perms->{ $module->name } } );
+#     }
+#     $file->_set_authorized(0)
+#         if ( $file->authorized
+#         && $file->documentation
+#         && $perms->{ $file->documentation }
+#         && !grep { $_ eq $file->author }
+#         @{ $perms->{ $file->documentation } } );
+#     return grep { !$_->authorized && $_->indexed } @{ $file->module };
+# }
+
+sub _set_associated_pod ( $module, $associated_pod ) {
+    return unless ( my $files = $associated_pod->{ $module->{name} } );
+
+    my %_pod_score = ( pod => 50, pm => 40, pl => 30 );
+
+    ( my $mod_path = $module->{name} ) =~ s{::}{/}g;
+
+    my ($file) = (
+        #<<<
+        # TODO: adjust score if all files are in root?
+        map  { $_->[1] }
+        sort { $b->[0] <=> $a->[0] }    # desc
+        map  {
+            [ (
+                # README.pod in root should rarely if ever be chosen.
+                # Typically it's there for github or something and it's usually
+                # a duplicate of the main module pod (though sometimes it falls
+                # out of sync (which makes it even worse)).
+                $_->{path} =~ /^README\.pod$/i ? -10 :
+
+                # If the name of the package matches the name of the file,
+                $_->{path} =~ m!(^lib/)?\b${mod_path}.((?i)pod|pm)$! ?
+                    # Score pod over pm, and boost (most points for 'lib' dir).
+                    ($1 ? 50 : 25) + $_pod_score{lc($2)} :
+
+                # Sort files by extension: Foo.pod > Foo.pm > foo.pl.
+                $_->{name} =~ /\.(pod|pm|pl)/i ? $_pod_score{lc($1)} :
+
+                # Otherwise score unknown (near the bottom).
+                -1
+            ),
+            $_ ]
+         }
+         @$files
+         #>>>
+    );
+
+    $module->{associated_pod} = _full_path($file);
+}
+
+sub _full_path ($file) {
+    return join( '/', @{$file}{qw< author release path >} );
+}
+
+sub _perms () {
+    my $file = $cpan->child(qw< modules 06perms.txt >);
+    my %authors;
+    if ( -e $file ) {
+        log_debug { "parsing ", $file };
+        my $fh = $file->openr;
+        while ( my $line = <$fh> ) {
+            my ( $module, $author, $type ) = split( /,/, $line );
+            next unless ($type);
+            $authors{$module} ||= [];
+            push( @{ $authors{$module} }, $author );
         }
+        close $fh;
+    }
+    else {
+        log_warn {"$file could not be found."};
+    }
+
+    my $packages = $cpan->child(qw< modules 02packages.details.txt.gz >);
+    if ( -e $packages ) {
+        log_debug { "parsing ", $packages };
+        open my $fh, "<:gzip", $packages;
+        while ( my $line = <$fh> ) {
+            if ( $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\// ) {
+                $authors{$1} ||= [];
+                push( @{ $authors{$1} }, $2 );
+            }
+        }
+        close $fh;
+    }
+    return \%authors;
+}
+
+=head2 is_perl_file
+
+Return true if the file extension is one of C<pl>, C<pm>, C<pod>, C<t>
+or if the file has no extension, is not a binary file and its size is less
+than 131072 bytes. This is an arbitrary limit but it keeps the pod parser
+happy and the indexer fast.
+
+=cut
+
+sub _is_perl_file ($file) {
+    return 0 if ( $file->{directory} );
+    return 1 if ( $file->{name} =~ /\.(pl|pm|pod|t)$/i );
+    return 1 if ( $file->{mime} eq "text/x-script.perl" );
+    return 1
+        if ( $file->{name} !~ /\./
+        && !( grep { $file->{name} eq $_ } @NOT_PERL_FILES )
+        && !$file->{binary}
+        && $file->{stat}{size} < 2**17 );
+    return 0;
+}
+
+sub _section ($file) {
+    my $section = extract_section( $file->{content}, 'NAME' );
+
+    # if it's a POD file without a name section, let's try to generate
+    # an abstract and name based on filename
+    if ( !$section && $file->{path} =~ /\.pod$/ ) {
+        $section = $file->{path};
+        $section =~ s{^(lib|pod|docs)/}{};
+        $section =~ s{\.pod$}{};
+        $section =~ s{/}{::}g;
+    }
+
+    return undef unless ($section);
+    $section =~ s/^=\w+.*$//mg;
+    $section =~ s/X<.*?>//mg;
+
+    return $section;
+}
+
+=head2 documentation
+
+Holds the name for the documentation in this file.
+
+If the file L<is a pod file|/is_pod_file>, the name is derived from the
+C<NAME> section. If the file L<is a perl file|/is_perl_file> and the
+name from the C<NAME> section matches one of the modules in L</module>,
+it returns the name. Otherwise it returns the name of the first module
+in L</module>. If there are no modules in the file the documentation is
+set to C<undef>.
+
+=cut
+
+sub _documentation ($file) {
+    return undef unless _is_perl_file($file);
+
+    my $section = _section($file);
+    return undef unless $section;
+
+    my $doc;
+
+    if ( $section =~ $RE_SECTION ) {
+        my $name = strip_pod($1);
+        $doc = $name if $name =~ /^[\w\.:\-_']+$/;
+    }
+
+### IF documentation is set - it's already a result of strip_pod
+    # $documentation = strip_pod($documentation)
+    #     if $documentation;
+
+    return undef unless length $doc;
+
+    # Modules to be indexed
+    my @indexed = grep { $_->{indexed} } @{ $file->{modules} };
+
+    # This is a Pod file, return its name
+    return $doc
+        if $doc and $file->{name} =~ /\.pod$/i;
+
+    # OR: found an indexed module with the same name
+    return $doc
+        if $doc and grep { $_->{name} eq $doc } @indexed;
+
+    # OR: found an indexed module with a name
+    if ( my ($mod) = grep { defined $_->{name} } @indexed ) {
+        return $mod->{name};
+    }
+
+    # OR: we have a parsed documentation
+    return $doc if defined $doc;
+
+    # OR: found ANY module with a name (better than nothing)
+    if ( my ($mod) = grep { defined $_->{name} } @{ $file->{modules} } ) {
+        return $mod->{name};
+    }
+
+    return undef;
+}
+
+1;
+
+__END__
+
+sub import_archive {
+
 
         # check for DEPRECATED/DEPRECIATED in abstract of file
         $file->_set_deprecated(1)

@@ -10,6 +10,7 @@ use File::Spec       ();
 use List::AllUtils qw< any >;
 use Module::Metadata 1.000012 ();    # Improved package detection.
 use Path::Tiny qw< path >;
+use Plack::MIME ();
 use Try::Tiny qw< catch try >;
 
 use MetaCPAN::Logger qw< :log :dlog >;
@@ -20,6 +21,8 @@ use MetaCPAN::Ingest qw<
     numify_version
     strip_pod
 >;
+
+my @NOT_PERL_FILES = qw(SIGNATURE);
 
 sub new ( $class, %args ) {
     my $author       = $args{author}       or die "Missing author\n";
@@ -90,10 +93,10 @@ sub _load_meta_file ( $extract_dir, $always_no_index_dirs ) {
         catch {
             log_warn {"META file ($file) could not be loaded: $_"};
         };
-        if ($last) {
-            last;
-        }
+
+        last if $last;
     }
+
     if ($last) {
         push( @{ $last->{no_index}->{directory} }, $always_no_index_dirs );
         return $last;
@@ -156,6 +159,8 @@ sub add_modules_from_meta ($self) {
     my $provides = $self->{metadata}->provides;
     my $files    = $self->{files};
 
+    my @modules;
+
     foreach my $module_name ( sort keys %$provides ) {
         my $data = $provides->{$module_name};
         my $path = File::Spec->canonpath( $data->{file} );
@@ -175,13 +180,17 @@ sub add_modules_from_meta ($self) {
 
         $file->{modules} //= [];
         push @{ $file->{modules} }, $module;
+        push @modules, $file;
     }
 
+    $self->{modules} = \@modules;
     return;
 }
 
 sub add_modules_from_files ($self) {
     my $meta = $self->{metadata};
+
+    my @modules;
 
     my @perl_files = grep { $_->{name} =~ m{(?:\.pm|\.pm\.PL)\z} }
         grep { $_->{indexed} } @{ $self->{files} };
@@ -211,8 +220,8 @@ sub add_modules_from_files ($self) {
 
                 $file->{modules} //= [];
                 push @{ $file->{modules} }, $module;
+                push @modules, $file;
             }
-
         }
         else {
             eval {
@@ -259,12 +268,18 @@ sub add_modules_from_files ($self) {
 
                     $file->{modules} //= [];
                     push @{ $file->{modules} }, $module;
+                    push @modules, $file;
                 }
                 alarm(0);
             };
         }
     }
+
+    $self->{modules} = \@modules;
+    return;
 }
+
+sub modules ($self) { $self->{modules} }
 
 sub document_file ( $self, %args ) {
     my ( $child, $dist, $filename, $fpath, $stat )
@@ -291,6 +306,8 @@ sub document_file ( $self, %args ) {
         status       => $self->{status},
         version      => $self->{version},
     };
+
+    $self->_add_mime($documnet);
 
     return $documnet;
 }
@@ -469,6 +486,22 @@ sub _should_index_file ( $self, $file, $fpath ) {
         @{ $self->{metadata}->no_index->{directory} };
 
     return 1;
+}
+
+sub _add_mime ( $self, $file ) {
+    my $mime;
+
+    if (  !$file->{directory}
+        && $file->{name} !~ /\./
+        && grep { $file->{name} ne $_ } @NOT_PERL_FILES )
+    {
+        $mime = "text/x-script.perl" if ( $file->{content} =~ /^#!.*?perl/ );
+    }
+    else {
+        $mime = Plack::MIME->mime_type( $file->{name} ) || 'text/plain';
+    }
+
+    $file->{mime} = $mime;
 }
 
 1;

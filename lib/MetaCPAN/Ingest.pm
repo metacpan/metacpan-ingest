@@ -5,6 +5,7 @@ use warnings;
 use v5.36;
 
 use Digest::SHA;
+use Encode qw< decode_utf8 >;
 use LWP::UserAgent;
 use Path::Tiny qw< path >;
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
@@ -21,6 +22,7 @@ use Sub::Exporter -setup => {
         diff_struct
         digest
         download_url
+        extract_section
         fix_version
         handle_error
         minion
@@ -192,11 +194,21 @@ sub download_url ($pauseid, $archive) {
 }
 
 # TODO: E<escape>
-sub strip_pod {
-    my $pod = shift;
+sub strip_pod ($pod) {
     $pod =~ s/L<([^\/]*?)\/([^\/]*?)>/$2 in $1/g;
     $pod =~ s/\w<(.*?)(\|.*?)?>/$1/g;
     return $pod;
+}
+
+sub extract_section ( $pod, $section ) {
+    eval { $pod = decode_utf8( $pod, Encode::FB_CROAK ) };
+    return undef
+        unless ( $pod =~ /^=head1\s+$section\b(.*?)(^((\=head1)|(\=cut)))/msi
+        || $pod =~ /^=head1\s+$section\b(.*)/msi );
+    my $out = $1;
+    $out =~ s/^\s*//g;
+    $out =~ s/\s*$//g;
+    return $out;
 }
 
 1;
