@@ -6,6 +6,7 @@ use v5.36;
 
 use DateTime         ();
 use File::Find::Rule ();
+use File::Spec       ();
 use Path::Tiny qw< path >;
 use Try::Tiny qw< catch try >;
 
@@ -100,6 +101,8 @@ sub _load_meta_file ( $extract_dir, $always_no_index_dirs ) {
 }
 
 sub files ($self) {
+    return $self->{files} if $self->{files} and @{ $self->{files} };
+
     my $dist = $self->{dist_info};
 
     my @files;
@@ -149,6 +152,7 @@ sub files ($self) {
         $self->{extract_dir}
     );
 
+    $self->{files} = \@files;
     return \@files;
 }
 
@@ -162,37 +166,7 @@ sub _is_broken_file ( $self, $filename ) {
     return 0;
 }
 
+
 1;
 
 __END__
-
-sub modules_from_meta {
-    my ( $provides, $files ) = @_;
-
-    my @modules;
-
-    my $provides = $self->metadata->provides;
-    my $files    = $self->files;
-    foreach my $module ( sort keys %$provides ) {
-        my $data = $provides->{$module};
-        my $path = File::Spec->canonpath( $data->{file} );
-
-        # Obey no_index and take the shortest path if multiple files match.
-        my ($file) = sort { length( $a->path ) <=> length( $b->path ) }
-            grep { $_->indexed && $_->path =~ /\Q$path\E$/ } @$files;
-
-        next unless $file;
-        $file->add_module( {
-            name    => $module,
-            version => $data->{version},
-            indexed => 1,
-        } );
-        push( @modules, $file );
-    }
-
-    return \@modules;
-
-}
-
-
-1;

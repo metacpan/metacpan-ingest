@@ -26,6 +26,7 @@ use MetaCPAN::Ingest qw<
     tmp_dir
     ua
 >;
+
 use MetaCPAN::Release;
 
 #use MetaCPAN::Model::Release  ();
@@ -259,12 +260,35 @@ sub _import_archive {
         status               => $status,
     );
 
-    my $files   = _index_files($release);
-    my $modules = _modules();
+    my $files = $release->files;
+    # add modules to files
+    my $metadata = $release->{metadata};
+
+    _index_files($files);
 
     use DDP;
-    &p( [$files] );
+    &p( [$files->[0]] );
     exit;
+}
+
+sub _index_files {
+    my ($files) = @_;
+
+    my $es   = MetaCPAN::ES->new( type => "file" );
+    my $bulk = $es->bulk( size => $bulk_size );
+
+    log_debug { 'Indexing ', scalar(@$files), ' files' };
+
+    for my $f (@$files) {
+        $bulk->update( {
+            id => digest( $f->{author}, $f->{release}, $f->{path} )
+            ,    ### ???? file name
+            doc           => $f,
+            doc_as_upsert => 1,
+        } );
+    }
+
+    $bulk->flush;
 }
 
 sub _perms {
@@ -300,32 +324,7 @@ sub _perms {
     return \%authors;
 }
 
-sub _index_files {
-    my ($release) = @_;
 
-    my $es   = MetaCPAN::ES->new( type => "file" );
-    my $bulk = $es->bulk( size => $bulk_size );
-
-    my $files = $release->files;
-    log_debug { 'Indexing ', scalar(@$files), ' files' };
-
-    for my $f (@$files) {
-        $bulk->update( {
-            id => digest( $f->{author}, $f->{release}, $f->{path} )
-            ,    ### ???? file name
-            doc           => $f,
-            doc_as_upsert => 1,
-        } );
-    }
-
-    $bulk->flush;
-
-    return $files;
-}
-
-sub _modules {
-
-}
 
 sub _detect_status {
     my ( $author, $archive ) = @_;
