@@ -18,7 +18,7 @@ use MetaCPAN::Ingest qw<
     ua
 >;
 
-my %range_ops = qw(< lt <= lte > gt >= gte);
+my %range_ops = qw( < lt <= lte > gt >= gte );
 
 my %valid_keys = map { $_ => 1 } qw<
     affected_versions

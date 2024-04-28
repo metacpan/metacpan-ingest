@@ -25,6 +25,7 @@ use Sub::Exporter -setup => {
         handle_error
         minion
         numify_version
+        strip_pod
         tmp_dir
         ua
     > ]
@@ -190,5 +191,12 @@ sub download_url ($pauseid, $archive) {
     );
 }
 
+# TODO: E<escape>
+sub strip_pod {
+    my $pod = shift;
+    $pod =~ s/L<([^\/]*?)\/([^\/]*?)>/$2 in $1/g;
+    $pod =~ s/\w<(.*?)(\|.*?)?>/$1/g;
+    return $pod;
+}
 
 1;
