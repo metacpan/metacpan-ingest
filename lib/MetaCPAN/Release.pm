@@ -17,6 +17,7 @@ use MetaCPAN::Ingest qw<
     download_url
     fix_version
     numify_version
+    strip_pod
 >;
 
 sub new ( $class, %args ) {
@@ -38,7 +39,7 @@ sub new ( $class, %args ) {
     return bless {
         author       => $author,
         archive      => $archive,
-        archive_path => $archive_path,
+        archive_path => path($archive_path),
         dist_info    => $dist_info,
         download_url => download_url( $author, $archive_path ),
         extract_dir  => $archive->{extract_dir},
@@ -111,9 +112,9 @@ sub files ($self) {
             my $child = path($File::Find::name);
             return if $self->_is_broken_file($File::Find::name);
             my $relative = $child->relative( $self->{extract_dir} );
-            my $stat     = do {
+            my $stat = do {
                 my $s = $child->stat;
-                +{ map { $_ => $s->$_ } qw(mode size mtime) };
+                +{ map { $_ => $s->$_ } qw< mode size mtime > };
             };
             return if ( $relative eq q{.} );
             ( my $fpath = "$relative" ) =~ s/^.*?\///;
@@ -124,30 +125,15 @@ sub files ($self) {
             $fpath = q{}
                 if $relative !~ /\// && !$self->{archive}->is_impolite;
 
-            my $file = +{
-                author  => $dist->cpanid,
-                binary  => -B $child,
-                content => $child->is_dir ? ""
-                : ( scalar $child->slurp ),
-                date => DateTime->from_epoch( epoch => $child->stat->mtime )
-                    . "",
-                directory    => $child->is_dir,
-                distribution => $dist->dist,
-                indexed => $self->{metadata}->should_index_file($fpath) ? 1
-                : 0,
-                local_path   => $child . "",
-                maturity     => $dist->maturity,
-                metadata     => $self->{metadata}->as_struct,
-                name         => $filename,
-                path         => $fpath,
-                release      => $dist->distvname,
-                download_url => $self->{download_url},
-                stat         => $stat,
-                status       => $self->{status},
-                version      => $self->{version},
-            };
+            my $file = $self->document_file(
+                child => $child,
+                dist  => $dist,
+                filename => $filename,
+                fpath => $fpath,
+                stat => $stat
+            );
 
-            push( @files, $file );
+           push( @files, $file );
         },
         $self->{extract_dir}
     );
@@ -179,7 +165,7 @@ sub add_modules_from_meta ($self) {
 
         next unless $file;
 
-        my $module = $self->module_document(
+        my $module = $self->document_module(
             name    => $module_name,
             version => $data->{version},
         );
@@ -205,7 +191,7 @@ sub add_modules_from_files ($self) {
             next if !$info;
 
             foreach my $module_name ( keys %{$info} ) {
-                my $module = $self->module_document(
+                my $module = $self->document_module(
                     name => $module_name,
                     (
                         defined $info->{$module_name}->{version}
@@ -240,7 +226,7 @@ sub add_modules_from_files ($self) {
                 {
                     my $version = $info->version($pkg);
 
-                    my $module = $self->module_document(
+                    my $module = $self->document_module(
                         name => $pkg,
                         (
                             defined $version
@@ -268,11 +254,39 @@ sub add_modules_from_files ($self) {
     }
 }
 
-sub module_document ( $self, %args ) {
+sub document_file ( $self, %args ) {
+    my ( $child, $dist, $filename, $fpath, $stat) =
+        @args{qw< child dist filename fpath stat >};
+
+    my $documnet = DlogS_trace {"adding file $_"} +{
+        author       => $dist->cpanid,
+        binary       => -B $child,
+        content      => $child->is_dir ? "" : ( scalar $child->slurp ),
+        date         => DateTime->from_epoch( epoch => $child->stat->mtime ) . "",
+        directory    => $child->is_dir,
+        distribution => $dist->dist,
+        indexed      => $self->{metadata}->should_index_file($fpath) ? 1
+        : 0,
+        local_path   => $child . "",
+        maturity     => $dist->maturity,
+        metadata     => $self->{metadata}->as_struct,
+        name         => $filename,
+        path         => $fpath,
+        release      => $dist->distvname,
+        download_url => $self->{download_url},
+        stat         => $stat,
+        status       => $self->{status},
+        version      => $self->{version},
+    };
+
+    return $documnet;
+}
+
+sub document_module ( $self, %args ) {
     my $name    = $args{name} or die "Can't create nameless modules\n";
     my $version = $args{version} // "";
 
-    return +{
+    my $document = DlogS_trace {"adding module $_"} +{
         associated_pod   => "",
         authorized       => 1,
         indexed          => 1,
@@ -280,6 +294,67 @@ sub module_document ( $self, %args ) {
         version          => $version,
         version_numified => numify_version($version),
     };
+}
+
+sub document_release ( $self, %args ) {
+    my $st   = $self->{archive_path}->stat;
+    my $stat = { map { $_ => $st->$_ } qw< mode size mtime > };
+    my $dist = $self->{dist_info};
+    my $meta = $self->{metadata};
+
+    my $document = DlogS_trace {"adding release $_"} +{
+        abstract        => strip_pod( $meta->abstract ),
+        archive         => $self->{archive_path}->stringify,
+        author          => $self->{author},
+        checksum_md5    => $self->{archive}->file_digest_md5,
+        checksum_sha256 => $self->{archive}->file_digest_sha256,
+        date            => DateTime->from_epoch( epoch => $stat->{mtime} ) . "",
+        dependency      => $self->dependencies,
+        distribution    => $dist->dist,
+
+        # CPAN::Meta->license *must* be called in list context
+        # (and *may* return multiple strings).
+        license  => [ $meta->license ],
+        maturity => $dist->maturity,
+        metadata => $meta->as_struct,
+        name     => $dist->distvname,
+        provides => [],
+        stat     => $stat,
+        status   => $self->{status},
+
+# Call in scalar context to make sure we only get one value (building a hash).
+        ( map { ( $_ => scalar $meta->$_ ) } qw< version resources > ),
+    };
+
+    return $document;
+}
+
+sub dependencies ($self) {
+    my $meta = $self->{metadata};
+
+    log_debug {'Gathering dependencies'};
+    my @dependencies;
+
+    if ( my $prereqs = $meta->prereqs ) {
+        while ( my ( $phase, $data ) = each %$prereqs ) {
+            while ( my ( $relationship, $v ) = each %$data ) {
+                while ( my ( $module, $version ) = each %$v ) {
+                    push(
+                        @dependencies,
+                        Dlog_trace {"adding dependency $_"} +{
+                            phase        => $phase,
+                            relationship => $relationship,
+                            module       => $module,
+                            version      => $version,
+                        }
+                    );
+                }
+            }
+        }
+    }
+
+    log_debug { 'Found ', scalar @dependencies, ' dependencies' };
+    return \@dependencies;
 }
 
 sub _is_broken_file ( $self, $filename ) {

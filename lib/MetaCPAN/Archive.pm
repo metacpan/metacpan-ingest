@@ -2,12 +2,15 @@ package MetaCPAN::Archive;
 
 use strict;
 use warnings;
+use v5.36;
 
 use Archive::Any ();
 use Path::Tiny;
+use Digest::file qw< digest_file_hex >;
 
-sub new {
-    my ( $class, %args ) = @_;
+use MetaCPAN::Logger qw< :log :dlog >;
+
+sub new ( $class, %args ) {
     my $file = $args{file}
         or die "Missing file\n";
 
@@ -23,26 +26,30 @@ sub new {
     }, $class;
 }
 
-sub is_impolite {
-    my ($self) = @_;
-    $self->{archive}->is_impolite;
+sub is_impolite ($self) {
+    return $self->{archive}->is_impolite;
 }
 
-sub files {
-    my ($self) = @_;
+sub files ($self) {
     return $self->{archive}->files;
 }
 
-sub extract {
-    my ($self) = @_;
+sub file_digest_md5 ($self) {
+    return digest_file_hex( $self->{file}, 'MD5' );
+}
+
+sub file_digest_sha256 ($self) {
+    return digest_file_hex( $self->{file}, 'SHA-256' );
+}
+
+sub extract ($self) {
     my $extract_dir = $self->_extract_dir;
     $self->{archive}->extract($extract_dir);
     $self->{extract_dir} = $extract_dir;
     return $extract_dir;
 }
 
-sub _extract_dir {
-    my ($self) = @_;
+sub _extract_dir ($self) {
     my $scratch_disk = '/mnt/scratch_disk';
     return -d $scratch_disk
         ? Path::Tiny->tempdir('/mnt/scratch_disk/tempXXXXX')
