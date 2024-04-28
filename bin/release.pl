@@ -260,14 +260,13 @@ sub _import_archive {
         status               => $status,
     );
 
-    my $files = $release->files;
-    # add modules to files
+    my $files    = $release->files;
     my $metadata = $release->{metadata};
 
     _index_files($files);
 
     use DDP;
-    &p( [$files->[0]] );
+    &p( [ $files->[0] ] );
     exit;
 }
 
@@ -323,8 +322,6 @@ sub _perms {
     }
     return \%authors;
 }
-
-
 
 sub _detect_status {
     my ( $author, $archive ) = @_;
