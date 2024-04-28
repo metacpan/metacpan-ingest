@@ -1,19 +1,23 @@
 use strict;
 use warnings;
 
+requires 'Archive::Any';
 requires 'CPAN::DistnameInfo', '0.12';
 requires 'Cpanel::JSON::XS';
+requires 'Data::Printer';
 requires 'DateTime';
 requires 'Data::Printer';
 requires 'Digest::SHA';
 requires 'Email::Valid';
 requires 'Encode';
+requires 'File::Find::Rule';
 requires 'Getopt::Long';
 requires 'LWP::UserAgent';
 requires 'LWP::Protocol::https';
 requires 'PAUSE::Permissions';
 requires 'Path::Iterator::Rule';
 requires 'Path::Tiny', '0.076';
+requires 'PerlIO::gzip';
 requires 'Ref::Util';
 requires 'PerlIO::gzip';
 requires 'Search::Elasticsearch';

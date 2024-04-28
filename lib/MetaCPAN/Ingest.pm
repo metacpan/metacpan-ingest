@@ -4,9 +4,11 @@ use strict;
 use warnings;
 use v5.36;
 
+use Digest::SHA;
+use LWP::UserAgent;
 use Path::Tiny qw< path >;
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
-use LWP::UserAgent;
+
 use MetaCPAN::Config;
 use MetaCPAN::Logger qw< :log :dlog >;
 
@@ -17,10 +19,13 @@ use Sub::Exporter -setup => {
         cpan_dir
         cpan_file_map
         diff_struct
+        digest
+        download_url
         fix_version
         handle_error
         minion
         numify_version
+        tmp_dir
         ua
     > ]
 };
@@ -85,6 +90,18 @@ sub diff_struct ( $old_root, $new_root, $allow_extra ) {
         }
     }
     return undef;
+}
+
+sub tmp_dir (@sub_dirs) {
+    my $dir = path('/tmp');
+    return $dir->child(@sub_dirs);    # TODO
+}
+
+sub digest (@params) {
+    my $digest = join( "\0", @params );
+    $digest = Digest::SHA::sha1_base64($digest);
+    $digest =~ tr/[+\/]/-_/;
+    return $digest;
 }
 
 sub fix_version ($version) {
@@ -163,5 +180,15 @@ sub cpan_file_map () {
 
     return $ret;
 }
+
+sub download_url ($pauseid, $archive) {
+    return sprintf(
+        "%s/%s/%s",
+        'https://cpan.metacpan.org/authors',
+        author_dir($pauseid),
+        $archive
+    );
+}
+
 
 1;
