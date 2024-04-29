@@ -20,6 +20,14 @@ sub new ( $class, %args ) {
     }, $class;
 }
 
+sub index ( $self, %args ) {
+    $self->{es}->index(
+        index => $self->{index},
+        type  => $self->{type},
+        %args,
+    );
+}
+
 sub index_refresh ($self) {
     $self->{es}->indices->refresh( index => $self->{index} );
 }

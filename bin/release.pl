@@ -237,12 +237,21 @@ while ( my $file = shift @files ) {
         };
     }
 }
+
 $es->index_refresh unless $queue;
 
 # Call Fastly to purge
 # purge_cpan_distnameinfos( \@module_to_purge_dists );
 
 # subs
+
+sub _index_release ($document) {
+    log_debug { 'Indexing release ', $document->{name} };
+    $es->index(
+        id   => $document->{name},
+        body => $document,
+    );
+}
 
 sub _index_files ($files) {
     my $es   = MetaCPAN::ES->new( type => "file" );
@@ -349,7 +358,7 @@ sub _import_archive ( $archive_path, $dist ) {
 
     my %associated_pod;
 
-    for my $file ( @$files ) {
+    for my $file (@$files) {
         $file->{documentation} = _documentation($file);
     }
 
@@ -386,28 +395,45 @@ sub _import_archive ( $archive_path, $dist ) {
 
         log_trace {"reindexing file $file->{path}"};
 
-        # if ( !$document->has_abstract && $file->abstract ) {
-        #     ( my $module = $document->distribution ) =~ s/-/::/g;
-        #     $document->_set_abstract( $file->abstract );
-        #     $document->put;
-        # }
-
-        # if (@provides) {
-        #     $document->_set_provides( [ uniq sort @provides ] );
-        #     $document->put;
-        # }
-        # $bulk->commit;
-
-# CONTINUE
+        if ( !$document->{abstract} && $file->{abstract} ) {
+            ( my $module = $document->{distribution} ) =~ s/-/::/g;
+            $document->{abstract} = $file->{abstract};
+        }
     }
 
+    $document->{provides} = [ uniq sort @provides ]
+        if scalar(@provides);
+
+    if ( scalar(@release_unauthorized) ) {
+        log_info {
+            "release "
+                . $document->{name}
+                . " contains unauthorized modules: "
+                . join( ",", map { $_->{name} } @release_unauthorized );
+        };
+        $document->{authorized} = 0;
+    }
+
+    # update 'first' value
+    _set_first($document);
+
+    _update_release_contirbutors($document);
+
+    _index_release($document);
     _index_files($files);
 
-###
+=head2
 
-    use DDP;
-    &p( [ HERE => 1 ] );
-    exit;
+TODO: IMPLEMENT THE FOLLOWING WITHOUT EXECUTING A SEPARATE SCRIPT (?)
+
+    # update 'latest' (must be done _after_ last update of the document)
+    if ( $document->{latest} and !$queue ) {
+        local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
+        MetaCPAN::Script::Runner->run;
+    }
+
+=cut
+
 }
 
 =head2 suggest
@@ -424,7 +450,7 @@ sub _suggest ($file) {
     $weight = 0 if $weight < 0;
 
     return +{
-        input   => [ $doc ],
+        input   => [$doc],
         payload => { doc_name => $doc },
         weight  => $weight,
     };
@@ -522,39 +548,6 @@ sub _set_associated_pod ( $module, $associated_pod ) {
 
 sub _full_path ($file) {
     return join( '/', @{$file}{qw< author release path >} );
-}
-
-sub _perms () {
-    my $file = $cpan->child(qw< modules 06perms.txt >);
-    my %authors;
-    if ( -e $file ) {
-        log_debug { "parsing ", $file };
-        my $fh = $file->openr;
-        while ( my $line = <$fh> ) {
-            my ( $module, $author, $type ) = split( /,/, $line );
-            next unless ($type);
-            $authors{$module} ||= [];
-            push( @{ $authors{$module} }, $author );
-        }
-        close $fh;
-    }
-    else {
-        log_warn {"$file could not be found."};
-    }
-
-    my $packages = $cpan->child(qw< modules 02packages.details.txt.gz >);
-    if ( -e $packages ) {
-        log_debug { "parsing ", $packages };
-        open my $fh, "<:gzip", $packages;
-        while ( my $line = <$fh> ) {
-            if ( $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\// ) {
-                $authors{$1} ||= [];
-                push( @{ $authors{$1} }, $2 );
-            }
-        }
-        close $fh;
-    }
-    return \%authors;
 }
 
 =head2 is_perl_file
@@ -660,41 +653,47 @@ sub _is_pod_file ($file) {
     $file->{name} =~ /\.pod$/i;
 }
 
-1;
+sub _set_first ($document) {
+    my $count = $es->search(
+        search_type => 'count',
+        body        => {
+            query  => { match_all => {} },
+            filter => {
+                and => [
+                    { term => { distribution => $document->{distribution} } },
+                    {
+                        range => {
+                            version_numified =>
+                                { 'lt' => $document->{version_numified} }
+                        },
+                    }
+                ],
+            },
+        },
+    )->{hits}{total};
 
-__END__
+    # REINDEX: after a full reindex, the above line is to replaced with:
+    # { term => { first => 1 } },
+    # currently, the "first" property is not computed on all releases
+    # since this feature has not been around when last reindexed
 
-sub import_archive {
-
-
-# CONTINUE
-
-    if (@release_unauthorized) {
-        log_info {
-            "release "
-                . $document->name
-                . " contains unauthorized modules: "
-                . join( ",", map { $_->name } @release_unauthorized );
-        };
-        $document->_set_authorized(0);
-        $document->put;
-    }
-
-    # update 'first' value
-    $document->set_first;
-    $document->put;
-
-    # update 'latest' (must be done _after_ last update of the document)
-    if ( $self->latest and !$self->queue ) {
-        local @ARGV = ( qw< latest --distribution >, $document->distribution );
-        MetaCPAN::Script::Runner->run;
-    }
-
-    my $contrib_data = $self->get_cpan_author_contributors( $document->author,
-        $document->name, $document->distribution );
-    $self->update_release_contirbutors($contrib_data);
+    $document->{first} = ( $count > 0 ? 0 : 1 );
 }
 
+sub _update_release_contirbutors ($document) {
+
+=head2
+
+    TODO: TRANSFER THE LOGIC IN MetaCPAN::Script::Role::Contributor
+          + QUERY IN MetaCPAN::Query::Release (get_contributors)
+
+    my $contrib_data = $self->get_cpan_author_contributors(
+        @{$document}{qw< author name distribution >}
+    );
+
+=cut
+
+}
 
 1;
 
