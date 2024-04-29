@@ -364,25 +364,20 @@ sub _import_archive ( $archive_path, $dist ) {
     foreach my $file (@$files) {
         _set_associated_pod( $_, \%associated_pod ) for @{ $file->{modules} };
 
-### CONTINUE FROM HERE -
-
      # NOTE: "The method returns a list of unauthorized, but indexed modules."
-     # push @release_unauthorized, _set_authorized($file, $perms)
-     #     if keys %$perms and !$force_authorized;
+        push @release_unauthorized, _set_authorized( $file, $perms )
+            if keys %$perms and !$force_authorized;
 
-        # my $file_x_deprecated = 0;
+        my $file_x_deprecated = 0;
 
-        # for ( @{ $file->module } ) {
-        #     push( @provides, $_->name )
-        #         if $_->indexed
-        #         && ( $_->authorized || $force_authorized );
-        #     $file_x_deprecated = 1
-        #         if $meta->{provides}{ $_->name }{x_deprecated};
-        # }
+        for my $mod ( @{ $file->{modules} } ) {
+            push( @provides, $mod->{name} )
+                if $mod->{indexed}
+                && ( $mod->{authorized} || $force_authorized );
+            $file_x_deprecated = 1
+                if $metadata->{provides}{ $mod->{name} }{x_deprecated};
+        }
     }
-
-    use DDP;
-    &p( [@release_unauthorized] );
 
 ###
 
@@ -415,24 +410,31 @@ as unauthorized as well.
 
 =cut
 
-# sub _set_authorized ( $file, $perms ) {
-#     # only authorized perl distributions make it into the CPAN
-#     return () if ( $file->{distribution} eq 'perl' );
-# ### CONTINUE HERE ---
+sub _set_authorized ( $file, $perms ) {
 
-#     foreach my $module ( @{ $file->{modules} } ) {
-#         $module->_set_authorized(0)
-#             if ( $perms->{ $module->name } && !grep { $_ eq $file->author }
-#             @{ $perms->{ $module->name } } );
-#     }
-#     $file->_set_authorized(0)
-#         if ( $file->authorized
-#         && $file->documentation
-#         && $perms->{ $file->documentation }
-#         && !grep { $_ eq $file->author }
-#         @{ $perms->{ $file->documentation } } );
-#     return grep { !$_->authorized && $_->indexed } @{ $file->module };
-# }
+    # only authorized perl distributions make it into the CPAN
+    return () if ( $file->{distribution} eq 'perl' );
+
+    foreach my $module ( @{ $file->{modules} } ) {
+        my $name = $module->{name};
+        if ( $perms->{$name}
+            && !grep { $_ eq $file->{author} } @{ $perms->{$name} } )
+        {
+            $module->{authorized} = 0;
+        }
+    }
+
+    my $doc = $file->{documentation};
+    if (   $file->{authorized}
+        && $doc
+        && $perms->{$doc}
+        && !grep { $_ eq $file->author } @{ $perms->{$doc} } )
+    {
+        $file->{authorized} = 0;
+    }
+
+    return grep { !$_->{authorized} && $_->{indexed} } @{ $file->{modules} };
+}
 
 sub _set_associated_pod ( $module, $associated_pod ) {
     return unless ( my $files = $associated_pod->{ $module->{name} } );
