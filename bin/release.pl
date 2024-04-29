@@ -113,8 +113,6 @@ my $ua   = ua();
 my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( type => "release" );
 
-#my $bulk = $es->bulk( size => $bulk_size );
-
 my $minion;
 $minion = minion() if $queue;
 
@@ -331,21 +329,6 @@ sub _import_archive ( $archive_path, $dist ) {
     my $metadata = $release->{metadata};
     my $document = $release->document_release();
 
-    _index_files($files);
-
-    ### TODO: check the effect of not running the builder for 'indexed'
-    ###       (we already set the flag in the logic creating the 'doc')
-
-    my %associated_pod;
-
-    for my $f ( grep { $_->{indexed} } @$files ) {
-        my $documentation = _documentation($f);
-        next unless $documentation;
-
-        $associated_pod{$documentation}
-            = [ @{ $associated_pod{$documentation} || [] }, $f ];
-    }
-
 # check for release deprecation in abstract of release or has x_deprecated in meta
     my $deprecated = (
                $metadata->{x_deprecated}
@@ -361,7 +344,21 @@ sub _import_archive ( $archive_path, $dist ) {
     my @release_unauthorized;
     my @provides;
 
-    foreach my $file (@$files) {
+    ### TODO: check the effect of not running the builder for 'indexed'
+    ###       (we already set the flag in the logic creating the 'doc')
+
+    my %associated_pod;
+
+    for my $file ( @$files ) {
+        $file->{documentation} = _documentation($file);
+    }
+
+    for my $file ( grep { $_->{documentation} && $_->{indexed} } @$files ) {
+        $associated_pod{ $file->{documentation} }
+            = [ @{ $associated_pod{ $file->{documentation} } || [] }, $file ];
+    }
+
+    for my $file (@$files) {
         _set_associated_pod( $_, \%associated_pod ) for @{ $file->{modules} };
 
      # NOTE: "The method returns a list of unauthorized, but indexed modules."
@@ -377,13 +374,60 @@ sub _import_archive ( $archive_path, $dist ) {
             $file_x_deprecated = 1
                 if $metadata->{provides}{ $mod->{name} }{x_deprecated};
         }
+
+        # check for DEPRECATED/DEPRECIATED in abstract of file
+        $file->{deprecated} = 1
+            if $deprecated
+            or $file_x_deprecated
+            or ( $file->{abstract} and $file->{abstract} =~ /DEPRECI?ATED/ );
+
+        $file->{modules} = [] if _is_pod_file($file);
+        $file->{suggest} = _suggest($file);
+
+        log_trace {"reindexing file $file->{path}"};
+
+        # if ( !$document->has_abstract && $file->abstract ) {
+        #     ( my $module = $document->distribution ) =~ s/-/::/g;
+        #     $document->_set_abstract( $file->abstract );
+        #     $document->put;
+        # }
+
+        # if (@provides) {
+        #     $document->_set_provides( [ uniq sort @provides ] );
+        #     $document->put;
+        # }
+        # $bulk->commit;
+
+# CONTINUE
     }
+
+    _index_files($files);
 
 ###
 
     use DDP;
     &p( [ HERE => 1 ] );
     exit;
+}
+
+=head2 suggest
+
+Autocomplete info for documentation.
+
+=cut
+
+sub _suggest ($file) {
+    my $doc = $file->{documentation};
+    return "" unless $doc;
+
+    my $weight = 1000 - length($doc);
+    $weight = 0 if $weight < 0;
+
+    return +{
+        input   => [ $doc ],
+        payload => { doc_name => $doc },
+        weight  => $weight,
+    };
 }
 
 =head2 set_authorized
@@ -525,7 +569,7 @@ happy and the indexer fast.
 sub _is_perl_file ($file) {
     return 0 if ( $file->{directory} );
     return 1 if ( $file->{name} =~ /\.(pl|pm|pod|t)$/i );
-    return 1 if ( $file->{mime} eq "text/x-script.perl" );
+    return 1 if ( $file->{mime} and $file->{mime} eq "text/x-script.perl" );
     return 1
         if ( $file->{name} !~ /\./
         && !( grep { $file->{name} eq $_ } @NOT_PERL_FILES )
@@ -590,7 +634,7 @@ sub _documentation ($file) {
 
     # This is a Pod file, return its name
     return $doc
-        if $doc and $file->{name} =~ /\.pod$/i;
+        if $doc and _is_perl_file($file);
 
     # OR: found an indexed module with the same name
     return $doc
@@ -612,6 +656,10 @@ sub _documentation ($file) {
     return undef;
 }
 
+sub _is_pod_file ($file) {
+    $file->{name} =~ /\.pod$/i;
+}
+
 1;
 
 __END__
@@ -619,29 +667,7 @@ __END__
 sub import_archive {
 
 
-        # check for DEPRECATED/DEPRECIATED in abstract of file
-        $file->_set_deprecated(1)
-            if $deprecated
-            or $file_x_deprecated
-            or $file->abstract and $file->abstract =~ /DEPRECI?ATED/;
-
-        $file->clear_module if ( $file->is_pod_file );
-        $file->documentation;
-        $file->suggest;
-
-        log_trace {"reindexing file $file->{path}"};
-        $bulk->put($file);
-        if ( !$document->has_abstract && $file->abstract ) {
-            ( my $module = $document->distribution ) =~ s/-/::/g;
-            $document->_set_abstract( $file->abstract );
-            $document->put;
-        }
-    }
-    if (@provides) {
-        $document->_set_provides( [ uniq sort @provides ] );
-        $document->put;
-    }
-    $bulk->commit;
+# CONTINUE
 
     if (@release_unauthorized) {
         log_info {
