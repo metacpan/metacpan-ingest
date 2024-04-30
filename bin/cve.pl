@@ -11,8 +11,6 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
-    config
-    cpan_dir
     handle_error
     numify_version
     ua
@@ -45,7 +43,6 @@ $cve_url     //= 'https://hackeriet.github.io/cpansa-feed/cpansa.json';
 $cve_dev_url //= 'https://hackeriet.github.io/cpansa-feed/cpansa_dev.json';
 
 # setup
-my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( index => "cve", type => "cve" );
 my $bulk = $es->bulk();
 

@@ -7,8 +7,6 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
-    config
-    cpan_dir
     read_06perms_iter
 >;
 
@@ -17,13 +15,8 @@ my $cleanup;
 GetOptions( "cleanup" => \$cleanup );
 
 # setup
-my $config = config();
-$config->init_logger;
-
-my $cpan   = cpan_dir();
-my $es     = MetaCPAN::ES->new( type => "permission" );
-my $bulk   = $es->bulk();
-my $scroll = $es->scroll();
+my $es   = MetaCPAN::ES->new( type => "permission" );
+my $bulk = $es->bulk();
 
 my %seen;
 log_debug {"building permission data to add"};
@@ -102,7 +95,9 @@ sub run_cleanup ($seen) {
 
     my @remove;
 
+    my $scroll = $es->scroll();
     my $count = $scroll->total;
+
     while ( my $p = $scroll->next ) {
         my $id = $p->{_id};
         unless ( exists $seen->{$id} ) {
@@ -113,7 +108,6 @@ sub run_cleanup ($seen) {
     }
 
     $bulk->delete_ids(@remove);
-    $bulk->flush;
 }
 
 1;
