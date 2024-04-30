@@ -8,8 +8,6 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
-    config
-    cpan_dir
     read_02packages_fh
 >;
 
@@ -18,10 +16,6 @@ my $cleanup;
 GetOptions( "cleanup" => \$cleanup );
 
 # setup
-my $config = config();
-$config->init_logger;
-
-my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( type => "package" );
 my $bulk = $es->bulk();
 
@@ -84,7 +78,6 @@ sub run_cleanup ($seen) {
         log_debug { $count . " left to check" } if --$count % 10000 == 0;
     }
     $bulk->delete_ids(@remove);
-    $bulk->flush;
 }
 
 1;
