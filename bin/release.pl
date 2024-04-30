@@ -2,14 +2,12 @@ use strict;
 use warnings;
 use v5.36;
 
-use CPAN::Meta         ();
 use CPAN::DistnameInfo ();
 use File::Find::Rule   ();
 use File::stat         ();
 use Getopt::Long;
 use List::Util qw< uniq >;
 use Path::Tiny qw< path >;
-use PerlIO::gzip;
 use Try::Tiny qw< catch try >;
 
 use MetaCPAN::Logger qw< :log :dlog >;

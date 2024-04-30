@@ -41,13 +41,11 @@ while ( my $perms = $iterator->next_module ) {
         co_maintainers => \@co_maints,
     };
 
-    $bulk->update(
-        {
-            id            => $name,
-            doc           => $doc,
-            doc_as_upsert => 1,
-        }
-    );
+    $bulk->update( {
+        id            => $name,
+        doc           => $doc,
+        doc_as_upsert => 1,
+    } );
 
     $seen{$name} = 1;
 }
@@ -96,7 +94,7 @@ sub run_cleanup ($seen) {
     my @remove;
 
     my $scroll = $es->scroll();
-    my $count = $scroll->total;
+    my $count  = $scroll->total;
 
     while ( my $p = $scroll->next ) {
         my $id = $p->{_id};

@@ -4,9 +4,9 @@ use strict;
 use warnings;
 use v5.36;
 
-use DateTime         ();
-use File::Find::Rule ();
-use File::Spec       ();
+use CPAN::Meta;
+use DateTime   ();
+use File::Spec ();
 use List::AllUtils qw< any >;
 use Module::Metadata 1.000012 ();    # Improved package detection.
 use Path::Tiny qw< path >;
