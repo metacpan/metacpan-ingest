@@ -95,7 +95,7 @@ $es->index_refresh;
 
 log_info {"done"};
 
-sub _update_author ($id, $whois_data, $current_data) {
+sub _update_author ( $id, $whois_data, $current_data ) {
     my $data = _author_data_from_cpan( $id, $whois_data );
 
     log_debug {
@@ -126,7 +126,7 @@ sub _update_author ($id, $whois_data, $current_data) {
     push @author_ids_to_purge, $id;
 }
 
-sub _author_data_from_cpan ($id, $whois_data) {
+sub _author_data_from_cpan ( $id, $whois_data ) {
     my $author_config = _author_config($id) || {};
 
     my $data = {
@@ -191,7 +191,7 @@ sub _author_data_from_cpan ($id, $whois_data) {
 
 sub _author_config ($id) {
     my $cpan = cpan_dir();
-    my $dir = $cpan->child( 'authors', author_dir($id) );
+    my $dir  = $cpan->child( 'authors', author_dir($id) );
     return undef
         unless $dir->is_dir;
 
