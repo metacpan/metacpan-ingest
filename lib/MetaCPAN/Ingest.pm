@@ -32,6 +32,7 @@ use Sub::Exporter -setup => {
         read_00whois
         read_02packages
         read_02packages_fh
+        read_06perms_fh
         read_06perms_iter
         strip_pod
         tmp_dir
@@ -101,9 +102,9 @@ sub diff_struct ( $old_root, $new_root, $allow_extra ) {
     return undef;
 }
 
-sub tmp_dir (@sub_dirs) {
+sub tmp_dir ( $cpanid, $distfile ) {
     my $dir = path('/tmp');
-    return $dir->child(@sub_dirs);    # TODO
+    return $dir->child( author_dir($cpanid), $distfile );
 }
 
 sub digest (@params) {
@@ -190,13 +191,10 @@ sub cpan_file_map () {
     return $ret;
 }
 
-sub download_url ($pauseid, $archive) {
-    return sprintf(
-        "%s/%s/%s",
+sub download_url ( $pauseid, $archive ) {
+    return sprintf( "%s/%s/%s",
         'https://cpan.metacpan.org/authors',
-        author_dir($pauseid),
-        $archive
-    );
+        author_dir($pauseid), $archive );
 }
 
 # TODO: E<escape>
@@ -218,7 +216,7 @@ sub extract_section ( $pod, $section ) {
 }
 
 sub read_00whois () {
-    my $cpan = cpan_dir();
+    my $cpan         = cpan_dir();
     my $authors_file = sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
 
     my $data = XMLin(
@@ -253,9 +251,9 @@ sub read_00whois () {
 }
 
 # TODO: replace usage with read_02packages
-sub read_02packages_fh () {
+sub read_02packages_fh ( $log_meta = 0 ) {
     my $cpan = cpan_dir();
-    my $fh = $cpan->child(qw< modules 02packages.details.txt.gz >)
+    my $fh   = $cpan->child(qw< modules 02packages.details.txt.gz >)
         ->openr(':gzip');
 
     # read first 9 lines (meta info)
@@ -265,7 +263,7 @@ sub read_02packages_fh () {
         next unless $line;
         $meta .= "$line\n";
     }
-    log_debug {$meta};
+    log_debug {$meta} if $log_meta;
 
     return $fh;
 }
@@ -273,8 +271,7 @@ sub read_02packages_fh () {
 sub read_02packages () {
     my $cpan = cpan_dir();
     return Parse::CPAN::Packages::Fast->new(
-        $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify
-    );
+        $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify );
 }
 
 # TODO: replace usage with unified read_06perms
@@ -284,7 +281,7 @@ sub read_06perms_fh () {
 }
 
 sub read_06perms_iter () {
-    my $cpan = cpan_dir();
+    my $cpan      = cpan_dir();
     my $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
     my $pp        = PAUSE::Permissions->new( path => $file_path );
     return $pp->module_iterator;

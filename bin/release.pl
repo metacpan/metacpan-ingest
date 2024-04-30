@@ -17,12 +17,9 @@ use MetaCPAN::Logger qw< :log :dlog >;
 use MetaCPAN::Archive;
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
-    author_dir
-    cpan_dir
     cpan_file_map
     digest
     extract_section
-    fix_version
     handle_error
     minion
     read_02packages_fh
@@ -111,9 +108,8 @@ GetOptions(
 $status //= 'cpan';
 
 # setup
-my $ua   = ua();
-my $cpan = cpan_dir();
-my $es   = MetaCPAN::ES->new( type => "release" );
+my $ua = ua();
+my $es = MetaCPAN::ES->new( type => "release" );
 
 my $minion;
 $minion = minion() if $queue;
@@ -143,8 +139,7 @@ for (@ARGV) {
         && CPAN::DistnameInfo->new($_)->cpanid )
     {
         my $dist = CPAN::DistnameInfo->new($_);
-
-        my $file = tmp_dir( author_dir( $dist->cpanid ), $dist->filename, );
+        my $file = tmp_dir( $dist->cpanid, $dist->filename );    # ?
         $file->parent->mkpath;
         log_info {"Downloading $_"};
 
@@ -220,7 +215,7 @@ while ( my $file = shift @files ) {
 
         if ($latest) {
             for my $delay ( 2 * 60, 7 * 60, 14 * 60, 26 * 60 ) {
-                queue_latest($dist, $delay, $job_id);
+                queue_latest( $dist, $delay, $job_id );
             }
         }
     }
@@ -280,7 +275,7 @@ sub _perms () {
 
     log_debug {"Reading 02packages"};
     my $fh_packages = read_02packages_fh();
-    while ( my $line = <$fh> ) {
+    while ( my $line = <$fh_packages> ) {
         next unless $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\//;
         $authors{$1} ||= [];
         push( @{ $authors{$1} }, $2 );
@@ -408,12 +403,12 @@ sub _import_archive ( $archive_path, $dist ) {
     _index_release($document);
     _index_files($files);
 
-    # update 'latest' (must be done _after_ last update of the document)
-    #   flag for all releases of the distribution.
-    # if ( $document->{latest} and !$queue ) {
-    #     local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
-    #     MetaCPAN::Script::Runner->run;
-    # }
+# update 'latest' (must be done _after_ last update of the document)
+#   flag for all releases of the distribution.
+# if ( $document->{latest} and !$queue ) {
+#     local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
+#     MetaCPAN::Script::Runner->run;
+# }
 }
 
 =head2 suggest
@@ -675,7 +670,7 @@ sub _update_release_contirbutors ($document) {
 
 }
 
-sub queue_latest ($dist, $delay, $job_id) {
+sub queue_latest ( $dist, $delay, $job_id ) {
     $minion->enqueue(
         index_latest => [ '--distribution', $dist->dist ] => {
             attempts => 3,
