@@ -220,17 +220,9 @@ while ( my $file = shift @files ) {
 
         if ($latest) {
             for my $delay ( 2 * 60, 7 * 60, 14 * 60, 26 * 60 ) {
-                $minion->enqueue(
-                    index_latest => [ '--distribution', $dist->dist ] => {
-                        attempts => 3,
-                        delay    => $delay,
-                        parents  => [$job_id],
-                        priority => 2,
-                    }
-                );
+                queue_latest($dist, $delay, $job_id);
             }
         }
-
     }
     else {
         try { _import_archive( $file, $dist ) }
@@ -416,18 +408,12 @@ sub _import_archive ( $archive_path, $dist ) {
     _index_release($document);
     _index_files($files);
 
-=head2
-
-TODO: IMPLEMENT THE FOLLOWING WITHOUT EXECUTING A SEPARATE SCRIPT (?)
-
     # update 'latest' (must be done _after_ last update of the document)
-    if ( $document->{latest} and !$queue ) {
-        local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
-        MetaCPAN::Script::Runner->run;
-    }
-
-=cut
-
+    #   flag for all releases of the distribution.
+    # if ( $document->{latest} and !$queue ) {
+    #     local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
+    #     MetaCPAN::Script::Runner->run;
+    # }
 }
 
 =head2 suggest
@@ -687,6 +673,17 @@ sub _update_release_contirbutors ($document) {
 
 =cut
 
+}
+
+sub queue_latest ($dist, $delay, $job_id) {
+    $minion->enqueue(
+        index_latest => [ '--distribution', $dist->dist ] => {
+            attempts => 3,
+            delay    => $delay,
+            parents  => [$job_id],
+            priority => 2,
+        }
+    );
 }
 
 1;
