@@ -8,7 +8,9 @@ use Digest::SHA;
 use Encode qw< decode_utf8 >;
 use LWP::UserAgent;
 use Path::Tiny qw< path >;
+use PAUSE::Permissions ();
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
+use XML::Simple qw< XMLin >;
 
 use MetaCPAN::Config;
 use MetaCPAN::Logger qw< :log :dlog >;
@@ -27,6 +29,10 @@ use Sub::Exporter -setup => {
         handle_error
         minion
         numify_version
+        read_00whois
+        read_02packages
+        read_02packages_fh
+        read_06perms_iter
         strip_pod
         tmp_dir
         ua
@@ -209,6 +215,79 @@ sub extract_section ( $pod, $section ) {
     $out =~ s/^\s*//g;
     $out =~ s/\s*$//g;
     return $out;
+}
+
+sub read_00whois () {
+    my $cpan = cpan_dir();
+    my $authors_file = sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
+
+    my $data = XMLin(
+        $authors_file,
+        ForceArray    => 1,
+        SuppressEmpty => '',
+        NoAttr        => 1,
+        KeyAttr       => [],
+    );
+
+    my $whois_data = {};
+
+    for my $author ( @{ $data->{cpanid} } ) {
+        my $data = {
+            map {
+                my $content = $author->{$_};
+                @$content == 1
+                    && !ref $content->[0] ? ( $_ => $content->[0] ) : ();
+            } keys %$author
+        };
+
+        my $id       = $data->{id};
+        my $existing = $whois_data->{$id};
+        if (  !$existing
+            || $existing->{type} eq 'author' && $data->{type} eq 'list' )
+        {
+            $whois_data->{$id} = $data;
+        }
+    }
+
+    return $whois_data;
+}
+
+# TODO: replace usage with read_02packages
+sub read_02packages_fh () {
+    my $cpan = cpan_dir();
+    my $fh = $cpan->child(qw< modules 02packages.details.txt.gz >)
+        ->openr(':gzip');
+
+    # read first 9 lines (meta info)
+    my $meta = "Meta info:\n";
+    for ( 0 .. 8 ) {
+        chomp( my $line = <$fh> );
+        next unless $line;
+        $meta .= "$line\n";
+    }
+    log_debug {$meta};
+
+    return $fh;
+}
+
+sub read_02packages () {
+    my $cpan = cpan_dir();
+    return Parse::CPAN::Packages::Fast->new(
+        $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify
+    );
+}
+
+# TODO: replace usage with unified read_06perms
+sub read_06perms_fh () {
+    my $cpan = cpan_dir();
+    return $cpan->child(qw< modules 06perms.txt >)->openr;
+}
+
+sub read_06perms_iter () {
+    my $cpan = cpan_dir();
+    my $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
+    my $pp        = PAUSE::Permissions->new( path => $file_path );
+    return $pp->module_iterator;
 }
 
 1;

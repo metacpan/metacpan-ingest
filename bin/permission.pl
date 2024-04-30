@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use v5.36;
 
-use PAUSE::Permissions ();
 use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
 
@@ -10,6 +9,7 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     config
     cpan_dir
+    read_06perms_iter
 >;
 
 # args
@@ -25,13 +25,10 @@ my $es     = MetaCPAN::ES->new( type => "permission" );
 my $bulk   = $es->bulk();
 my $scroll = $es->scroll();
 
-my $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
-my $pp        = PAUSE::Permissions->new( path => $file_path );
-
 my %seen;
 log_debug {"building permission data to add"};
 
-my $iterator = $pp->module_iterator;
+my $iterator = read_06perms_iter();
 while ( my $perms = $iterator->next_module ) {
 
     # This method does a "return sort @foo", so it can't be called in the

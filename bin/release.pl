@@ -25,6 +25,8 @@ use MetaCPAN::Ingest qw<
     fix_version
     handle_error
     minion
+    read_02packages_fh
+    read_06perms_fh
     strip_pod
     tmp_dir
     ua
@@ -272,35 +274,27 @@ sub _index_files ($files) {
 }
 
 sub _perms () {
-    my $file = $cpan->child(qw< modules 06perms.txt >);
+    my $fh_perms = read_06perms_fh();
     my %authors;
-    if ( -e $file ) {
-        log_debug { "parsing ", $file };
-        my $fh = $file->openr;
-        while ( my $line = <$fh> ) {
-            my ( $module, $author, $type ) = split( /,/, $line );
-            next unless ($type);
-            $authors{$module} ||= [];
-            push( @{ $authors{$module} }, $author );
-        }
-        close $fh;
-    }
-    else {
-        log_warn {"$file could not be found."};
-    }
 
-    my $packages = $cpan->child(qw< modules 02packages.details.txt.gz >);
-    if ( -e $packages ) {
-        log_debug { "parsing ", $packages };
-        open my $fh, "<:gzip", $packages;
-        while ( my $line = <$fh> ) {
-            if ( $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\// ) {
-                $authors{$1} ||= [];
-                push( @{ $authors{$1} }, $2 );
-            }
-        }
-        close $fh;
+    log_debug {"Reading 06perms"};
+    while ( my $line = <$fh_perms> ) {
+        my ( $module, $author, $type ) = split( /,/, $line );
+        next unless ($type);
+        $authors{$module} ||= [];
+        push( @{ $authors{$module} }, $author );
     }
+    close $fh_perms;
+
+    log_debug {"Reading 02packages"};
+    my $fh_packages = read_02packages_fh();
+    while ( my $line = <$fh> ) {
+        next unless $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\//;
+        $authors{$1} ||= [];
+        push( @{ $authors{$1} }, $2 );
+    }
+    close $fh_packages;
+
     return \%authors;
 }
 

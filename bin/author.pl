@@ -9,7 +9,6 @@ use Encode       ();
 use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
 use URI ();
-use XML::Simple qw< XMLin >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
@@ -17,6 +16,7 @@ use MetaCPAN::Ingest qw<
     cpan_dir
     cpan_file_map
     diff_struct
+    read_00whois
 >;
 
 # config
@@ -55,11 +55,10 @@ my $pauseid;
 GetOptions( "pauseid=s" => \$pauseid );
 
 # setup
-my $cpan = cpan_dir();
-my $es   = MetaCPAN::ES->new( type => "author" );
+my $es = MetaCPAN::ES->new( type => "author" );
 
-my $authors_data
-    = _get_authors_data( sprintf( "%s/%s", $cpan, 'authors/00whois.xml' ) );
+log_info {'Reading 00whois'};
+my $authors_data = read_00whois();
 
 if ($pauseid) {
     log_info {"Indexing 1 author"};
@@ -95,38 +94,6 @@ $es->index_refresh;
 #$self->perform_purges;
 
 log_info {"done"};
-
-sub _get_authors_data ($authors_file) {
-    my $data = XMLin(
-        $authors_file,
-        ForceArray    => 1,
-        SuppressEmpty => '',
-        NoAttr        => 1,
-        KeyAttr       => [],
-    );
-
-    my $whois_data = {};
-
-    for my $author ( @{ $data->{cpanid} } ) {
-        my $data = {
-            map {
-                my $content = $author->{$_};
-                @$content == 1
-                    && !ref $content->[0] ? ( $_ => $content->[0] ) : ();
-            } keys %$author
-        };
-
-        my $id       = $data->{id};
-        my $existing = $whois_data->{$id};
-        if (  !$existing
-            || $existing->{type} eq 'author' && $data->{type} eq 'list' )
-        {
-            $whois_data->{$id} = $data;
-        }
-    }
-
-    return $whois_data;
-}
 
 sub _update_author ($id, $whois_data, $current_data) {
     my $data = _author_data_from_cpan( $id, $whois_data );
@@ -223,6 +190,7 @@ sub _author_data_from_cpan ($id, $whois_data) {
 }
 
 sub _author_config ($id) {
+    my $cpan = cpan_dir();
     my $dir = $cpan->child( 'authors', author_dir($id) );
     return undef
         unless $dir->is_dir;

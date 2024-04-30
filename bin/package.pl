@@ -10,6 +10,7 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     config
     cpan_dir
+    read_02packages_fh
 >;
 
 # args
@@ -24,24 +25,15 @@ my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( type => "package" );
 my $bulk = $es->bulk();
 
-log_info {'Reading 02packages.details'};
-
-my $fh = _get_02packages_fh();
-
-# read first 9 lines (meta info)
-my $meta = "Meta info:\n";
-for ( 0 .. 8 ) {
-    chomp( my $line = <$fh> );
-    next unless $line;
-    $meta .= "$line\n";
-}
-log_debug {$meta};
-
 my %seen;
 log_debug {"adding data"};
 
+log_info {'Reading 02packages.details'};
+
 # read the rest of the file line-by-line (too big to slurp)
-while ( my $line = <$fh> ) {
+
+my $fh_packages = read_02packages_fh();
+while ( my $line = <$fh_packages> ) {
     next unless $line;
     chomp($line);
 
@@ -75,11 +67,6 @@ log_info {'done indexing 02packages.details'};
 $es->index_refresh();
 
 # subs
-
-sub _get_02packages_fh () {
-    return $cpan->child(qw< modules 02packages.details.txt.gz >)
-        ->openr(':gzip');
-}
 
 sub run_cleanup ($seen) {
     log_debug {"checking package data to remove"};
