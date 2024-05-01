@@ -7,7 +7,6 @@ use v5.36;
 use CPAN::Meta;
 use DateTime   ();
 use File::Spec ();
-use List::AllUtils qw< any >;
 use Module::Metadata 1.000012 ();    # Improved package detection.
 use Path::Tiny qw< path >;
 use Plack::MIME ();
@@ -21,8 +20,6 @@ use MetaCPAN::Ingest qw<
     numify_version
     strip_pod
 >;
-
-my @NOT_PERL_FILES = qw(SIGNATURE);
 
 sub new ( $class, %args ) {
     my $author       = $args{author}       or die "Missing author\n";
@@ -108,36 +105,14 @@ sub _load_meta_file ( $extract_dir, $always_no_index_dirs ) {
 sub files ($self) {
     return $self->{files} if $self->{files} and @{ $self->{files} };
 
-    my $dist = $self->{dist_info};
-
     my @files;
     File::Find::find(
         sub {
-            my $child = path($File::Find::name);
-            return if $self->_is_broken_file($File::Find::name);
-            my $relative = $child->relative( $self->{extract_dir} );
-            my $stat     = do {
-                my $s = $child->stat;
-                +{ map { $_ => $s->$_ } qw< mode size mtime > };
-            };
-            return if ( $relative eq q{.} );
-            ( my $fpath = "$relative" ) =~ s/^.*?\///;
-            my $filename = $fpath;
-            $child->is_dir
-                ? $filename =~ s/^(.*\/)?(.+?)\/?$/$2/
-                : $filename =~ s/.*\///;
-            $fpath = q{}
-                if $relative !~ /\// && !$self->{archive}->is_impolite;
-
-            my $file = $self->document_file(
-                child    => $child,
-                dist     => $dist,
-                filename => $filename,
-                fpath    => $fpath,
-                stat     => $stat
+            my $file = MetaCPAN::File->new(
+                name    => $File::Find::name,
+                release => $self,
             );
-
-            push( @files, $file );
+            push( @files, $file ) if $file;
         },
         $self->{extract_dir}
     );
@@ -168,7 +143,6 @@ sub add_modules_from_meta ($self) {
         # Obey no_index and take the shortest path if multiple files match.
         my ($file) = sort { length( $a->{path} ) <=> length( $b->{path} ) }
             grep { $_->{indexed} && $_->{path} =~ /\Q$path\E$/ } @$files;
-
         next unless $file;
 
         my $module = $self->document_module(
@@ -178,8 +152,7 @@ sub add_modules_from_meta ($self) {
                 1, # modules explicitly listed in 'provides' should be indexed
         );
 
-        $file->{modules} //= [];
-        push @{ $file->{modules} }, $module;
+        $file->add_module($module);
         push @modules, $file;
     }
 
@@ -218,8 +191,7 @@ sub add_modules_from_files ($self) {
                     indexed => $indexed,
                 );
 
-                $file->{modules} //= [];
-                push @{ $file->{modules} }, $module;
+                $file->add_module($module);
                 push @modules, $file;
             }
         }
@@ -266,8 +238,7 @@ sub add_modules_from_files ($self) {
                         indexed => $indexed,
                     );
 
-                    $file->{modules} //= [];
-                    push @{ $file->{modules} }, $module;
+                    $file->add_module($module);
                     push @modules, $file;
                 }
                 alarm(0);
@@ -280,37 +251,6 @@ sub add_modules_from_files ($self) {
 }
 
 sub modules ($self) { $self->{modules} }
-
-sub document_file ( $self, %args ) {
-    my ( $child, $dist, $filename, $fpath, $stat )
-        = @args{qw< child dist filename fpath stat >};
-
-    my $indexed = $self->_should_index_file( $filename, $fpath );
-
-    my $documnet = DlogS_trace {"adding file $_"} +{
-        author  => $dist->cpanid,
-        binary  => -B $child,
-        content => $child->is_dir ? "" : ( scalar $child->slurp ),
-        date    => DateTime->from_epoch( epoch => $child->stat->mtime ) . "",
-        directory    => $child->is_dir,
-        distribution => $dist->dist,
-        indexed      => $indexed,
-        local_path   => $child . "",
-        maturity     => $dist->maturity,
-        metadata     => $self->{metadata}->as_struct,
-        name         => $filename,
-        path         => $fpath,
-        release      => $dist->distvname,
-        download_url => $self->{download_url},
-        stat         => $stat,
-        status       => $self->{status},
-        version      => $self->{version},
-    };
-
-    $self->_add_mime($documnet);
-
-    return $documnet;
-}
 
 sub document_module ( $self, %args ) {
     my $name    = $args{name} or die "Can't create nameless modules\n";
@@ -388,62 +328,21 @@ sub dependencies ($self) {
     return \@dependencies;
 }
 
-sub _is_broken_file ( $self, $filename ) {
-    return 1 if ( -p $filename || !-e $filename );
+sub _should_index_module ( $self, $name, $file ) {
+    return 0 if !$file->{indexed};
+    return 0 if $name !~ /^[A-Za-z]/;
+    return 0 if !$self->{metadata}->should_index_package($name);
+    return 0
+        if $self->hide_from_pause( $file->{content}, $file->{name}, $name );
 
-    if ( -l $filename ) {
-        my $syml = readlink $filename;
-        return 1 if ( !-e $filename && !-l $filename );
-    }
-    return 0;
-}
-
-sub _is_in_other_files ( $self, $file ) {
-    my @other = qw<
-        AUTHORS
-        Build.PL
-        Changelog
-        ChangeLog
-        CHANGELOG
-        Changes
-        CHANGES
-        CONTRIBUTING
-        CONTRIBUTING.md
-        CONTRIBUTING.pod
-        Copying
-        COPYRIGHT
-        cpanfile
-        CREDITS
-        dist.ini
-        FAQ
-        INSTALL
-        INSTALL.md
-        INSTALL.pod
-        LICENSE
-        Makefile.PL
-        MANIFEST
-        META.json
-        META.yml
-        NEWS
-        README
-        README.md
-        README.pod
-        THANKS
-        Todo
-        ToDo
-        TODO
-    >;
-
-    return any { $file eq $_ } @other;
+    return 1;
 }
 
 my $bom
     = qr/(?:\x00\x00\xfe\xff|\xff\xfe\x00\x00|\xfe\xff|\xff\xfe|\xef\xbb\xbf)/;
 
-sub hide_from_pause ( $self, $content, $file_name, $pkg ) {
-    return 0 if defined($file_name) && $file_name =~ m{\.pm\.PL\z};
-
-    #    my $pkg = $self->name;
+sub hide_from_pause ( $self, $content, $filename, $pkg ) {
+    return 0 if defined($filename) && $filename =~ m{\.pm\.PL\z};
 
 # This regexp is *almost* the same as $PKG_REGEXP in Module::Metadata.
 # [b] We need to allow/ignore a possible BOM since we read in binary mode.
@@ -462,46 +361,6 @@ sub hide_from_pause ( $self, $content, $file_name, $pkg ) {
       \h*                   # optional whitesapce [s]
       [;\{]                 # semicolon line terminator or block start
     /mx ? 0 : 1;
-}
-
-sub _should_index_module ( $self, $name, $file ) {
-    return 0 if !$file->{indexed};
-    return 0 if $name !~ /^[A-Za-z]/;
-    return 0 if !$self->{metadata}->should_index_package($name);
-    return 0
-        if $self->hide_from_pause( $file->{content}, $file->{name}, $name );
-
-    return 1;
-}
-
-sub _should_index_file ( $self, $file, $fpath ) {
-    return 0 if !$self->{metadata}->should_index_file($fpath);
-
-    # files listed under 'other files' are not shown in a search
-    return 0 if $self->_is_in_other_files($file);
-
-    # files under no_index directories should not be indexed
-    return 0
-        if grep { $fpath eq $_ or $fpath =~ m|^$_/| }
-        @{ $self->{metadata}->no_index->{directory} };
-
-    return 1;
-}
-
-sub _add_mime ( $self, $file ) {
-    my $mime;
-
-    if (  !$file->{directory}
-        && $file->{name} !~ /\./
-        && grep { $file->{name} ne $_ } @NOT_PERL_FILES )
-    {
-        $mime = "text/x-script.perl" if ( $file->{content} =~ /^#!.*?perl/ );
-    }
-    else {
-        $mime = Plack::MIME->mime_type( $file->{name} ) || 'text/plain';
-    }
-
-    $file->{mime} = $mime;
 }
 
 1;
