@@ -14,15 +14,14 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::Archive;
 use MetaCPAN::ES;
+use MetaCPAN::File;
 use MetaCPAN::Ingest qw<
     cpan_file_map
     digest
-    extract_section
     handle_error
     minion
     read_02packages_fh
     read_06perms_fh
-    strip_pod
     tmp_dir
     ua
 >;
@@ -85,10 +84,6 @@ my @always_no_index_dirs = (
     # and add a few more
     qw< example blib examples eg >,
 );
-
-my $RE_SECTION = qr/^\s*(\S+)((\h+-+\h+(.+))|(\r?\n\h*\r?\n\h*(.+)))?/ms;
-
-my @NOT_PERL_FILES = qw(SIGNATURE);
 
 # args
 my ( $age, $bulk_size, $detect_backpan, $force_authorized, $latest, $queue,
@@ -197,7 +192,7 @@ while ( my $file = shift @files ) {
 
     if ($queue) {
         my $job_id = $minion->enqueue(
-            index_release => [$file],
+            index_release => [ $file->{data} ],
             { attempts => 3, priority => 3 }
         );
 
@@ -250,37 +245,12 @@ sub _index_files ($files) {
         $bulk->update( {
             id => digest( $f->{author}, $f->{release}, $f->{path} )
             ,    ### ???? file name
-            doc           => $f,
+            doc           => $f->as_struct,
             doc_as_upsert => 1,
         } );
     }
 
     $bulk->flush;
-}
-
-sub _perms () {
-    my $fh_perms = read_06perms_fh();
-    my %authors;
-
-    log_debug {"Reading 06perms"};
-    while ( my $line = <$fh_perms> ) {
-        my ( $module, $author, $type ) = split( /,/, $line );
-        next unless ($type);
-        $authors{$module} ||= [];
-        push( @{ $authors{$module} }, $author );
-    }
-    close $fh_perms;
-
-    log_debug {"Reading 02packages"};
-    my $fh_packages = read_02packages_fh();
-    while ( my $line = <$fh_packages> ) {
-        next unless $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\//;
-        $authors{$1} ||= [];
-        push( @{ $authors{$1} }, $2 );
-    }
-    close $fh_packages;
-
-    return \%authors;
 }
 
 sub _detect_status ( $author, $archive ) {
@@ -328,7 +298,6 @@ sub _import_archive ( $archive_path, $dist ) {
 
     log_debug { sprintf( 'Indexing %d modules', scalar(@$modules) ) };
 
-    my $perms = _perms();
     my @release_unauthorized;
     my @provides;
 
@@ -337,8 +306,9 @@ sub _import_archive ( $archive_path, $dist ) {
 
     my %associated_pod;
 
+    # TODO: why here and not on object creation ?
     for my $file (@$files) {
-        $file->{documentation} = _documentation($file);
+        $file->add_documentation();
     }
 
     for my $file ( grep { $_->{documentation} && $_->{indexed} } @$files ) {
@@ -350,7 +320,7 @@ sub _import_archive ( $archive_path, $dist ) {
         _set_associated_pod( $_, \%associated_pod ) for @{ $file->{modules} };
 
      # NOTE: "The method returns a list of unauthorized, but indexed modules."
-        push @release_unauthorized, _set_authorized( $file, $perms )
+        push @release_unauthorized, $file->set_authorized($perms)
             if keys %$perms and !$force_authorized;
 
         my $file_x_deprecated = 0;
@@ -364,13 +334,13 @@ sub _import_archive ( $archive_path, $dist ) {
         }
 
         # check for DEPRECATED/DEPRECIATED in abstract of file
-        $file->{deprecated} = 1
+        $file->set_deprecated(1)
             if $deprecated
             or $file_x_deprecated
             or ( $file->{abstract} and $file->{abstract} =~ /DEPRECI?ATED/ );
 
-        $file->{modules} = [] if _is_pod_file($file);
-        $file->{suggest} = _suggest($file);
+        $file->empty_modules() if $file->_is_pod_file();
+        $file->set_suggest();
 
         log_trace {"reindexing file $file->{path}"};
 
@@ -407,76 +377,6 @@ sub _import_archive ( $archive_path, $dist ) {
 #     local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
 #     MetaCPAN::Script::Runner->run;
 # }
-}
-
-=head2 suggest
-
-Autocomplete info for documentation.
-
-=cut
-
-sub _suggest ($file) {
-    my $doc = $file->{documentation};
-    return "" unless $doc;
-
-    my $weight = 1000 - length($doc);
-    $weight = 0 if $weight < 0;
-
-    return +{
-        input   => [$doc],
-        payload => { doc_name => $doc },
-        weight  => $weight,
-    };
-}
-
-=head2 set_authorized
-
-Expects a C<$perms> parameter which is a HashRef. The key is the module name
-and the value an ArrayRef of author names who are allowed to release
-that module.
-
-The method returns a list of unauthorized, but indexed modules.
-
-Unauthorized modules are modules that were uploaded in the name of a
-different author than stated in the C<06perms.txt.gz> file. One problem
-with this file is, that it doesn't record historical data. It may very
-well be that an author was authorized to upload a module at the time.
-But then his co-maintainer rights might have been revoked, making consecutive
-uploads of that release unauthorized. However, since this script runs
-with the latest version of C<06perms.txt.gz>, the former upload will
-be flagged as unauthorized as well. Same holds the other way round,
-a previously unauthorized release would be flagged authorized if the
-co-maintainership was added later on.
-
-If a release contains unauthorized modules, the whole release is marked
-as unauthorized as well.
-
-=cut
-
-sub _set_authorized ( $file, $perms ) {
-
-    # only authorized perl distributions make it into the CPAN
-    return () if ( $file->{distribution} eq 'perl' );
-
-    foreach my $module ( @{ $file->{modules} } ) {
-        my $name = $module->{name};
-        if ( $perms->{$name}
-            && !grep { $_ eq $file->{author} } @{ $perms->{$name} } )
-        {
-            $module->{authorized} = 0;
-        }
-    }
-
-    my $doc = $file->{documentation};
-    if (   $file->{authorized}
-        && $doc
-        && $perms->{$doc}
-        && !grep { $_ eq $file->author } @{ $perms->{$doc} } )
-    {
-        $file->{authorized} = 0;
-    }
-
-    return grep { !$_->{authorized} && $_->{indexed} } @{ $file->{modules} };
 }
 
 sub _set_associated_pod ( $module, $associated_pod ) {
@@ -516,114 +416,7 @@ sub _set_associated_pod ( $module, $associated_pod ) {
          #>>>
     );
 
-    $module->{associated_pod} = _full_path($file);
-}
-
-sub _full_path ($file) {
-    return join( '/', @{$file}{qw< author release path >} );
-}
-
-=head2 is_perl_file
-
-Return true if the file extension is one of C<pl>, C<pm>, C<pod>, C<t>
-or if the file has no extension, is not a binary file and its size is less
-than 131072 bytes. This is an arbitrary limit but it keeps the pod parser
-happy and the indexer fast.
-
-=cut
-
-sub _is_perl_file ($file) {
-    return 0 if ( $file->{directory} );
-    return 1 if ( $file->{name} =~ /\.(pl|pm|pod|t)$/i );
-    return 1 if ( $file->{mime} and $file->{mime} eq "text/x-script.perl" );
-    return 1
-        if ( $file->{name} !~ /\./
-        && !( grep { $file->{name} eq $_ } @NOT_PERL_FILES )
-        && !$file->{binary}
-        && $file->{stat}{size} < 2**17 );
-    return 0;
-}
-
-sub _section ($file) {
-    my $section = extract_section( $file->{content}, 'NAME' );
-
-    # if it's a POD file without a name section, let's try to generate
-    # an abstract and name based on filename
-    if ( !$section && $file->{path} =~ /\.pod$/ ) {
-        $section = $file->{path};
-        $section =~ s{^(lib|pod|docs)/}{};
-        $section =~ s{\.pod$}{};
-        $section =~ s{/}{::}g;
-    }
-
-    return undef unless ($section);
-    $section =~ s/^=\w+.*$//mg;
-    $section =~ s/X<.*?>//mg;
-
-    return $section;
-}
-
-=head2 documentation
-
-Holds the name for the documentation in this file.
-
-If the file L<is a pod file|/is_pod_file>, the name is derived from the
-C<NAME> section. If the file L<is a perl file|/is_perl_file> and the
-name from the C<NAME> section matches one of the modules in L</module>,
-it returns the name. Otherwise it returns the name of the first module
-in L</module>. If there are no modules in the file the documentation is
-set to C<undef>.
-
-=cut
-
-sub _documentation ($file) {
-    return undef unless _is_perl_file($file);
-
-    my $section = _section($file);
-    return undef unless $section;
-
-    my $doc;
-
-    if ( $section =~ $RE_SECTION ) {
-        my $name = strip_pod($1);
-        $doc = $name if $name =~ /^[\w\.:\-_']+$/;
-    }
-
-### IF documentation is set - it's already a result of strip_pod
-    # $documentation = strip_pod($documentation)
-    #     if $documentation;
-
-    return undef unless length $doc;
-
-    # Modules to be indexed
-    my @indexed = grep { $_->{indexed} } @{ $file->{modules} };
-
-    # This is a Pod file, return its name
-    return $doc
-        if $doc and _is_perl_file($file);
-
-    # OR: found an indexed module with the same name
-    return $doc
-        if $doc and grep { $_->{name} eq $doc } @indexed;
-
-    # OR: found an indexed module with a name
-    if ( my ($mod) = grep { defined $_->{name} } @indexed ) {
-        return $mod->{name};
-    }
-
-    # OR: we have a parsed documentation
-    return $doc if defined $doc;
-
-    # OR: found ANY module with a name (better than nothing)
-    if ( my ($mod) = grep { defined $_->{name} } @{ $file->{modules} } ) {
-        return $mod->{name};
-    }
-
-    return undef;
-}
-
-sub _is_pod_file ($file) {
-    $file->{name} =~ /\.pod$/i;
+    $module->{associated_pod} = $file->full_path;
 }
 
 sub _set_first ($document) {
@@ -677,6 +470,31 @@ sub queue_latest ( $dist, $delay, $job_id ) {
             priority => 2,
         }
     );
+}
+
+sub _perms () {
+    my $fh_perms = read_06perms_fh();
+    my %authors;
+
+    log_debug {"Reading 06perms"};
+    while ( my $line = <$fh_perms> ) {
+        my ( $module, $author, $type ) = split( /,/, $line );
+        next unless ($type);
+        $authors{$module} ||= [];
+        push( @{ $authors{$module} }, $author );
+    }
+    close $fh_perms;
+
+    log_debug {"Reading 02packages"};
+    my $fh_packages = read_02packages_fh();
+    while ( my $line = <$fh_packages> ) {
+        next unless $line =~ /^(.+?)\s+.+?\s+\S\/\S+\/(\S+)\//;
+        $authors{$1} ||= [];
+        push( @{ $authors{$1} }, $2 );
+    }
+    close $fh_packages;
+
+    return \%authors;
 }
 
 1;
