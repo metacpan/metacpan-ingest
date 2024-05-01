@@ -13,6 +13,7 @@ use Try::Tiny qw< catch try >;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::Archive;
+use MetaCPAN::Contributor qw< update_release_contirbutors >;
 use MetaCPAN::ES;
 use MetaCPAN::File;
 use MetaCPAN::Ingest qw<
@@ -366,7 +367,7 @@ sub _import_archive ( $archive_path, $dist ) {
     # update 'first' value
     _set_first($document);
 
-    _update_release_contirbutors($document);
+    update_release_contirbutors($document);
 
     _index_release($document);
     _index_files($files);
@@ -444,21 +445,6 @@ sub _set_first ($document) {
     # since this feature has not been around when last reindexed
 
     $document->{first} = ( $count > 0 ? 0 : 1 );
-}
-
-sub _update_release_contirbutors ($document) {
-
-=head2
-
-    TODO: TRANSFER THE LOGIC IN MetaCPAN::Script::Role::Contributor
-          + QUERY IN MetaCPAN::Query::Release (get_contributors)
-
-    my $contrib_data = $self->get_cpan_author_contributors(
-        @{$document}{qw< author name distribution >}
-    );
-
-=cut
-
 }
 
 sub queue_latest ( $dist, $delay, $job_id ) {

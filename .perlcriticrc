@@ -33,7 +33,7 @@ program-extensions = .t
 
 [Subroutines::ProhibitReturnSort]
 
-[Subroutines::ProhibitSubroutinePrototypes]
+[-Subroutines::ProhibitSubroutinePrototypes]
 
 [TestingAndDebugging::RequireUseStrict]
 equivalent_modules = MetaCPAN::Moose

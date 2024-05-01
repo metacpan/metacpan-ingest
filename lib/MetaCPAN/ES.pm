@@ -6,9 +6,15 @@ use v5.36;
 
 use Search::Elasticsearch;
 
+use MetaCPAN::Ingest qw< config >;
+
 sub new ( $class, %args ) {
-    my $node  = $args{node}  // "elasticsearch:9200";
+    my $node  = $args{node};
     my $index = $args{index} // "cpan";
+
+    my $config = config;
+    $node ||= $config->{config}{es_node};
+    $node or die "Cannot create an ES instance without a node\n";
 
     return bless {
         es => Search::Elasticsearch->new(
@@ -30,6 +36,30 @@ sub index ( $self, %args ) {
 
 sub index_refresh ($self) {
     $self->{es}->indices->refresh( index => $self->{index} );
+}
+
+sub exists ( $self, %args ) {
+    my $id    = $args{id} or die "Missing id\n";
+    my $index = $args{index} // $self->{index};
+    my $type  = $args{type}  // $self->{type};
+
+    return $self->{es}->exists(
+        index => $index,
+        type  => $type,
+        id    => $id,
+    );
+}
+
+sub get ( $self, %args ) {
+    my $id    = $args{id} or die "Missing id\n";
+    my $index = $args{index} // $self->{index};
+    my $type  = $args{type}  // $self->{type};
+
+    return $self->{es}->get(
+        index => $index,
+        type  => $type,
+        id    => $id,
+    );
 }
 
 sub search ( $self, %args ) {
