@@ -225,15 +225,12 @@ sub add_documentation ($self) {
     return undef unless $section;
 
     my $doc;
+    my $val;
 
     if ( $section =~ $RE_SECTION ) {
         my $name = strip_pod($1);
         $doc = $name if $name =~ /^[\w\.:\-_']+$/;
     }
-
-### IF documentation is set - it's already a result of strip_pod
-    # $documentation = strip_pod($documentation)
-    #     if $documentation;
 
     return undef unless length $doc;
 
@@ -241,25 +238,28 @@ sub add_documentation ($self) {
     my @indexed = grep { $_->{indexed} } @{ $self->{modules} };
 
     # This is a Pod file, return its name
-    return $doc
-        if $doc and $self->_is_perl_file();
+    $val = $doc
+        if !$val and $doc and $self->_is_perl_file();
 
     # OR: found an indexed module with the same name
-    return $doc
-        if $doc and grep { $_->{name} eq $doc } @indexed;
+    $val = $doc
+        if !$val and $doc and grep { $_->{name} eq $doc } @indexed;
 
     # OR: found an indexed module with a name
-    if ( my ($mod) = grep { defined $_->{name} } @indexed ) {
-        return $mod->{name};
+    if ( !$val and my ($mod) = grep { defined $_->{name} } @indexed ) {
+        $val = $mod->{name};
     }
 
     # OR: we have a parsed documentation
-    return $doc if defined $doc;
+    $val = $doc if !$val and defined $doc;
 
     # OR: found ANY module with a name (better than nothing)
-    if ( my ($mod) = grep { defined $_->{name} } @{ $self->{modules} } ) {
+    if ( !$val and my ($mod) = grep { defined $_->{name} } @{ $self->{modules} } ) {
         return $mod->{name};
     }
+
+    $self->{documentation} = $val;
+    $self->{documentation_length} = length($val);
 
     return undef;
 }
