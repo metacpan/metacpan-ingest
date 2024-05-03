@@ -372,12 +372,14 @@ sub _import_archive ( $archive_path, $dist ) {
     _index_release($document);
     _index_files($files);
 
-# update 'latest' (must be done _after_ last update of the document)
-#   flag for all releases of the distribution.
-# if ( $document->{latest} and !$queue ) {
+    # update 'latest' (must be done _after_ last update of the document)
+    #   flag for all releases of the distribution.
+    if ( $document->{latest} and !$queue ) {
+        log_info {"Upding latest status"};
+
 #     local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
 #     MetaCPAN::Script::Runner->run;
-# }
+    }
 }
 
 sub _set_associated_pod ( $module, $associated_pod ) {
