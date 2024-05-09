@@ -99,8 +99,7 @@ sub scroll ( $self, %args ) {
     );
 }
 
-sub count {
-    my ( $self, %args ) = @_;
+sub count ( $self, %args ) {
     return $self->{es}->count(
         index => $self->{index},
         type  => $self->{type},

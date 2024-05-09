@@ -84,7 +84,7 @@ sub run {
         # 'file' type records where the module.name matches the
         # distribution name and which are released &
         # indexed (the 'leading' module)
-        my $q_body = _filtered_query($filter);
+        my $q_body = _body_filtered_query($filter);
 
         my $node   = config->{config}{es_test_node};
         my $es     = MetaCPAN::ES->new( type => "file", node => $node );
@@ -95,12 +95,11 @@ sub run {
                 qw< author date distribution download_url module.name release status >
             ],
         );
-
         $found_total += $scroll->total;
 
         log_debug { sprintf( "Found %s modules",       $scroll->total ) };
         log_debug { sprintf( "Found %s total modules", $found_total ) }
-        if @$filter != $total and $filter == $module_filters->[-1];
+            if @$filter != $total and $filter == $module_filters->[-1];
         exit;
 
         my $i = 0;
@@ -201,27 +200,29 @@ sub _add_module_filters ($filter) {
     return \@module_filters;
 }
 
-sub _filtered_query ($filter) {
+sub _body_filtered_query ($filter) {
     return +{
-        filtered => {
-            filter => {
-                bool => {
-                    must => [
-                        {
-                            nested => {
-                                path   => 'module',
-                                filter => { bool => { must => $filter } }
-                            }
-                        },
-                        { term => { 'maturity' => 'released' } },
-                    ],
-                    must_not => [
-                        { term => { status       => 'backpan' } },
-                        { term => { distribution => 'perl' } }
-                    ]
-                }
+        query => {
+            filtered => {
+                query => { match_all => {} },
+                filter => {
+                    bool => {
+                        must => [
+                            {
+                                nested => {
+                                    path   => 'module',
+                                    query => { bool => { must => $filter } }
+                                }
+                            },
+                            { term => { 'maturity' => 'released' } },
+                        ],
+                        must_not => [
+                            { term => { status       => 'backpan' } },
+                            { term => { distribution => 'perl' } }
+                        ]
+                    }
+                },
             },
-            query => { match_all => {} },
         }
     };
 }
