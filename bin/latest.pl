@@ -7,6 +7,7 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use CPAN::DistnameInfo;
 use Parse::CPAN::Packages::Fast;
+use Ref::Util qw< is_arrayref is_hashref >;
 use Regexp::Common qw< time >;
 use Time::Local qw< timelocal >;
 
@@ -31,14 +32,14 @@ log_info {'Dry run: updates will not be written to ES'} if $dry_run;
 my $minion;
 $minion = minion() if $queue;
 
+my $node = config->{config}{es_test_node};
+
 run();
 
 sub run () {
     log_info {'Reading 02packages.details'};
 
-
-    my $node = config->{config}{es_test_node};
-    my $es   = MetaCPAN::ES->new(
+    my $es = MetaCPAN::ES->new(
         type => "file",
         node => $node
     );
@@ -54,7 +55,9 @@ sub run () {
             my $dist = $packages->package($p)->distribution->dist;
             push @filter, $p if $dist && $dist eq $d;
         }
-        log_info { "$distribution consists of " . scalar(@filter) . ' modules' };
+        log_info {
+            "$distribution consists of " . scalar(@filter) . ' modules'
+        };
     }
 
     # if we are just queueing a single distribution
@@ -98,7 +101,7 @@ sub run () {
 
         log_debug { sprintf( "Found %s modules",       $scroll->total ) };
         log_debug { sprintf( "Found %s total modules", $found_total ) }
-            if @$filter != $total and $filter == $module_filters->[-1];
+        if @$filter != $total and $filter == $module_filters->[-1];
 
         my $i = 0;
 
@@ -109,18 +112,18 @@ sub run () {
             my $file_data = $file->{_source};
 
        # Convert module name into Parse::CPAN::Packages::Fast::Package object.
-            my @modules =
-                grep { defined }
-                map  { eval { $packages->package( $_->{name} ) } }
-                @{ $file_data->{module} };
+            my @modules = grep {defined}
+                map {
+                eval { $packages->package( $_->{name} ) }
+                } @{ $file_data->{module} };
 
             # For each of the packages in this file...
-            foreach my $module ( @modules ) {
+            foreach my $module (@modules) {
 
            # Get P:C:P:F:Distribution (CPAN::DistnameInfo) object for package.
                 my $dist = $module->distribution;
 
-                if ( $queue ) {
+                if ($queue) {
                     my $d = $dist->dist;
                     _queue_latest($d)
                         unless exists $queued_distributions{$d};
@@ -141,8 +144,10 @@ sub run () {
 
                     # If multiple versions of a dist appear in 02packages
                     # only mark the most recent upload as latest.
-                    next if ( $upgrade
-                              && compare_dates( $upgrade->{date}, $file_data->{date} ) );
+                    next
+                        if ( $upgrade
+                        && compare_dates( $upgrade->{date},
+                            $file_data->{date} ) );
                     $upgrade{ $file_data->{distribution} } = $file_data;
                 }
                 elsif ( $file_data->{status} eq 'latest' ) {
@@ -152,7 +157,7 @@ sub run () {
         }
     }
 
-    my $bulk = $es->bulk_helper( type => 'file' );
+    my $bulk = $es->bulk( type => 'file' );
 
     my %to_purge;
 
@@ -164,7 +169,7 @@ sub run () {
 
         $to_purge{ $file_data->{download_url} } = 1;
 
-        reindex( $bulk, $file_data, 'latest' );
+        _reindex( $bulk, $file_data, 'latest' );
     }
 
     while ( my ( $release, $file_data ) = each %downgrade ) {
@@ -181,21 +186,15 @@ sub run () {
 
         $to_purge{ $file_data->{download_url} } = 1;
 
-        reindex( $bulk, $file_data, 'cpan' );
+        _reindex( $bulk, $file_data, 'cpan' );
     }
 
     $bulk->flush;
-    $es->index_refresh();
+    $es->index_refresh;
 
-    # Call Fastly to purge
-    # purge_cpan_distnameinfos( [ map CPAN::DistnameInfo->new($_), keys %to_purge ] );
+# Call Fastly to purge
+# purge_cpan_distnameinfos( [ map CPAN::DistnameInfo->new($_), keys %to_purge ] );
 }
-
-=head2
-
-TODO: FIX: removing this comment causes syntax error ???!!!
-
-=end
 
 sub _add_module_filters ($filter) {
     my @module_filters;
@@ -224,13 +223,13 @@ sub _body_filtered_query ($filter) {
     return +{
         query => {
             filtered => {
-                query => { match_all => {} },
+                query  => { match_all => {} },
                 filter => {
                     bool => {
                         must => [
                             {
                                 nested => {
-                                    path   => 'module',
+                                    path  => 'module',
                                     query => { bool => { must => $filter } }
                                 }
                             },
@@ -256,52 +255,110 @@ sub _queue_latest ( $dist = $distribution ) {
     );
 }
 
-# Update the status for the release and all the files.
-sub reindex ( $bulk, $source, $status ) {
+sub _get_release ( $es, $author, $name ) {
+    my $release = $es->search(
+        body => {
+            query => {
+                bool => {
+                    must => [
+                        { term => { author => $author } },
+                        { term => { name   => $name } },
+                    ]
+                }
+            }
+        },
+        fields => [qw< id name >],
+    );
 
-=head2
+    return {}
+        unless is_arrayref( $release->{hits}{hits} )
+        && is_hashref( $release->{hits}{hits}[0] );
+
+    my $fields = $release->{hits}{hits}[0]{fields};
+
+    return +{
+        id   => $fields->{id},
+        name => $fields->{name}[0],
+    };
+}
+
+sub _set_release_status ( $es, $release_id, $status ) {
+    my $bulk = $es->bulk();
+    $bulk->update( { id => $release_id, doc => { status => $status } } );
+    $bulk->flush;
+}
+
+# Update the status for the release and all the files.
+sub _reindex ( $bulk, $source, $status ) {
 
     # Update the status on the release.
-    my $release = $self->index->type('release')->get( {
-        author => $source->{author},
-        name   => $source->{release},
-    } );
+    my $es_release = MetaCPAN::ES->new(
+        type => "release",
+        node => $node
+    );
 
-    $release->_set_status($status);
+    my $release
+        = _get_release( $es_release, $source->{author}, $source->{release} );
+
+    unless ( keys %$release ) {
+        log_info {
+            sprintf( 'failed to fetch release: %s - %s',
+                $source->{author}, $source->{release} )
+        };
+        return;
+    }
+
+    _set_release_status( $es_release, $release->{id}, $status )
+        unless $dry_run;
+
     log_info {
         $status eq 'latest' ? 'Upgrading ' : 'Downgrading ',
-            'release ', $release->name || q[];
+            'release ', $release->{name}
     };
-    $release->put unless ( $dry_run );
 
     # Get all the files for the release.
-    my $scroll = $self->index->type("file")->search_type('scan')->filter( {
-        bool => {
-            must => [
-                { term => { 'release' => $source->{release} } },
-                { term => { 'author'  => $source->{author} } }
-            ]
-        }
-    } )->size(100)->source( [ 'status', 'file' ] )->raw->scroll;
+
+    my $es_file = MetaCPAN::ES->new(
+        type => "file",
+        node => $node
+    );
+
+    my $scroll = $es_file->scroll(
+        body => {
+            query => {
+                filtered => {
+                    query  => { match_all => {} },
+                    filter => {
+                        bool => {
+                            must => [
+                                {
+                                    term =>
+                                        { 'release' => $source->{release} }
+                                },
+                                { term => { 'author' => $source->{author} } },
+                            ],
+                        },
+                    },
+                },
+            },
+            fields => [qw< name >],
+        },
+    );
 
     while ( my $row = $scroll->next ) {
-        my $source = $row->{_source};
         log_trace {
-            $status eq 'latest' ? 'Upgrading ' : 'Downgrading ',
-                'file ', $source->{name} || q[];
+            sprintf( '%s file %s',
+                ( $status eq 'latest' ? 'Upgrading' : 'Downgrading' ),
+                $row->{fields}{name}[0] )
         };
 
         # Use bulk update to overwrite the status for X files at a time.
         $bulk->update( { id => $row->{_id}, doc => { status => $status } } )
             unless $dry_run;
     }
-
-=end
-
 }
 
-sub compare_dates {
-    my ( $self, $d1, $d2 ) = @_;
+sub compare_dates ( $d1, $d2 ) {
     for ( $d1, $d2 ) {
         if ( $_ =~ /$RE{time}{iso}{-keep}/ ) {
             $_ = timelocal( $7, $6, $5, $4, $3 - 1, $2 );
