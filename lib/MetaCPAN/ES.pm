@@ -96,6 +96,7 @@ sub scroll ( $self, %args ) {
         body        => ( $args{body} // { query => { match_all => {} } } ),
         search_type => 'scan',
         scroll      => ( $args{scroll} // '30m' ),
+        ( $args{fields} ? ( fields => $args{fields} ) : () ),
     );
 }
 
