@@ -11,7 +11,6 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
-    handle_error
     numify_version
     read_url
 >;

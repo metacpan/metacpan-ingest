@@ -9,10 +9,7 @@ use Path::Tiny qw< path >;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    handle_error
-    read_url
->;
+use MetaCPAN::Ingest qw< read_url >;
 
 # args
 my ( $json_file, $test );
