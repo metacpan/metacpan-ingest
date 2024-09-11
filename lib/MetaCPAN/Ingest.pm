@@ -34,6 +34,7 @@ use Sub::Exporter -setup => {
         read_02packages_fh
         read_06perms_fh
         read_06perms_iter
+        read_url
         strip_pod
         tmp_dir
         ua
@@ -167,6 +168,22 @@ sub ua ( $proxy = undef ) {
     $ua->agent('MetaCPAN');
 
     return $ua;
+}
+
+sub read_url ( $url ) {
+    my $ua   = ua();
+    my $resp = $ua->get($url);
+
+    handle_error( $resp->status_line, 1 ) unless $resp->is_success;
+
+    # clean up headers if .json.gz is served as gzip type
+    # rather than json encoded with gzip
+    if ( $resp->header('Content-Type') eq 'application/x-gzip' ) {
+        $resp->header( 'Content-Type'     => 'application/json' );
+        $resp->header( 'Content-Encoding' => 'gzip' );
+    }
+
+    return $resp->decoded_content;
 }
 
 sub cpan_file_map () {
