@@ -16,35 +16,33 @@ use MetaCPAN::Contributor qw<
 my $all = 0;
 my ( $distribution, $release, $age );
 GetOptions(
-    "all" => \$all,
+    "all"            => \$all,
     "distribution=s" => \$distribution,
-    "release=s" => \$release,
-    "age=i" => \$age,
+    "release=s"      => \$release,
+    "age=i"          => \$age,
 );
 
 # Setup
 my $query
-    = $all ? { match_all => {} }
-    : $distribution
-    ? { term => { distribution => $distribution } }
-    : $release ? {
-        bool => {
-            must => [
-                { term => { author => get_author($release) } },
-                { term => { name   => $release } },
-            ]
-        }
+    = $all          ? { match_all => {} }
+    : $distribution ? { term => { distribution => $distribution } }
+    : $release      ? {
+    bool => {
+        must => [
+            { term => { author => get_author($release) } },
+            { term => { name   => $release } },
+        ]
     }
-    : $age
-    ? { range => { date => { gte => sprintf( 'now-%dd', $age ) } } }
-    : die "Error: must provide 'all' or 'distribution' or 'release' or 'age'";
+    }
+    : $age ? { range => { date => { gte => sprintf( 'now-%dd', $age ) } } }
+    :   die "Error: must provide 'all' or 'distribution' or 'release' or 'age'";
 
-my $body = { query => $query };
+my $body    = { query => $query };
 my $timeout = $all ? '720m' : '5m';
-my $fields = [qw< author distribution name >];
+my $fields  = [qw< author distribution name >];
 
 my $es_release = MetaCPAN::ES->new( type => "release" );
-my $scroll = $es_release->scroll(
+my $scroll     = $es_release->scroll(
     body   => $body,
     scroll => $timeout,
     fields => $fields,
@@ -64,10 +62,12 @@ while ( my $r = $scroll->next ) {
 
 ###
 
-sub get_author ( $release ) {
+sub get_author ($release) {
     return unless $release;
     my $author = $release =~ s{/.*$}{}r;
-    $author or die "Error: invalid 'release' argument (format: PAUSEID/DISTRIBUTION-VERSION)";
+    $author
+        or die
+        "Error: invalid 'release' argument (format: PAUSEID/DISTRIBUTION-VERSION)";
     return $author;
 }
 
