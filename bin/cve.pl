@@ -13,7 +13,7 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     handle_error
     numify_version
-    ua
+    read_url
 >;
 
 my %range_ops = qw( < lt <= lte > gt >= gte );
@@ -202,20 +202,7 @@ sub retrieve_cve_data {
 
     my $url = $test ? $cve_dev_url : $cve_url;
 
-    log_info { 'Fetching data from ', $url };
-    my $ua   = ua();
-    my $resp = $ua->get($url);
-
-    handle_error( $resp->status_line, 1 ) unless $resp->is_success;
-
-    # clean up headers if .json.gz is served as gzip type
-    # rather than json encoded with gzip
-    if ( $resp->header('Content-Type') eq 'application/x-gzip' ) {
-        $resp->header( 'Content-Type'     => 'application/json' );
-        $resp->header( 'Content-Encoding' => 'gzip' );
-    }
-
-    return decode_json( $resp->decoded_content );
+    return decode_json( read_url($url) );
 }
 
 1;
