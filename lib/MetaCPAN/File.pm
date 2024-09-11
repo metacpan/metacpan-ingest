@@ -239,11 +239,15 @@ sub add_documentation ($self) {
 
     # This is a Pod file, return its name
     $val = $doc
-        if !$val and $doc and $self->_is_perl_file();
+        if !$val
+        and $doc
+        and $self->_is_perl_file();
 
     # OR: found an indexed module with the same name
     $val = $doc
-        if !$val and $doc and grep { $_->{name} eq $doc } @indexed;
+        if !$val
+        and $doc
+        and grep { $_->{name} eq $doc } @indexed;
 
     # OR: found an indexed module with a name
     if ( !$val and my ($mod) = grep { defined $_->{name} } @indexed ) {
@@ -254,11 +258,13 @@ sub add_documentation ($self) {
     $val = $doc if !$val and defined $doc;
 
     # OR: found ANY module with a name (better than nothing)
-    if ( !$val and my ($mod) = grep { defined $_->{name} } @{ $self->{modules} } ) {
+    if ( !$val
+        and my ($mod) = grep { defined $_->{name} } @{ $self->{modules} } )
+    {
         return $mod->{name};
     }
 
-    $self->{documentation} = $val;
+    $self->{documentation}        = $val;
     $self->{documentation_length} = length($val);
 
     return undef;

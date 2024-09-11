@@ -18,7 +18,7 @@ use MetaCPAN::Ingest qw<
 my ( $json_file, $test );
 GetOptions(
     "json=s" => \$json_file,
-    "test" => \$test
+    "test"   => \$test
 );
 my $cover_url     //= 'http://cpancover.com/latest/cpancover.json';
 my $cover_dev_url //= 'http://cpancover.com/latest/cpancover_dev.json';
