@@ -15,6 +15,7 @@ requires 'Getopt::Long';
 requires 'List::AllUtils';
 requires 'LWP::UserAgent';
 requires 'LWP::Protocol::https';
+requires 'Net::GitHub::V4';
 requires 'PAUSE::Permissions';
 requires 'Parse::CPAN::Packages::Fast';
 requires 'Path::Iterator::Rule';
@@ -27,6 +28,7 @@ requires 'PerlIO::gzip';
 requires 'Search::Elasticsearch';
 requires 'Search::Elasticsearch::Client::2_0';
 requires 'Sub::Exporter';
+requires 'Text::CSV_XS';
 requires 'URI';
 requires 'XML::Simple';
 
