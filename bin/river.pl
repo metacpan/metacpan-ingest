@@ -14,7 +14,7 @@ use MetaCPAN::Ingest qw< read_url >;
 my $river_url //= 'https://neilb.org/river-of-cpan.json.gz';
 my $river_data = decode_json( read_url($river_url) );
 
-my $es   = MetaCPAN::ES->new( index => "cpan", type => "distribution" );
+my $es   = MetaCPAN::ES->new( type => "distribution" );
 my $bulk = $es->bulk();
 
 log_info {'Updating the distribution index'};
