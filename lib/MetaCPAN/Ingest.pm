@@ -6,6 +6,7 @@ use v5.36;
 
 use Digest::SHA;
 use Encode qw< decode_utf8 >;
+use IPC::Run3 ();
 use LWP::UserAgent;
 use Path::Tiny qw< path >;
 use PAUSE::Permissions ();
@@ -27,6 +28,7 @@ use Sub::Exporter -setup => {
         extract_section
         fix_version
         handle_error
+        home
         minion
         numify_version
         read_00whois
@@ -135,6 +137,20 @@ sub handle_error ( $error, $die_always ) {
     $! = 1;    ### $self->exit_code if ( $self->exit_code != 0 );
 
     Carp::croak $error if $die_always;
+}
+
+sub home () {
+    IPC::Run3::run3(
+        [ qw< git rev-parse --show-toplevel > ], # TODO: use alternative persistent path that's accessible from the container
+        \undef, \my $stdout, \my $stderr
+    );
+
+    die $stderr if ($?);
+
+    chomp $stdout;
+    die "Failed to find git dir: '$stdout'" unless -d $stdout;
+
+    return $stdout;
 }
 
 sub minion () {
