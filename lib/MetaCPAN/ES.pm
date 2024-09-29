@@ -22,7 +22,7 @@ sub new ( $class, %args ) {
             nodes  => [$node],
         ),
         index => $index,
-        type  => $args{type},
+        ( $args{type} ? ( type => $args{type} ) : () ),
     }, $class;
 }
 
