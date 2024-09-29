@@ -14,7 +14,7 @@ use MetaCPAN::Ingest qw<
     strip_pod
 >;
 
-my @NOT_PERL_FILES = qw(SIGNATURE);
+my @NOT_PERL_FILES = qw< SIGNATURE >;
 
 my $RE_SECTION = qr/^\s*(\S+)((\h+-+\h+(.+))|(\r?\n\h*\r?\n\h*(.+)))?/ms;
 

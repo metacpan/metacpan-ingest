@@ -10,7 +10,7 @@ use Test::More $ENV{COVERAGE}
 
 use File::Temp ();
 
-use Test::Code::TidyAll qw( tidyall_ok );
+use Test::Code::TidyAll qw< tidyall_ok >;
 
 plan skip_all => 'files not yet tidy';
 
