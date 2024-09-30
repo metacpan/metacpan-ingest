@@ -36,6 +36,7 @@ use Sub::Exporter -setup => {
         read_02packages_fh
         read_06perms_fh
         read_06perms_iter
+        read_recent_segment
         read_url
         strip_pod
         tmp_dir
@@ -318,6 +319,11 @@ sub read_06perms_iter () {
     my $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
     my $pp        = PAUSE::Permissions->new( path => $file_path );
     return $pp->module_iterator;
+}
+
+sub read_recent_segment ( $segment ) {
+    my $cpan = cpan_dir();
+    return $cpan->child("RECENT-$segment.json")->slurp;
 }
 
 1;
