@@ -18,6 +18,7 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use Sub::Exporter -setup => {
     exports => [ qw<
+        are_you_sure
         config
         author_dir
         cpan_dir
@@ -53,6 +54,34 @@ my $config //= do {
 $config->init_logger;
 
 sub config () {$config}
+
+sub are_you_sure ( $msg ) {
+    my $iconfirmed = 0;
+
+    if ( -t *STDOUT ) {
+        my $answer
+            = prompt colored( ['bold red'], "*** Warning ***: $msg" ) . "\n"
+            . 'Are you sure you want to do this (type "YES" to confirm) ? ';
+        if ( $answer ne 'YES' ) {
+            log_error {"Confirmation incorrect: '$answer'"};
+            print "Operation will be interruped!\n";
+
+            # System Error: 125 - ECANCELED - Operation canceled
+            exit_code(125);
+        }
+        else {
+            log_info {'Operation confirmed.'};
+            print "alright then...\n";
+            $iconfirmed = 1;
+        }
+    }
+    else {
+        log_info {"*** Warning ***: $msg"};
+        $iconfirmed = 1;
+    }
+
+    return $iconfirmed;
+}
 
 sub author_dir ($pauseid) {
     my $dir = 'id/'
