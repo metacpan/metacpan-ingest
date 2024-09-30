@@ -2,8 +2,6 @@ use strict;
 use warnings;
 use v5.36;
 
-use Getopt::Long;
-
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use Ref::Util qw< is_hashref is_ref >;
