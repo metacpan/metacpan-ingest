@@ -6,6 +6,7 @@ use v5.36;
 
 use Digest::SHA;
 use Encode qw< decode_utf8 >;
+use IO::Prompt::Tiny qw< prompt >;
 use IPC::Run3 ();
 use LWP::UserAgent;
 use Path::Tiny qw< path >;
