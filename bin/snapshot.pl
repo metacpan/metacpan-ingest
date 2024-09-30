@@ -216,30 +216,30 @@ __END__
 
 =head1 NAME
 
-MetaCPAN::Script::Snapshot - Snapshot (and restore) Elasticsearch indices
+Snapshot (and restore) Elasticsearch indices
 
 =head1 SYNOPSIS
 
 # Setup
- $ bin/metacpan snapshot --setup (only needed once)
+ $ bin/snapshot --setup (only needed once)
 
 # Snapshot all indexes daily
- $ bin/metacpan snapshot --snap --snap-stub full --date-format %Y-%m-%d
+ $ bin/snapshot --snap --snap-stub full --date-format %Y-%m-%d
 
 # List what has been snapshotted
- $ bin/metacpan snapshot --list
+ $ bin/snapshot --list
 
 # restore (indices are renamed from `foo` to `restored_foo`)
- $ bin/metacpan snapshot --restore --snap-name full_2016-12-01
+ $ bin/snapshot --restore --snap-name full_2016-12-01
 
 # purge anything older than 30 days and not created on the 1st of a month
- $ bin/metacpan snapshot --purge-old
+ $ bin/snapshot --purge-old
 
 Another example..
 
 # Snapshot just user* indexes hourly and restore
- $ bin/metacpan snapshot --snap --indices 'user*' --snap-stub user --date-format '%Y-%m-%d-%H'
- $ bin/metacpan snapshot --restore --snap-name user_2016-12-01-12
+ $ bin/snapshot --snap --indices 'user*' --snap-stub user --date-format '%Y-%m-%d-%H'
+ $ bin/snapshot --restore --snap-name user_2016-12-01-12
 
 Also useful:
 

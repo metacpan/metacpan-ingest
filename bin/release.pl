@@ -491,18 +491,18 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/metacpan ~/cpan/authors/id/A
- # bin/metacpan ~/cpan/authors/id/A/AB/ABRAXXA/DBIx-Class-0.08127.tar.gz
- # bin/metacpan http://cpan.cpantesters.org/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
+ # bin/release ~/cpan/authors/id/A
+ # bin/release ~/cpan/authors/id/A/AB/ABRAXXA/DBIx-Class-0.08127.tar.gz
+ # bin/release http://cpan.cpantesters.org/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
 
- # bin/metacpan ~/cpan --age 24 --latest
+ # bin/release ~/cpan --age 24 --latest
 
 =head1 DESCRIPTION
 
 This is the workhorse of MetaCPAN. It accepts a list of folders, files or urls
 and indexes the releases. Adding C<--latest> will set the status to C<latest>
 for the indexed releases If you are indexing more than one release, running
-L<MetaCPAN::Script::Latest> afterwards is probably faster.
+L<latest> afterwards is probably faster.
 
 C<--age> sets the maximum age of the file in hours. Will be ignored when processing
 individual files or an url.

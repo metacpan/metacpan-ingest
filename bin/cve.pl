@@ -212,7 +212,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/metacpan cve [--test] [json_file]
+ # bin/cve [--test] [json_file]
 
 =head1 DESCRIPTION
 

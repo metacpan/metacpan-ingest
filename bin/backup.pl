@@ -188,7 +188,7 @@ __END__
 
 =head1 NAME
 
-MetaCPAN::Script::Backup - Backup indices and types
+Backup indices and types
 
 =head1 SYNOPSIS
 

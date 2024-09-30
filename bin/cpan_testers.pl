@@ -143,7 +143,7 @@ log_info {'done'};
 
 =head1 SYNOPSIS
 
- $ bin/metacpan cpantesters
+ $ bin/cpantesters
 
 =head1 DESCRIPTION
 

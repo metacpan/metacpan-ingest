@@ -41,7 +41,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/metacpan river
+ # bin/river
 
 =head1 DESCRIPTION
 

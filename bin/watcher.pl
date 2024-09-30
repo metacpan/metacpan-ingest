@@ -252,7 +252,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/metacpan watcher
+ # bin/watcher
 
 =head1 DESCRIPTION
 
