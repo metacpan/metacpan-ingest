@@ -181,7 +181,7 @@ sub run () {
         next
             if ( !$force
             && $upgrade{ $file_data->{distribution} }
-            && $upgrade{ $file_data->{distribution} }->{release} eq
+            && $upgrade{ $file_data->{distribution} }{release} eq
             $file_data->{release} );
 
         $to_purge{ $file_data->{download_url} } = 1;

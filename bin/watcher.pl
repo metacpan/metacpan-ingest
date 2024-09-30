@@ -82,7 +82,7 @@ sub changes () {
             push( @changes, $_ );
         }
         if (  !$backpan
-            && $json->{meta}->{minmax}->{min} < $latest->date->epoch )
+            && $json->{meta}{minmax}{min} < $latest->date->epoch )
         {
             log_debug {"Includes latest release"};
             last;
@@ -185,7 +185,7 @@ sub reindex_release ($release) {
     my $info = CPAN::DistnameInfo->new( $release->{path} );
     $release = reindex_release_first($info);
     return unless ($release);
-    log_info {"Moving $release->{_source}->{name} to BackPAN"};
+    log_info {"Moving $release->{_source}{name} to BackPAN"};
 
     my $scroll_file = $es_file->scroll( {
         scroll => '1m',
@@ -199,12 +199,12 @@ sub reindex_release ($release) {
                         and => [
                             {
                                 term => {
-                                    release => $release->{_source}->{name}
+                                    release => $release->{_source}{name}
                                 }
                             },
                             {
                                 term => {
-                                    author => $release->{_source}->{author}
+                                    author => $release->{_source}{author}
                                 }
                             },
                         ]
@@ -223,8 +223,8 @@ sub reindex_release ($release) {
         $bulk_file->index( {
             id     => $row->{_id},
             source => {
-                $row->{fields}->{_parent}
-                ? ( parent => $row->{fields}->{_parent} )
+                $row->{fields}{_parent}
+                ? ( parent => $row->{fields}{_parent} )
                 : (),
                 %$source,
                 status => 'backpan',
