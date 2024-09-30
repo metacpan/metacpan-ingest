@@ -89,7 +89,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/metacpan cover [--test] [json_file]
+ # bin/cover [--test] [json_file]
 
 =head1 DESCRIPTION
 
