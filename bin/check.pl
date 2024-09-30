@@ -81,12 +81,9 @@ while ( my $line = <$packages_fh> ) {
                             [qw< name status authorized version id date >],
                         query  => { match_all => {} },
                         filter => {
-                            and => [
-                                {
-                                    term =>
-                                        { name => $file->{fields}{release} }
-                                }
-                            ]
+                            and => [ {
+                                term => { name => $file->{fields}{release} }
+                            } ]
                         },
                     );
 
@@ -108,11 +105,11 @@ while ( my $line = <$packages_fh> ) {
                     log_error {"Could not find latest release for $pkg"};
                     foreach my $rel (@releases) {
                         log_warn {"  Found release $rel->{fields}{name}"};
-                        log_warn {"    STATUS    : $rel->{fields}->{status}"};
+                        log_warn {"    STATUS    : $rel->{fields}{status}"};
                         log_warn {
-                            "    AUTORIZED : $rel->{fields}->{authorized}"
+                            "    AUTORIZED : $rel->{fields}{authorized}"
                         };
-                        log_warn {"    DATE      : $rel->{fields}->{date}"};
+                        log_warn {"    DATE      : $rel->{fields}{date}"};
                     }
 
                     $error_count++;
@@ -123,13 +120,13 @@ while ( my $line = <$packages_fh> ) {
                     "Module $pkg doesn't have any releases in ElasticSearch!"
                 };
                 foreach my $file (@files) {
-                    log_warn {"  Found file $file->{fields}->{name}"};
-                    log_warn {"    RELEASE    : $file->{fields}->{release}"};
-                    log_warn {"    AUTHOR     : $file->{fields}->{author}"};
+                    log_warn {"  Found file $file->{fields}{name}"};
+                    log_warn {"    RELEASE    : $file->{fields}{release}"};
+                    log_warn {"    AUTHOR     : $file->{fields}{author}"};
                     log_warn {
-                        "    AUTHORIZED : $file->{fields}->{authorized}"
+                        "    AUTHORIZED : $file->{fields}{authorized}"
                     };
-                    log_warn {"    DATE       : $file->{fields}->{date}"};
+                    log_warn {"    DATE       : $file->{fields}{date}"};
                 }
                 $error_count++;
             }

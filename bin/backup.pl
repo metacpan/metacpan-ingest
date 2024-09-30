@@ -82,12 +82,12 @@ sub run_restore () {
         $bulk_store{$key} ||= $es->bulk( max_count => $batch_size );
         my $bulk = $bulk_store{$key};
 
-        my $parent = $raw->{fields}->{_parent};
+        my $parent = $raw->{fields}{_parent};
 
         if ( $raw->{_type} eq 'author' ) {
 
             # Hack for dodgy lat / lon's
-            if ( my $loc = $raw->{_source}->{location} ) {
+            if ( my $loc = $raw->{_source}{location} ) {
 
                 my $lat = $loc->[1];
                 my $lon = $loc->[0];
@@ -95,27 +95,24 @@ sub run_restore () {
                 if ( $lat > 90 or $lat < -90 ) {
 
                     # Invalid latitude
-                    delete $raw->{_source}->{location};
+                    delete $raw->{_source}{location};
                 }
                 elsif ( $lon > 180 or $lon < -180 ) {
 
                     # Invalid longitude
-                    delete $raw->{_source}->{location};
+                    delete $raw->{_source}{location};
                 }
             }
         }
 
         if ( $es->exists( id => $raw->{_id} ) ) {
-
             $bulk->update( {
                 id            => $raw->{_id},
                 doc           => $raw->{_source},
                 doc_as_upsert => 1,
             } );
-
         }
         else {
-
             $bulk->create( {
                 id => $raw->{_id},
                 $parent ? ( parent => $parent ) : (),
