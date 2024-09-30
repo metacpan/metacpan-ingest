@@ -41,8 +41,6 @@ my $ua = ua();
 my $es   = MetaCPAN::ES->new( type => "release" );
 my $bulk = $es->bulk();
 
-index_reports();
-
 log_info { 'Mirroring ' . $db };
 
 $ua->mirror( $db, "$db.bz2" ) unless $skip_download;
@@ -116,7 +114,7 @@ while ( my $row_from_db = $sth->fetchrow_hashref ) {
     }
 
     # maybe use Data::Compare instead
-    for my $condition (qw(fail pass na unknown)) {
+    for my $condition ( qw< fail pass na unknown > ) {
         last if $insert_ok;
         if ( ( $tester_results->{$condition} || 0 )
             != $row_from_db->{$condition} )
@@ -126,7 +124,7 @@ while ( my $row_from_db = $sth->fetchrow_hashref ) {
     }
 
     next unless ($insert_ok);
-    my %tests = map { $_ => $row_from_db->{$_} } qw(fail pass na unknown);
+    my %tests = map { $_ => $row_from_db->{$_} } qw< fail pass na unknown >;
     $bulk->update( {
         doc           => { tests => \%tests },
         doc_as_upsert => 1,
