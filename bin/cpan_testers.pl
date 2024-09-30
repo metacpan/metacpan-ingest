@@ -114,7 +114,7 @@ while ( my $row_from_db = $sth->fetchrow_hashref ) {
     }
 
     # maybe use Data::Compare instead
-    for my $condition ( qw< fail pass na unknown > ) {
+    for my $condition (qw< fail pass na unknown >) {
         last if $insert_ok;
         if ( ( $tester_results->{$condition} || 0 )
             != $row_from_db->{$condition} )
