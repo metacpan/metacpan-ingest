@@ -88,7 +88,7 @@ for my $row (@$data) {
     }
 
     # maybe use Data::Compare instead
-    for my $condition (qw(fail pass na unknown)) {
+    for my $condition (qw< fail pass na unknown >) {
         last if $insert_ok;
         if ( ( $tester_results->{$condition} || 0 ) != $row->{$condition} ) {
             $insert_ok = 1;
@@ -97,7 +97,7 @@ for my $row (@$data) {
 
     next unless $insert_ok;
 
-    my %tests = map { $_ => $row->{$_} } qw(fail pass na unknown);
+    my %tests = map { $_ => $row->{$_} } qw< fail pass na unknown >;
     $bulk->update( {
         doc           => { tests => \%tests },
         doc_as_upsert => 1,
