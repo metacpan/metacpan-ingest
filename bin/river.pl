@@ -3,7 +3,6 @@ use warnings;
 use v5.36;
 
 use Cpanel::JSON::XS qw< decode_json >;
-use Getopt::Long;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
