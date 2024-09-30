@@ -29,7 +29,7 @@ my $es_release = MetaCPAN::ES->new( type => "release" );
 my $es_file    = MetaCPAN::ES->new( type => "file" );
 
 my $latest   = 0;
-my @segments = qw(1h 6h 1d 1W 1M 1Q 1Y Z);
+my @segments = qw< 1h 6h 1d 1W 1M 1Q 1Y Z >;
 
 while (1) {
     $latest = eval { latest_release() };
