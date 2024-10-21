@@ -19,8 +19,6 @@ use MetaCPAN::Ingest qw<
 
 # setup
 my $rt_summary_url //= 'https://rt.cpan.org/Public/bugs-per-dist.tsv';
-my $gh_issues_url
-    //= 'https://api.github.com/repos/%s/%s/issues?per_page=100';
 
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
 
@@ -162,31 +160,38 @@ RELEASE: while ( my $r = $scroll_release->next ) {
 
         log_debug {"Retrieving issues from $user/$repo"};
 
-        my $data
-            = $gh_graphql->query( _gh_graphql_query( $json, $user, $repo ) );
+        my $dist_summary = $summary{ $r->{'distribution'} } ||= {};
+
+        my $vars = {
+            user => $user,
+            repo => $repo,
+        };
+        my $gh_query = _gh_graphql_query( $user, $repo );
+        my $data     = $gh_graphql->query( $gh_query, $vars );
 
         if ( my $error = $data->{errors} ) {
             for my $error (@$error) {
                 my $log_message = sprintf "[%s] %s", $r->{distribution},
                     $error->{message};
                 if ( $error->{type} eq 'NOT_FOUND' ) {
-                    delete $summary{ $r->{distribution} }{bugs}{github};
+                    delete $dist_summary->{'bugs'}{'github'};
+                    delete $dist_summary->{'repo'}{'github'};
                     log_info {$log_message};
                 }
                 else {
                     log_error {$log_message};
                 }
-                next RELEASE;
+                next RELEASE if @$error;
             }
         }
 
-        my $open = $data->{data}{repository}{openIssues}{totalCount}
-            + $data->{data}{repository}{openPullRequests}{totalCount};
+        my $repo_data = $data->{data}{repository};
+        my $open      = $repo_data->{openIssues}{totalCount}
+            + $repo_data->{openPullRequests}{totalCount};
+        my $closed = $repo_data->{closedIssues}{totalCount}
+            + $repo_data->{closedPullRequests}{totalCount};
 
-        my $closed = $data->{data}{repository}{closedIssues}{totalCount}
-            + $data->{data}{repository}{closedPullRequests}{totalCount};
-
-        my $rec = {
+        $dist_summary->{'bugs'}{'github'} = {
             active => $open,
             open   => $open,
             closed => $closed,
@@ -194,11 +199,13 @@ RELEASE: while ( my $r = $scroll_release->next ) {
 
         };
 
-        $summary{ $r->{distribution} }{bugs}{github} = $rec;
+        $dist_summary->{'repo'}{'github'} = {
+            stars    => $repo_data->{stargazerCount},
+            watchers => $repo_data->{watchers}{totalCount},
+        };
     }
 
     log_info {"writing github data"};
-
     _bulk_update( \%summary );
 }
 
@@ -227,10 +234,10 @@ sub _gh_user_repo_from_resources ($resources) {
     return ();
 }
 
-sub _gh_graphql_query ( $json, $user, $repo ) {
-    sprintf <<END_QUERY, map $json->encode($_), $user, $repo;
-query {
-    repository(owner: %s, name: %s) {
+sub _gh_graphql_query ( $user, $repo ) {
+    sprintf <<END_QUERY;
+query($user:String!, $repo:String!) {
+    repository(owner: $user, name: $repo) {
         openIssues: issues(states: OPEN) {
             totalCount
         }
@@ -243,6 +250,10 @@ query {
         closedPullRequests: pullRequests(states: [CLOSED, MERGED]) {
             totalCount
         }
+        watchers: watchers {
+            totalCount
+        }
+        stargazerCount: stargazerCount
     }
 }
 END_QUERY
