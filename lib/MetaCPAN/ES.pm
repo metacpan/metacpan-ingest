@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use v5.36;
 
+use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
 
 use MetaCPAN::Ingest qw< config >;
@@ -106,6 +107,27 @@ sub count ( $self, %args ) {
         type  => $self->{type},
         body  => $args{body},
     );
+}
+
+sub clear_type ( $self ) {
+    my $bulk = $self->bulk;
+    my $scroll = $self->scroll(
+        query => { match_all => {} },
+        sort  => '_doc',
+    );
+
+    my @ids;
+    while ( my $search = $scroll->next ) {
+        push @ids => $search->{_id};
+        log_debug { "deleting id=" . $search->{_id} };
+        if ( @ids == 500 ) {
+            $bulk->delete_ids(@ids);
+            @ids = ();
+        }
+    }
+    $bulk->delete_ids(@ids);
+
+    $bulk->flush;
 }
 
 1;
