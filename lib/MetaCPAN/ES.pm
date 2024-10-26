@@ -109,25 +109,37 @@ sub count ( $self, %args ) {
     );
 }
 
-sub clear_type ( $self ) {
-    my $bulk = $self->bulk;
+sub get_ids ( $self, %args ) {
+    my $query = $args{query};
+
     my $scroll = $self->scroll(
-        query => { match_all => {} },
+        query => $query // { match_all => {} },
         sort  => '_doc',
     );
 
     my @ids;
+
     while ( my $search = $scroll->next ) {
         push @ids => $search->{_id};
-        log_debug { "deleting id=" . $search->{_id} };
-        if ( @ids == 500 ) {
-            $bulk->delete_ids(@ids);
-            @ids = ();
-        }
     }
-    $bulk->delete_ids(@ids);
+
+    return \@ids;
+}
+
+sub delete_ids ( $self, $ids ) {
+    my $bulk = $self->bulk;
+
+    while ( my @batch = splice(@$ids, 0, 500) ) {
+        $bulk->delete_ids(@batch);
+    }
 
     $bulk->flush;
+}
+
+sub clear_type ( $self ) {
+    my $ids = $self->get_ids();
+
+    $self->delete_ids(@$ids);
 }
 
 1;
