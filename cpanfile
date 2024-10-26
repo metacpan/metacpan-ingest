@@ -31,6 +31,7 @@ requires 'Search::Elasticsearch';
 requires 'Search::Elasticsearch::Client::2_0';
 requires 'Sub::Exporter';
 requires 'Text::CSV_XS';
+requires 'Term::ANSIColor';
 requires 'URI';
 requires 'XML::Simple';
 

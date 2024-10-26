@@ -12,6 +12,7 @@ use LWP::UserAgent;
 use Path::Tiny qw< path >;
 use PAUSE::Permissions ();
 use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
+use Term::ANSIColor qw< colored >;
 use XML::Simple qw< XMLin >;
 
 use MetaCPAN::Config;
@@ -56,7 +57,9 @@ $config->init_logger;
 
 sub config () {$config}
 
-sub are_you_sure ( $msg ) {
+sub are_you_sure ( $msg, $force=0 ) {
+    return 1 if $force;
+
     my $iconfirmed = 0;
 
     if ( -t *STDOUT ) {
