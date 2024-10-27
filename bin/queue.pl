@@ -3,7 +3,7 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use Path::Tiny qw< path >;
+use Path::Tiny           qw< path >;
 use Path::Iterator::Rule ();
 
 use MetaCPAN::Ingest qw< minion >;

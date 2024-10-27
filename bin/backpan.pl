@@ -52,7 +52,7 @@ sub build_release_status_map () {
             (
                 $undo
                     or exists $cpan_file_map->{$author}{$archive}
-            )
+                )
             ? 'cpan'
             : 'backpan',
             $release->{_id}

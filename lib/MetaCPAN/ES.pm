@@ -142,9 +142,9 @@ sub clear_type ($self) {
     $self->delete_ids(@$ids);
 }
 
-sub await ( $self ) {
+sub await ($self) {
     my $timeout = 15;
-    my $iready = 0;
+    my $iready  = 0;
     my $cluster_info;
     my $es = $self->{es};
 
@@ -158,19 +158,29 @@ sub await ( $self ) {
                 $iready = $es->ping;
 
                 if ($iready) {
-                    log_info { sprintf("Awaiting %d / %d : ready", $iseconds, $timeout) };
+                    log_info {
+                        sprintf( "Awaiting %d / %d : ready",
+                            $iseconds, $timeout )
+                    };
                     $cluster_info = \%{ $es->info };
                 }
             };
 
             if ($@) {
                 if ( $iseconds < $timeout ) {
-                    log_info { sprintf("Awaiting %d / %d : unavailable - sleeping ...", $iseconds, $timeout) };
+                    log_info {
+                        sprintf(
+                            "Awaiting %d / %d : unavailable - sleeping ...",
+                            $iseconds, $timeout )
+                    };
                     sleep(1);
                     $iseconds++;
                 }
                 else {
-                    log_info { sprintf("Awaiting %d / %d : unavailable - timeout!", $iseconds, $timeout) };
+                    log_info {
+                        sprintf( "Awaiting %d / %d : unavailable - timeout!",
+                            $iseconds, $timeout )
+                    };
 
                     #Set System Error: 112 - EHOSTDOWN - Host is down
                     handle_error( 112, $@, 1 );

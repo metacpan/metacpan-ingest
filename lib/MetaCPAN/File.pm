@@ -5,7 +5,7 @@ use warnings;
 use v5.36;
 
 use List::AllUtils qw< any >;
-use Path::Tiny qw< path >;
+use Path::Tiny     qw< path >;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 

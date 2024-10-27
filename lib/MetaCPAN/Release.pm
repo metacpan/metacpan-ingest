@@ -5,12 +5,12 @@ use warnings;
 use v5.36;
 
 use CPAN::Meta;
-use DateTime   ();
-use File::Spec ();
-use Module::Metadata 1.000012 ();    # Improved package detection.
-use Path::Tiny qw< path >;
-use Plack::MIME ();
-use Try::Tiny qw< catch try >;
+use DateTime                  ();
+use File::Spec                ();
+use Module::Metadata 1.000012 ();                # Improved package detection.
+use Path::Tiny                qw< path >;
+use Plack::MIME               ();
+use Try::Tiny                 qw< catch try >;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 

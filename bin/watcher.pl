@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
+use Cpanel::JSON::XS   qw< decode_json >;
 use DateTime           ();
 use CPAN::DistnameInfo ();
 use FindBin            ();

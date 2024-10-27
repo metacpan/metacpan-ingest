@@ -4,11 +4,11 @@ use v5.36;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
-use Ref::Util qw< is_hashref is_ref >;
+use Ref::Util             qw< is_hashref is_ref >;
 use HTTP::Request::Common qw< GET >;
-use URI::Escape qw< uri_escape >;
-use Text::CSV_XS    ();
-use Net::GitHub::V4 ();
+use URI::Escape           qw< uri_escape >;
+use Text::CSV_XS          ();
+use Net::GitHub::V4       ();
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
@@ -101,7 +101,7 @@ sub _parse_tsv ($tsv) {
             source => _rt_dist_url( $row->{dist} ),
             active => $row->{active},
             closed => $row->{inactive},
-            map      { $_ => $row->{$_} + 0 }
+            map { $_ => $row->{$_} + 0 }
                 grep { not /^(dist|active|inactive)$/ }
                 keys %$row,
         };

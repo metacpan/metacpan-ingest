@@ -8,7 +8,7 @@ use File::stat         ();
 use Getopt::Long;
 use List::Util qw< uniq >;
 use Path::Tiny qw< path >;
-use Try::Tiny qw< catch try >;
+use Try::Tiny  qw< catch try >;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
@@ -121,7 +121,7 @@ for (@ARGV) {
         $find = $find->mtime( ">" . ( time - $age * 3600 ) )
             if $age;
         push( @files,
-            map      { $_->{file} }
+            map { $_->{file} }
                 sort { $a->{mtime} <=> $b->{mtime} }
                 map  { +{ file => $_, mtime => File::stat::stat($_)->mtime } }
                 $find->in($_) );

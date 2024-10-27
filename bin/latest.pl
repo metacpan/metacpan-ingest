@@ -7,9 +7,9 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use CPAN::DistnameInfo;
 use Parse::CPAN::Packages::Fast;
-use Ref::Util qw< is_arrayref is_hashref >;
+use Ref::Util      qw< is_arrayref is_hashref >;
 use Regexp::Common qw< time >;
-use Time::Local qw< timelocal >;
+use Time::Local    qw< timelocal >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
@@ -313,7 +313,7 @@ sub _reindex ( $bulk, $source, $status ) {
 
     log_info {
         $status eq 'latest' ? 'Upgrading ' : 'Downgrading ',
-            'release ', $release->{name}
+        'release ', $release->{name}
     };
 
     # Get all the files for the release.

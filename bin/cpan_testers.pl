@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use v5.36;
 
-use DBI ();
+use DBI        ();
 use File::stat qw< stat >;
 use Getopt::Long;
 use IO::Uncompress::Bunzip2 qw< bunzip2 >;

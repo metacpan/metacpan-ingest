@@ -3,7 +3,7 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use Digest::file qw< digest_file_hex >;
+use Digest::file     qw< digest_file_hex >;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;

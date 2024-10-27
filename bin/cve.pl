@@ -5,7 +5,7 @@ use v5.36;
 use Cpanel::JSON::XS qw< decode_json >;
 use Getopt::Long;
 use Path::Tiny qw< path >;
-use Ref::Util qw< is_arrayref >;
+use Ref::Util  qw< is_arrayref >;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 

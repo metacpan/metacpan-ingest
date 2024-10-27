@@ -3,12 +3,12 @@ use warnings;
 use v5.36;
 
 use Cpanel::JSON::XS qw< decode_json >;
-use DateTime     ();
-use Email::Valid ();
-use Encode       ();
+use DateTime         ();
+use Email::Valid     ();
+use Encode           ();
 use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
-use URI ();
+use URI              ();
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<

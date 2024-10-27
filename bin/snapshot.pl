@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json encode_json >;
+use Cpanel::JSON::XS          qw< decode_json encode_json >;
 use DateTime                  ();
 use DateTime::Format::ISO8601 ();
 use HTTP::Tiny                ();
