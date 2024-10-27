@@ -6,6 +6,7 @@ requires 'CPAN::DistnameInfo', '0.12';
 requires 'Cpanel::JSON::XS';
 requires 'Data::Printer';
 requires 'DateTime';
+requires 'DateTime::Format::ISO8601';
 requires 'Data::Printer';
 requires 'DBI';
 requires 'Digest::SHA';
@@ -37,7 +38,7 @@ requires 'XML::Simple';
 
 requires 'MetaCPAN::Common',
     git => 'https://github.com/metacpan/MetaCPAN-Common',
-    ref => '48274b9cb890d7f76a8ba6e2fce78348ca1165ca';
+    ref => '0e5c2852178a47e98db291f613da2b96aca85f64';
 
 on test => sub {
     requires 'Code::TidyAll',                     '>= 0.74';

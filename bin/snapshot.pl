@@ -2,33 +2,48 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json encode_json >;
+use Cpanel::JSON::XS          qw< decode_json encode_json >;
 use DateTime                  ();
 use DateTime::Format::ISO8601 ();
 use HTTP::Tiny                ();
 use Getopt::Long;
 use Sys::Hostname qw< hostname >;
+use Try::Tiny;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< are_you_sure >;
+use MetaCPAN::Ingest qw<
+    are_you_sure
+    config
+    is_dev
+>;
 
 # setup
-my $hostname        = hostname();
-my $mode            = $hostname =~ /dev/ ? 'testing' : 'production';
+my $config          = config();
+my $mode            = is_dev() ? 'testing' : 'production';
 my $bucket          = "mc-${mode}-backups";    # So we don't break production
 my $repository_name = 'our_backups';
 
-#my $es   = MetaCPAN::ES->new( type => "distribution" );
-#my $bulk = $es->bulk();
+my $aws_key = $config->{es_aws_s3_access_key};
+die "es_aws_s3_access_key not in config" unless $aws_key;
+
+my $aws_secret = $config->{es_aws_s3_secret};
+die "es_aws_s3_secret not in config" unless $aws_secret;
+
+my $http_client = HTTP::Tiny->new(
+    default_headers => { 'Accept' => 'application/json' },
+    timeout         => 120,                                 # list can be slow
+);
 
 # args
 my (
     $date_format, $indices, $list,      $purge_old, $restore,
     $setup,       $snap,    $snap_name, $snap_stub
 );
-my $host = MetaCPAN::Server::Config::config()->{elasticsearch_servers};
+
+my $host = $config->{es_node};
+
 GetOptions(
     "list"          => \$list,
     "date_format=s" => \$date_format,
@@ -45,20 +60,7 @@ GetOptions(
 # Note: can take wild cards https://www.elastic.co/guide/en/elasticsearch/reference/2.4/multi-index.html
 $indices //= '*';
 
-my $config = {};    ## TODO ( use MetaCPAN::Server::Config (); ??? )
-
-my $aws_key    = $config->{es_aws_s3_access_key};
-my $aws_secret = $config->{es_aws_s3_secret};
-
-my $http_client = HTTP::Tiny->new(
-    default_headers => { 'Accept' => 'application/json' },
-    timeout         => 120,                                 # list can be slow
-);
-
 # run
-die "es_aws_s3_access_key not in config" unless $aws_key;
-die "es_aws_s3_secret not in config"     unless $aws_secret;
-
 run_list_snaps() if $list;
 run_setup()      if $setup;
 run_snapshot()   if $snap;
@@ -205,7 +207,7 @@ sub _request ( $method, $path, $data ) {
             Dlog_error {"Error response: $_"} $resp_json;
         }
         catch {
-            log_error { 'Error msg: ' . $response->{content} }
+            log_error { 'Error msg: ' . $response->{content} };
         }
         return 0;
     }

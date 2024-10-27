@@ -32,6 +32,7 @@ use Sub::Exporter -setup => {
         fix_version
         handle_error
         home
+        is_dev
         minion
         numify_version
         read_00whois
@@ -55,7 +56,7 @@ my $config //= do {
 };
 $config->init_logger;
 
-sub config () {$config}
+sub config () { $config->config(); }
 
 sub are_you_sure ( $msg, $force=0 ) {
     return 1 if $force;
@@ -185,6 +186,11 @@ sub home () {
     die "Failed to find git dir: '$stdout'" unless -d $stdout;
 
     return $stdout;
+}
+
+# TODO: there must be a better way
+sub is_dev () {
+    return $ENV{PLACK_ENV} =~ /dev/;
 }
 
 sub minion () {
