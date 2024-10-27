@@ -8,8 +8,8 @@ use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
->;
+use MetaCPAN::External::Cygwin qw< run_cygwin >;
+use MetaCPAN::External::Debian qw< run_debian >;
 
 # with(
 #     'MetaCPAN::Script::Role::External::Cygwin',
