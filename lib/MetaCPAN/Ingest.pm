@@ -163,12 +163,12 @@ sub fix_version ($version) {
     return ( ( $v ? 'v' : '' ) . $version );
 }
 
-sub handle_error ( $error, $die_always ) {
+sub handle_error ( $exit_code, $error, $die_always ) {
 
     # Always log.
     log_fatal {$error};
 
-    $! = 1;    ### $self->exit_code if ( $self->exit_code != 0 );
+    $! = $exit_code;
 
     Carp::croak $error if $die_always;
 }
@@ -224,7 +224,7 @@ sub read_url ( $url ) {
     my $ua   = ua();
     my $resp = $ua->get($url);
 
-    handle_error( $resp->status_line, 1 ) unless $resp->is_success;
+    handle_error(1, $resp->status_line, 1 ) unless $resp->is_success;
 
     # clean up headers if .json.gz is served as gzip type
     # rather than json encoded with gzip

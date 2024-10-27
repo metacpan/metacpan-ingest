@@ -19,8 +19,7 @@ GetOptions(
 
 # setup
 my $cpan = cpan_dir();
-my $es = MetaCPAN::ES->new( type => "mirror" );
-
+my $es   = MetaCPAN::ES->new( type => "mirror" );
 
 index_mirrors();
 
@@ -50,14 +49,13 @@ sub index_mirrors () {
         };
 
         #Dlog_trace {"Indexing $_"} $mirror;
-        log_debug {sprintf("Indexing %s", $mirror->{name})};
+        log_debug { sprintf( "Indexing %s", $mirror->{name} ) };
 
-        my @doc =
-            map  { $_ => $mirror->{$_} }
+        my @doc = map { $_ => $mirror->{$_} }
             grep { defined $mirror->{$_} }
             keys %$mirror;
 
-        $es->index( body => { @doc } );
+        $es->index( body => {@doc} );
     }
 }
 

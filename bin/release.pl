@@ -216,7 +216,7 @@ while ( my $file = shift @files ) {
     else {
         try { _import_archive( $file, $dist ) }
         catch {
-            handle_error( "$file $_[0]", 1 );
+            handle_error( 1, "$file $_[0]" );
         };
     }
 }
