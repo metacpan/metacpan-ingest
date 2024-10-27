@@ -7,7 +7,7 @@ use v5.36;
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
 
-use MetaCPAN::Ingest qw< config >;
+use MetaCPAN::Ingest qw< config handle_error >;
 
 sub new ( $class, %args ) {
     my $node  = $args{node};
@@ -140,6 +140,50 @@ sub clear_type ( $self ) {
     my $ids = $self->get_ids();
 
     $self->delete_ids(@$ids);
+}
+
+sub await ( $self ) {
+    my $timeout = 15;
+    my $iready = 0;
+    my $cluster_info;
+    my $es = $self->{es};
+
+    if ( scalar( keys %$cluster_info ) == 0 ) {
+        my $iseconds = 0;
+
+        log_info {"Awaiting Elasticsearch ..."};
+
+        do {
+            eval {
+                $iready = $es->ping;
+
+                if ($iready) {
+                    log_info { sprintf("Awaiting %d / %d : ready", $iseconds, $timeout) };
+                    $cluster_info = \%{ $es->info };
+                }
+            };
+
+            if ($@) {
+                if ( $iseconds < $timeout ) {
+                    log_info { sprintf("Awaiting %d / %d : unavailable - sleeping ...", $iseconds, $timeout) };
+                    sleep(1);
+                    $iseconds++;
+                }
+                else {
+                    log_info { sprintf("Awaiting %d / %d : unavailable - timeout!", $iseconds, $timeout) };
+
+                    #Set System Error: 112 - EHOSTDOWN - Host is down
+                    handle_error( 112, $@, 1 );
+                }
+            }
+        } while ( !$iready && $iseconds <= $timeout );
+    }
+    else {
+        #ElasticSearch Service is available
+        $iready = 1;
+    }
+
+    return $iready;
 }
 
 1;
