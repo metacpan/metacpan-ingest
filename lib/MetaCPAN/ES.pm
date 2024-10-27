@@ -129,14 +129,14 @@ sub get_ids ( $self, %args ) {
 sub delete_ids ( $self, $ids ) {
     my $bulk = $self->bulk;
 
-    while ( my @batch = splice(@$ids, 0, 500) ) {
+    while ( my @batch = splice( @$ids, 0, 500 ) ) {
         $bulk->delete_ids(@batch);
     }
 
     $bulk->flush;
 }
 
-sub clear_type ( $self ) {
+sub clear_type ($self) {
     my $ids = $self->get_ids();
 
     $self->delete_ids(@$ids);
