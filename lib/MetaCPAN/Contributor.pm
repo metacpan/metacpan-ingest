@@ -77,7 +77,7 @@ sub update_release_contirbutors ( $document, $timeout = "5m" ) {
 
 sub get_contributors ( $author_name, $release_name ) {
     my $config = config;
-    my $node   = $config->{config}{es_test_node};
+    my $node   = $config->{es_test_node};
     my $es     = MetaCPAN::ES->new( type => "release", node => $node );
 
     my $query = +{

@@ -32,7 +32,7 @@ log_info {'Dry run: updates will not be written to ES'} if $dry_run;
 my $minion;
 $minion = minion() if $queue;
 
-my $node = config->{config}{es_test_node};
+my $node = config->{es_test_node};
 
 run();
 
