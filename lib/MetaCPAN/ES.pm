@@ -14,7 +14,7 @@ sub new ( $class, %args ) {
     my $index = $args{index} // "cpan";
 
     my $config = config;
-    $node ||= $config->{config}{es_node};
+    $node ||= $config->{es_node};
     $node or die "Cannot create an ES instance without a node\n";
 
     return bless {
