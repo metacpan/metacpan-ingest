@@ -97,6 +97,7 @@ sub _parse_tsv ($tsv) {
 
     my %summary;
     while ( my $row = $tsv_parser->getline_hr($fh) ) {
+        next unless $row->{dist};
         $summary{ $row->{dist} }{'bugs'}{'rt'} = {
             source => _rt_dist_url( $row->{dist} ),
             active => $row->{active},
