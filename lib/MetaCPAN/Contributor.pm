@@ -177,6 +177,7 @@ sub get_contributors ( $author_name, $release_name ) {
         $dupe ? () : $info;
     } ( @$authors, @$contribs );
 
+    my %want_email;
     for my $contrib (@contribs) {
 
         # heuristic to autofill pause accounts
@@ -189,20 +190,26 @@ sub get_contributors ( $author_name, $release_name ) {
 
         }
 
-        # check if contributor's email points to a registered author
-        if ( !$contrib->{pauseid} ) {
-            for my $email ( @{ $contrib->{email} } ) {
-                my $check_author = $es->search(
-                    type => 'author',
-                    body => {
-                        query => { term => { email => $email } },
-                        size  => 10,
-                    }
-                );
+        push @{ $want_email{$_} }, $contrib for @{ $contrib->{email} };
+    }
 
-                if ( $check_author->{hits}{total} ) {
-                    $contrib->{pauseid}
-                        = uc $check_author->{hits}{hits}[0]{_source}{pauseid};
+    if (%want_email) {
+        my $check_author = $es->search(
+            type => 'author',
+            body => {
+                query => { term => { email => [ sort keys %want_email ] } },
+                _source => [ 'email', 'pauseid' ],
+                size  => 10,
+            }
+        );
+
+        for my $author ( @{ $check_author->{hits}{hits} } ) {
+            my $emails = $author->{_source}{email};
+            $emails = [$emails] if !ref $emails;
+            my $pauseid = uc $author->{_source}{pauseid};
+            for my $email (@$emails) {
+                for my $contrib ( @{ $want_email{$email} } ) {
+                    $contrib->{pauseid} = $pauseid;
                 }
             }
         }
