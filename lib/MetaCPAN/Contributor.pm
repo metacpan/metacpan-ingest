@@ -197,9 +197,9 @@ sub get_contributors ( $author_name, $release_name ) {
         my $check_author = $es->search(
             type => 'author',
             body => {
-                query => { term => { email => [ sort keys %want_email ] } },
+                query   => { term => { email => [ sort keys %want_email ] } },
                 _source => [ 'email', 'pauseid' ],
-                size  => 10,
+                size    => 10,
             }
         );
 
