@@ -8,6 +8,7 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
+    fix_version
     read_02packages_fh
 >;
 
@@ -40,7 +41,7 @@ while ( my $line = <$fh_packages> ) {
         file         => $file,
         author       => $distinfo->cpanid,
         distribution => $distinfo->dist,
-        dist_version => $distinfo->version,
+        dist_version => fix_version( $distinfo->version ),
     };
 
     $bulk->update( {
