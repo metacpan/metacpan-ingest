@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use v5.36;
 
+use Cpanel::JSON::XS;
 use Digest::SHA;
 use Encode qw< decode_utf8 >;
 use IO::Prompt::Tiny qw< prompt >;
@@ -29,9 +30,11 @@ use Sub::Exporter -setup => {
         digest
         download_url
         extract_section
+        false
         fix_version
         handle_error
         home
+        is_bool
         is_dev
         minion
         numify_version
@@ -44,9 +47,14 @@ use Sub::Exporter -setup => {
         read_url
         strip_pod
         tmp_dir
+        true
         ua
     > ]
 };
+
+*true    = \&Cpanel::JSON::XS::true;
+*false   = \&Cpanel::JSON::XS::false;
+*is_bool = \&Cpanel::JSON::XS::is_bool;
 
 my $config //= do {
     MetaCPAN::Config->new(

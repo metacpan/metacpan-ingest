@@ -86,6 +86,8 @@ sub bulk ( $self, %args ) {
         type      => $self->{type},
         max_count => ( $args{max_count} // 250 ),
         timeout   => ( $args{timeout}   // '25m' ),
+        ( $args{on_success} ? ( on_success => $args{on_success} ) : () ),
+        ( $args{on_error}   ? ( on_error   => $args{on_error} )   : () ),
     );
 }
 
@@ -124,6 +126,10 @@ sub get_ids ( $self, %args ) {
     }
 
     return \@ids;
+}
+
+sub get_source ( $self, $id ) {
+    return $self->{es}->get_source($id);
 }
 
 sub delete_ids ( $self, $ids ) {
