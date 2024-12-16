@@ -124,26 +124,30 @@ sub index_github_bugs () {
     my $scroll_release = $es_release->scroll(
         body => {
             query => {
-                and => [
-                    { term => { status => 'latest' } },
-                    {
-                        or => [
-                            {
-                                prefix => {
-                                    "resources.bugtracker.web" =>
-                                        'http://github.com/'
-                                }
+                bool => {
+                    must => [
+                        { term => { status => 'latest' } },
+                        {
+                            bool => {
+                                should => [
+                                    {
+                                        prefix => {
+                                            "resources.bugtracker.web" =>
+                                            'http://github.com/'
+                                        },
+                                    },
+                                    {
+                                        prefix => {
+                                            "resources.bugtracker.web" =>
+                                            'https://github.com/'
+                                        },
+                                    },
+                                ],
                             },
-                            {
-                                prefix => {
-                                    "resources.bugtracker.web" =>
-                                        'https://github.com/'
-                                }
-                            },
-                        ],
-                    }
-                ],
-            }
+                        },
+                    ],
+                },
+            },
         },
     );
 

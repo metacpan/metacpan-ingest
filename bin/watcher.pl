@@ -98,16 +98,13 @@ sub backpan_changes () {
         fields => [qw< author archive >],
         body   => {
             query => {
-                filtered => {
-                    query  => { match_all => {} },
-                    filter => {
-                        not => {
-                            filter => { term => { status => 'backpan' } }
-                        }
-                    }
-                }
-            }
-        }
+                bool => {
+                    must_not => [
+                        { term => { status => 'backpan' } }
+                    ],
+                },
+            },
+        },
     );
 
     my @changes;
@@ -168,14 +165,15 @@ sub reindex_release_first ($info) {
     my $scroll_release = $es_release->scroll(
         scroll => '1m',
         body   => {
-            query  => { match_all => {} },
-            filter => {
-                and => [
-                    { term => { author  => $info->cpanid } },
-                    { term => { archive => $info->filename } },
-                ]
+            query  => {
+                bool => {
+                    must => [
+                        { term => { author  => $info->cpanid } },
+                        { term => { archive => $info->filename } },
+                    ],
+                },
             },
-        }
+        },
     );
 
     return $scroll_release->next;
@@ -193,25 +191,22 @@ sub reindex_release ($release) {
         fields => [qw< _parent _source >],
         body   => {
             query => {
-                filtered => {
-                    query  => { match_all => {} },
-                    filter => {
-                        and => [
-                            {
-                                term => {
-                                    release => $release->{_source}{name}
-                                }
-                            },
-                            {
-                                term => {
-                                    author => $release->{_source}{author}
-                                }
-                            },
-                        ]
-                    }
-                }
-            }
-        }
+                bool => {
+                    must => [
+                        {
+                            term => {
+                                release => $release->{_source}{name}
+                            }
+                        },
+                        {
+                            term => {
+                                author => $release->{_source}{author}
+                            }
+                        },
+                    ],
+                },
+            },
+        },
     } );
     return if $dry_run;
 
