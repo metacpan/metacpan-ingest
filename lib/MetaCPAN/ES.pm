@@ -66,9 +66,9 @@ sub get ( $self, %args ) {
 sub search ( $self, %args ) {
     my $body = $args{body} or die "Missing body\n";
 
-    my $index  = $args{index} // $self->{index};
-    my $type   = $args{type}  // $self->{type};
-    my @size   = ( $args{size}   ? ( size   => $args{size} )   : () );
+    my $index = $args{index} // $self->{index};
+    my $type  = $args{type}  // $self->{type};
+    my @size  = ( $args{size} ? ( size => $args{size} ) : () );
 
     return $self->{es}->search(
         index => $index,

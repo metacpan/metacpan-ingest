@@ -45,15 +45,13 @@ index_github_bugs();
 sub check_all_distributions () {
     my $es_release     = MetaCPAN::ES->new( type => "release" );
     my $scroll_release = $es_release->scroll(
-        body   => {
+        body => {
             query => {
                 bool => {
-                    must_not => [
-                        { term => { status => 'backpan' } },
-                    ],
+                    must_not => [ { term => { status => 'backpan' } }, ],
                 },
             },
-            size => 500,
+            size    => 500,
             _source => [qw< distribution >],
         },
     );
@@ -138,13 +136,13 @@ sub index_github_bugs () {
                                     {
                                         prefix => {
                                             "resources.bugtracker.web" =>
-                                            'http://github.com/'
+                                                'http://github.com/'
                                         },
                                     },
                                     {
                                         prefix => {
                                             "resources.bugtracker.web" =>
-                                            'https://github.com/'
+                                                'https://github.com/'
                                         },
                                     },
                                 ],

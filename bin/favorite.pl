@@ -55,10 +55,10 @@ sub index_favorites () {
         my $favs = $es->scroll(
             scroll => '5m',
             body   => {
-                query => $age_filter,
+                query   => $age_filter,
                 _source => [qw< distribution >],
-                size => $limit || 500,
-                sort => '_doc',
+                size    => $limit || 500,
+                sort    => '_doc',
             }
         );
 
@@ -87,11 +87,11 @@ sub index_favorites () {
         my $es   = MetaCPAN::ES->new( type => "favorite" );
         my $favs = $es->scroll(
             scroll => '30s',
-            body => {
-                query => $query,
+            body   => {
+                query   => $query,
                 _source => [qw< distribution >],
-                size => 500,
-                sort => '_doc',
+                size    => 500,
+                sort    => '_doc',
             },
         );
 
@@ -126,8 +126,8 @@ sub index_favorites () {
                     },
                 },
                 _source => [qw< id distribution >],
-                size   => 500,
-                sort => '_doc',
+                size    => 500,
+                sort    => '_doc',
 
             },
         );
@@ -189,8 +189,8 @@ sub index_favorites () {
             my $files = $es->scroll(
                 scroll => '15s',
                 body   => {
-                    query => { term => { distribution => $dist } }
-                    _source => false,
+                    query => { term => { distribution => $dist } } _source =>
+                        false,
                     size => 500,
                     sort => '_doc',
                 },

@@ -73,8 +73,8 @@ sub _update_slice ($range) {
                 }
             },
             _source => [qw< id documentation >],
-            size => 500,
-            sort => '_doc',
+            size    => 500,
+            sort    => '_doc',
         },
     );
 
@@ -89,8 +89,8 @@ sub _update_slice ($range) {
             id  => $file->{_id},
             doc => {
                 suggest => {
-                    input   => [$documentation],
-                    weight  => $weight,
+                    input  => [$documentation],
+                    weight => $weight,
                 },
             },
         } );

@@ -40,7 +40,7 @@ sub build_release_status_map () {
     my $scroll = $es_release->scroll(
         body => {
             %{ get_release_query() },
-            size => 500,
+            size    => 500,
             _source => [qw< author archive name >],
         },
     );
@@ -68,9 +68,7 @@ sub get_release_query () {
         return +{
             query => {
                 bool => {
-                    must_not => [
-                        { term => { status => 'backpan' } },
-                    ],
+                    must_not => [ { term => { status => 'backpan' } }, ],
                 },
             },
         };
@@ -134,7 +132,7 @@ sub update_files_author ( $author, $author_releases ) {
                     ],
                 },
             },
-            size => 500,
+            size    => 500,
             _source => [qw< release >],
         },
     );

@@ -38,7 +38,7 @@ while ( my $line = <$packages_fh> ) {
 
             # look up this module in ElasticSearch and see what we have on it
             my $results = $es_file->search(
-                query  => {
+                query => {
                     bool => {
                         must => [
                             { term => { 'module.name' => $pkg } },
@@ -47,8 +47,8 @@ while ( my $line = <$packages_fh> ) {
                         ],
                     },
                 },
-                size   => 100,    # shouldn't get more than this
-                _source => [qw<
+                size    => 100,    # shouldn't get more than this
+                _source => [ qw<
                     name
                     release
                     author
@@ -58,7 +58,7 @@ while ( my $line = <$packages_fh> ) {
                     indexed
                     maturity
                     date
-                >],
+                > ],
 
             );
             my @files = @{ $results->{hits}{hits} };
@@ -66,15 +66,18 @@ while ( my $line = <$packages_fh> ) {
             # now find the first latest releases for these files
             foreach my $file (@files) {
                 my $release_results = $es_release->search(
-                    query  => {
+                    query => {
                         bool => {
                             must => [
-                                { term => { name => $file->{_source}{release} } },
+                                {
+                                    term =>
+                                        { name => $file->{_source}{release} }
+                                },
                                 { term => { status => 'latest' } },
                             ],
                         },
                     },
-                    size   => 1,
+                    size    => 1,
                     _source => [qw< name status authorized version id date >],
                 );
 
@@ -87,14 +90,18 @@ while ( my $line = <$packages_fh> ) {
             if ( !@releases ) {
                 foreach my $file (@files) {
                     my $release_results = $es_release->search(
-                        query  => {
+                        query => {
                             bool => {
                                 must => [
-                                    { term => { name => $file->{_source}{release} } },
+                                    {
+                                        term => {
+                                            name => $file->{_source}{release}
+                                        }
+                                    },
                                 ],
                             },
                         },
-                        size   => 1,
+                        size    => 1,
                         _source =>
                             [qw< name status authorized version id date >],
                     );

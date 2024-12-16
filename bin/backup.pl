@@ -170,10 +170,10 @@ sub run_backup {
     );
     my $scroll = $es->scroll(
         scroll => '1m',
-        body => {
+        body   => {
             _source => true,
-            size   => $size,
-            sort => '_doc',
+            size    => $size,
+            sort    => '_doc',
         },
     );
 

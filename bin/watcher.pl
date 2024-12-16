@@ -98,12 +98,10 @@ sub backpan_changes () {
         body   => {
             query => {
                 bool => {
-                    must_not => [
-                        { term => { status => 'backpan' } }
-                    ],
+                    must_not => [ { term => { status => 'backpan' } } ],
                 },
             },
-            size   => 1000,
+            size    => 1000,
             _source => [qw< author archive >],
         },
     );
@@ -166,7 +164,7 @@ sub reindex_release_first ($info) {
     my $scroll_release = $es_release->scroll(
         scroll => '1m',
         body   => {
-            query  => {
+            query => {
                 bool => {
                     must => [
                         { term => { author  => $info->cpanid } },
@@ -205,9 +203,9 @@ sub reindex_release ($release) {
                     ],
                 },
             },
-            size   => 1000,
+            size    => 1000,
             _source => true,
-            sort   => '_doc',
+            sort    => '_doc',
         },
     } );
     return if $dry_run;
@@ -220,8 +218,7 @@ sub reindex_release ($release) {
         $bulk_file->index( {
             id     => $row->{_id},
             source => {
-                %$source,
-                status => 'backpan',
+                %$source, status => 'backpan',
             }
         } );
     }
@@ -229,8 +226,7 @@ sub reindex_release ($release) {
     $bulk_release->index( {
         id     => $release->{_id},
         source => {
-            %{ $release->{_source} },
-            status => 'backpan',
+            %{ $release->{_source} }, status => 'backpan',
         }
     } );
 

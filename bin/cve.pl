@@ -135,19 +135,18 @@ for my $dist ( sort keys %{$data} ) {
         if (@filters) {
             my $query = {
                 bool => {
-                    must => [
-                        { term => { distribution => $dist } }, @filters,
-                    ]
+                    must =>
+                        [ { term => { distribution => $dist } }, @filters, ]
                 }
             };
 
             my $releases = $es->search(
-                index  => 'cpan',
-                type   => 'release',
-                body   => {
-                    query => $query,
+                index => 'cpan',
+                type  => 'release',
+                body  => {
+                    query   => $query,
                     _source => [qw< version name author >],
-                    size   => 2000,
+                    size    => 2000,
                 },
             );
 
@@ -155,12 +154,9 @@ for my $dist ( sort keys %{$data} ) {
                 ## no critic (ControlStructures::ProhibitMutatingListFunctions)
                 @matches = map { $_->[0] }
                     sort { $a->[1] <=> $b->[1] }
-                    map {
-                        [
-                            $_->{_source},
-                            numify_version( $_->{_source}{version} )
-                        ]
-                    } @{ $releases->{hits}{hits} };
+                    map  { [ $_->{_source},
+                    numify_version( $_->{_source}{version} ) ] }
+                    @{ $releases->{hits}{hits} };
             }
             else {
                 log_debug {

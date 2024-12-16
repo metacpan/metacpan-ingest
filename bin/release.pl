@@ -426,14 +426,17 @@ sub _set_first ($document) {
     my $count = $es->search(
         search_type => 'count',
         body        => {
-            query  => {
+            query => {
                 bool => {
                     must => [
-                        { term => { distribution => $document->{distribution} } },
+                        {
+                            term =>
+                                { distribution => $document->{distribution} }
+                        },
                         {
                             range => {
                                 version_numified =>
-                                { 'lt' => $document->{version_numified} }
+                                    { 'lt' => $document->{version_numified} }
                             },
                         },
                     ],

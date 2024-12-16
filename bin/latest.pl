@@ -238,7 +238,8 @@ sub _body_query ($filter) {
                 ]
             }
         },
-    },
+        },
+        ;
 }
 
 sub _queue_latest ( $dist = $distribution ) {
@@ -260,7 +261,7 @@ sub _get_release ( $es, $author, $name ) {
                         { term => { name   => $name } },
                     ]
                 },
-                size => 500,
+                size    => 500,
                 _source => [qw< id name >],
             },
         },
@@ -325,13 +326,12 @@ sub _reindex ( $bulk, $source, $status ) {
                 bool => {
                     must => [
                         {
-                            term =>
-                            { 'release' => $source->{release} }
+                            term => { 'release' => $source->{release} }
                         },
                         { term => { 'author' => $source->{author} } },
                     ],
                 },
-                size => 500,
+                size    => 500,
                 _source => [qw< name >],
             },
         },
