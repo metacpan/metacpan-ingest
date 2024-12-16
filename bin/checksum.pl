@@ -32,11 +32,11 @@ my $scroll = $es->scroll(
             not => {
                 exists => {
                     field => "checksum_md5"
-                }
-            }
-        }
+                },
+            },
+        },
+        _source => [qw< id name download_url >],
     },
-    fields => [qw< id name download_url >],
 );
 
 log_warn { "Found " . $scroll->total . " releases" };
@@ -50,11 +50,11 @@ while ( my $p = $scroll->next ) {
         last;
     }
 
-    log_info { "Adding checksums for " . $p->{fields}{name}[0] };
+    log_info { "Adding checksums for " . $p->{_source}{name} };
 
-    if ( my $download_url = $p->{fields}{download_url} ) {
+    if ( my $download_url = $p->{_source}{download_url} ) {
         my $file
-            = cpan_dir . "/authors" . $p->{fields}{download_url}[0]
+            = cpan_dir . "/authors" . $p->{_source}{download_url}
             =~ s/^.*authors//r;
         my $checksum_md5    = digest_file_hex( $file, 'MD5' );
         my $checksum_sha256 = digest_file_hex( $file, 'SHA-256' );
@@ -75,7 +75,7 @@ while ( my $p = $scroll->next ) {
         }
     }
     else {
-        log_info { $p->{fields}{name}[0] . " is missing a download_url" };
+        log_info { $p->{_source}{name} . " is missing a download_url" };
     }
 }
 

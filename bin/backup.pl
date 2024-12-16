@@ -12,7 +12,7 @@ use Path::Tiny       qw< path >;
 use Try::Tiny        qw< catch try >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< home >;
+use MetaCPAN::Ingest qw< home true >;
 
 # config
 
@@ -82,7 +82,7 @@ sub run_restore () {
         $bulk_store{$key} ||= $es->bulk( max_count => $batch_size );
         my $bulk = $bulk_store{$key};
 
-        my $parent = $raw->{fields}{_parent};
+        my $parent = $raw->{_parent};
 
         if ( $raw->{_type} eq 'author' ) {
 
@@ -169,9 +169,12 @@ sub run_backup {
         ( $type ? ( type => $type ) : () )
     );
     my $scroll = $es->scroll(
-        size   => $size,
-        fields => [qw< _parent _source >],
         scroll => '1m',
+        body   => {
+            _source => true,
+            size    => $size,
+            sort    => '_doc',
+        },
     );
 
     log_info { 'Backing up ', $scroll->total, ' documents' };

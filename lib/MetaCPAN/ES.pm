@@ -66,16 +66,14 @@ sub get ( $self, %args ) {
 sub search ( $self, %args ) {
     my $body = $args{body} or die "Missing body\n";
 
-    my $index  = $args{index} // $self->{index};
-    my $type   = $args{type}  // $self->{type};
-    my @fields = ( $args{fields} ? ( fields => $args{fields} ) : () );
-    my @size   = ( $args{size}   ? ( size   => $args{size} )   : () );
+    my $index = $args{index} // $self->{index};
+    my $type  = $args{type}  // $self->{type};
+    my @size  = ( $args{size} ? ( size => $args{size} ) : () );
 
     return $self->{es}->search(
         index => $index,
         type  => $type,
         body  => $body,
-        @fields,
         @size,
     );
 }
@@ -95,11 +93,9 @@ sub scroll ( $self, %args ) {
     return $self->{es}->scroll_helper(
         index       => $self->{index},
         type        => $self->{type},
-        size        => ( $args{size} // 500 ),
         body        => ( $args{body} // { query => { match_all => {} } } ),
         search_type => 'scan',
         scroll      => ( $args{scroll} // '30m' ),
-        ( $args{fields} ? ( fields => $args{fields} ) : () ),
     );
 }
 

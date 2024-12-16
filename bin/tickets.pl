@@ -45,18 +45,21 @@ index_github_bugs();
 sub check_all_distributions () {
     my $es_release     = MetaCPAN::ES->new( type => "release" );
     my $scroll_release = $es_release->scroll(
-        fields => ['distribution'],
-        body   => {
+        body => {
             query => {
-                not => { term => { status => 'backpan' } },
-            }
+                bool => {
+                    must_not => [ { term => { status => 'backpan' } }, ],
+                },
+            },
+            size    => 500,
+            _source => [qw< distribution >],
         },
     );
 
     my %dists;
 
     while ( my $release = $scroll_release->next ) {
-        my $d = $release->{'fields'}{'distribution'}[0];
+        my $d = $release->{_source}{distribution};
         $d or next;
 
         log_debug { sprintf( "Adding missing distribution record: %s", $d ) };
@@ -133,13 +136,13 @@ sub index_github_bugs () {
                                     {
                                         prefix => {
                                             "resources.bugtracker.web" =>
-                                            'http://github.com/'
+                                                'http://github.com/'
                                         },
                                     },
                                     {
                                         prefix => {
                                             "resources.bugtracker.web" =>
-                                            'https://github.com/'
+                                                'https://github.com/'
                                         },
                                     },
                                 ],

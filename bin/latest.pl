@@ -238,7 +238,8 @@ sub _body_query ($filter) {
                 ]
             }
         },
-    },
+        },
+        ;
 }
 
 sub _queue_latest ( $dist = $distribution ) {
@@ -259,21 +260,22 @@ sub _get_release ( $es, $author, $name ) {
                         { term => { author => $author } },
                         { term => { name   => $name } },
                     ]
-                }
-            }
+                },
+                size    => 500,
+                _source => [qw< id name >],
+            },
         },
-        fields => [qw< id name >],
     );
 
     return {}
         unless is_arrayref( $release->{hits}{hits} )
         && is_hashref( $release->{hits}{hits}[0] );
 
-    my $fields = $release->{hits}{hits}[0]{fields};
+    my $source = $release->{hits}{hits}[0]{_source};
 
     return +{
-        id   => $fields->{id},
-        name => $fields->{name}[0],
+        id   => $source->{_id},
+        name => $source->{name},
     };
 }
 
@@ -324,14 +326,14 @@ sub _reindex ( $bulk, $source, $status ) {
                 bool => {
                     must => [
                         {
-                            term =>
-                            { 'release' => $source->{release} }
+                            term => { 'release' => $source->{release} }
                         },
                         { term => { 'author' => $source->{author} } },
                     ],
                 },
+                size    => 500,
+                _source => [qw< name >],
             },
-            fields => [qw< name >],
         },
     );
 
@@ -339,7 +341,7 @@ sub _reindex ( $bulk, $source, $status ) {
         log_trace {
             sprintf( '%s file %s',
                 ( $status eq 'latest' ? 'Upgrading' : 'Downgrading' ),
-                $row->{fields}{name}[0] )
+                $row->{_source}{name} )
         };
 
         # Use bulk update to overwrite the status for X files at a time.

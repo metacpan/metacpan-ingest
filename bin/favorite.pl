@@ -6,7 +6,7 @@ use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< minion >;
+use MetaCPAN::Ingest qw< false minion >;
 
 # args
 my ( $age, $check_missing, $count, $distribution, $limit, $queue );
@@ -39,7 +39,7 @@ log_info {'done'};
 ###
 
 sub index_favorites () {
-    my $body;
+    my $query = { match_all => {} };
     my $age_filter;
 
     if ($age) {
@@ -48,37 +48,30 @@ sub index_favorites () {
     }
 
     if ($distribution) {
-        $body = {
-            query => {
-                term => { distribution => $distribution }
-            }
-        };
+        $query = { term => { distribution => $distribution } };
     }
     elsif ($age) {
         my $es   = MetaCPAN::ES->new( type => "favorite" );
         my $favs = $es->scroll(
             scroll => '5m',
-            fields => [qw< distribution >],
             body   => {
-                query => $age_filter,
-                ( $limit ? ( size => $limit ) : () )
+                query   => $age_filter,
+                _source => [qw< distribution >],
+                size    => $limit || 500,
+                sort    => '_doc',
             }
         );
 
         my %recent_dists;
 
         while ( my $fav = $favs->next ) {
-            my $dist = $fav->{fields}{distribution}[0];
+            my $dist = $fav->{_source}{distribution};
             $recent_dists{$dist}++ if $dist;
         }
 
         my @keys = keys %recent_dists;
         if (@keys) {
-            $body = {
-                query => {
-                    terms => { distribution => \@keys }
-                }
-            };
+            $query = { terms => { distribution => \@keys } };
         }
         $es->index_refresh;
     }
@@ -94,12 +87,16 @@ sub index_favorites () {
         my $es   = MetaCPAN::ES->new( type => "favorite" );
         my $favs = $es->scroll(
             scroll => '30s',
-            fields => [qw< distribution >],
-            ( $body ? ( body => $body ) : () ),
+            body   => {
+                query   => $query,
+                _source => [qw< distribution >],
+                size    => 500,
+                sort    => '_doc',
+            },
         );
 
         while ( my $fav = $favs->next ) {
-            my $dist = $fav->{fields}{distribution}[0];
+            my $dist = $fav->{_source}{distribution};
             $dist_fav_count{$dist}++ if $dist;
         }
 
@@ -119,8 +116,6 @@ sub index_favorites () {
         my $es    = MetaCPAN::ES->new( type => "file" );
         my $files = $es->scroll(
             scroll => '15m',
-            fields => [qw< id distribution >],
-            size   => 500,
             body   => {
                 query => {
                     bool => {
@@ -128,13 +123,17 @@ sub index_favorites () {
                             { range => { dist_fav_count => { gte => 1 } } }
                         ],
                         @age_filter,
-                    }
-                }
+                    },
+                },
+                _source => [qw< id distribution >],
+                size    => 500,
+                sort    => '_doc',
+
             },
         );
 
         while ( my $file = $files->next ) {
-            my $dist = $file->{fields}{distribution}[0];
+            my $dist = $file->{_source}{distribution};
             next unless $dist;
             next if exists $missing{$dist} or exists $dist_fav_count{$dist};
 
@@ -189,20 +188,22 @@ sub index_favorites () {
             my $bulk  = $es->bulk( timeout => '120m' );
             my $files = $es->scroll(
                 scroll => '15s',
-                fields => [qw< id >],
                 body   => {
-                    query => { term => { distribution => $dist } }
+                    query => { term => { distribution => $dist } } _source =>
+                        false,
+                    size => 500,
+                    sort => '_doc',
                 },
             );
 
             while ( my $file = $files->next ) {
-                my $id  = $file->{fields}{id}[0];
+                my $id  = $file->{_id};
                 my $cnt = $dist_fav_count{$dist};
 
                 log_debug {"Updating file id $id with fav_count $cnt"};
 
                 $bulk->update( {
-                    id  => $file->{fields}{id}[0],
+                    id  => $file->{_id};
                     doc => { dist_fav_count => $cnt },
                 } );
             }

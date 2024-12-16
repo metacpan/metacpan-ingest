@@ -14,6 +14,7 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     cpan_dir
     read_recent_segment
+    true
 >;
 
 # args
@@ -93,23 +94,21 @@ sub changes () {
 
 sub backpan_changes () {
     my $scroll_release = $es_release->scroll(
-        size   => 1000,
         scroll => '1m',
-        fields => [qw< author archive >],
         body   => {
             query => {
                 bool => {
-                    must_not => [
-                        { term => { status => 'backpan' } }
-                    ],
+                    must_not => [ { term => { status => 'backpan' } } ],
                 },
             },
+            size    => 1000,
+            _source => [qw< author archive >],
         },
     );
 
     my @changes;
     while ( my $release = $scroll_release->next ) {
-        my $data = $release->{fields};
+        my $data = $release->{_source};
         my $path
             = $cpan->child( 'authors',
             MetaCPAN::Util::author_dir( $data->{author} ),
@@ -165,7 +164,7 @@ sub reindex_release_first ($info) {
     my $scroll_release = $es_release->scroll(
         scroll => '1m',
         body   => {
-            query  => {
+            query => {
                 bool => {
                     must => [
                         { term => { author  => $info->cpanid } },
@@ -187,8 +186,6 @@ sub reindex_release ($release) {
 
     my $scroll_file = $es_file->scroll( {
         scroll => '1m',
-        size   => 1000,
-        fields => [qw< _parent _source >],
         body   => {
             query => {
                 bool => {
@@ -206,6 +203,9 @@ sub reindex_release ($release) {
                     ],
                 },
             },
+            size    => 1000,
+            _source => true,
+            sort    => '_doc',
         },
     } );
     return if $dry_run;
@@ -218,11 +218,7 @@ sub reindex_release ($release) {
         $bulk_file->index( {
             id     => $row->{_id},
             source => {
-                $row->{fields}{_parent}
-                ? ( parent => $row->{fields}{_parent} )
-                : (),
-                %$source,
-                status => 'backpan',
+                %$source, status => 'backpan',
             }
         } );
     }
