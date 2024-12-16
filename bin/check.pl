@@ -42,13 +42,14 @@ while ( my $line = <$packages_fh> ) {
                 fields => [
                     qw< name release author distribution version authorized indexed maturity date >
                 ],
-                query  => { match_all => {} },
-                filter => {
-                    and => [
-                        { term => { 'module.name' => $pkg } },
-                        { term => { authorized    => 'true' } },
-                        { term => { maturity      => 'released' } },
-                    ],
+                query  => {
+                    bool => {
+                        must => [
+                            { term => { 'module.name' => $pkg } },
+                            { term => { authorized    => 'true' } },
+                            { term => { maturity      => 'released' } },
+                        ],
+                    },
                 },
             );
             my @files = @{ $results->{hits}{hits} };
@@ -58,12 +59,13 @@ while ( my $line = <$packages_fh> ) {
                 my $release_results = $es_release->search(
                     size   => 1,
                     fields => [qw< name status authorized version id date >],
-                    query  => { match_all => {} },
-                    filter => {
-                        and => [
-                            { term => { name => $file->{fields}{release} } },
-                            { term => { status => 'latest' } },
-                        ],
+                    query  => {
+                        bool => {
+                            must => [
+                                { term => { name => $file->{fields}{release} } },
+                                { term => { status => 'latest' } },
+                            ],
+                        },
                     },
                 );
 
@@ -79,11 +81,12 @@ while ( my $line = <$packages_fh> ) {
                         size   => 1,
                         fields =>
                             [qw< name status authorized version id date >],
-                        query  => { match_all => {} },
-                        filter => {
-                            and => [ {
-                                term => { name => $file->{fields}{release} }
-                            } ]
+                        query  => {
+                            bool => {
+                                must => [
+                                    { term => { name => $file->{fields}{release} } },
+                                ],
+                            },
                         },
                     );
 
