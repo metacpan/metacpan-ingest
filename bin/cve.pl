@@ -134,21 +134,21 @@ for my $dist ( sort keys %{$data} ) {
 
         if (@filters) {
             my $query = {
-                query => {
-                    bool => {
-                        must => [
-                            { term => { distribution => $dist } }, @filters,
-                        ]
-                    }
-                },
+                bool => {
+                    must => [
+                        { term => { distribution => $dist } }, @filters,
+                    ]
+                }
             };
 
             my $releases = $es->search(
                 index  => 'cpan',
                 type   => 'release',
-                body   => $query,
-                fields => [ "version", "name", "author", ],
-                size   => 2000,
+                body   => {
+                    query => $query,
+                    _source => [qw< version name author >],
+                    size   => 2000,
+                },
             );
 
             if ( $releases->{hits}{total} ) {
@@ -156,9 +156,10 @@ for my $dist ( sort keys %{$data} ) {
                 @matches = map { $_->[0] }
                     sort { $a->[1] <=> $b->[1] }
                     map {
-                    my %fields = %{ $_->{fields} };
-                    ref $_ and $_ = $_->[0] for values %fields;
-                    [ \%fields, numify_version( $fields{version} ) ];
+                        [
+                            $_->{_source},
+                            numify_version( $_->{_source}{version} )
+                        ]
                     } @{ $releases->{hits}{hits} };
             }
             else {
