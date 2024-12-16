@@ -88,7 +88,7 @@ sub run () {
         # 'file' type records where the module.name matches the
         # distribution name and which are released &
         # indexed (the 'leading' module)
-        my $q_body = _body_filtered_query($filter);
+        my $q_body = _body_query($filter);
 
         my $scroll = $es->scroll(
             body    => $q_body,
@@ -219,31 +219,26 @@ sub _add_module_filters ($filter) {
     return \@module_filters;
 }
 
-sub _body_filtered_query ($filter) {
+sub _body_query ($filter) {
     return +{
         query => {
-            filtered => {
-                query  => { match_all => {} },
-                filter => {
-                    bool => {
-                        must => [
-                            {
-                                nested => {
-                                    path  => 'module',
-                                    query => { bool => { must => $filter } }
-                                }
-                            },
-                            { term => { 'maturity' => 'released' } },
-                        ],
-                        must_not => [
-                            { term => { status       => 'backpan' } },
-                            { term => { distribution => 'perl' } }
-                        ]
-                    }
-                },
-            },
-        }
-    };
+            bool => {
+                must => [
+                    {
+                        nested => {
+                            path  => 'module',
+                            query => { bool => { must => $filter } }
+                        }
+                    },
+                    { term => { 'maturity' => 'released' } },
+                ],
+                must_not => [
+                    { term => { status       => 'backpan' } },
+                    { term => { distribution => 'perl' } }
+                ]
+            }
+        },
+    },
 }
 
 sub _queue_latest ( $dist = $distribution ) {
@@ -326,19 +321,14 @@ sub _reindex ( $bulk, $source, $status ) {
     my $scroll = $es_file->scroll(
         body => {
             query => {
-                filtered => {
-                    query  => { match_all => {} },
-                    filter => {
-                        bool => {
-                            must => [
-                                {
-                                    term =>
-                                        { 'release' => $source->{release} }
-                                },
-                                { term => { 'author' => $source->{author} } },
-                            ],
+                bool => {
+                    must => [
+                        {
+                            term =>
+                            { 'release' => $source->{release} }
                         },
-                    },
+                        { term => { 'author' => $source->{author} } },
+                    ],
                 },
             },
             fields => [qw< name >],
