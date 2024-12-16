@@ -38,10 +38,6 @@ while ( my $line = <$packages_fh> ) {
 
             # look up this module in ElasticSearch and see what we have on it
             my $results = $es_file->search(
-                size   => 100,    # shouldn't get more than this
-                fields => [
-                    qw< name release author distribution version authorized indexed maturity date >
-                ],
                 query  => {
                     bool => {
                         must => [
@@ -51,22 +47,35 @@ while ( my $line = <$packages_fh> ) {
                         ],
                     },
                 },
+                size   => 100,    # shouldn't get more than this
+                _source => [qw<
+                    name
+                    release
+                    author
+                    distribution
+                    version
+                    authorized
+                    indexed
+                    maturity
+                    date
+                >],
+
             );
             my @files = @{ $results->{hits}{hits} };
 
             # now find the first latest releases for these files
             foreach my $file (@files) {
                 my $release_results = $es_release->search(
-                    size   => 1,
-                    fields => [qw< name status authorized version id date >],
                     query  => {
                         bool => {
                             must => [
-                                { term => { name => $file->{fields}{release} } },
+                                { term => { name => $file->{_source}{release} } },
                                 { term => { status => 'latest' } },
                             ],
                         },
                     },
+                    size   => 1,
+                    _source => [qw< name status authorized version id date >],
                 );
 
                 push @releases, $release_results->{hits}{hits}[0]
@@ -78,16 +87,16 @@ while ( my $line = <$packages_fh> ) {
             if ( !@releases ) {
                 foreach my $file (@files) {
                     my $release_results = $es_release->search(
-                        size   => 1,
-                        fields =>
-                            [qw< name status authorized version id date >],
                         query  => {
                             bool => {
                                 must => [
-                                    { term => { name => $file->{fields}{release} } },
+                                    { term => { name => $file->{_source}{release} } },
                                 ],
                             },
                         },
+                        size   => 1,
+                        _source =>
+                            [qw< name status authorized version id date >],
                     );
 
                     push @releases, @{ $release_results->{hits}{hits} };
@@ -97,22 +106,22 @@ while ( my $line = <$packages_fh> ) {
             # if we found the releases tell them about it
             if (@releases) {
                 if (    @releases == 1
-                    and $releases[0]->{fields}{status} eq 'latest' )
+                    and $releases[0]->{_source}{status} eq 'latest' )
                 {
                     log_info {
-                        "Found latest release $releases[0]->{fields}{name} for $pkg"
+                        "Found latest release $releases[0]->{_source}{name} for $pkg"
                     }
                     unless $errors_only;
                 }
                 else {
                     log_error {"Could not find latest release for $pkg"};
                     foreach my $rel (@releases) {
-                        log_warn {"  Found release $rel->{fields}{name}"};
-                        log_warn {"    STATUS    : $rel->{fields}{status}"};
+                        log_warn {"  Found release $rel->{_source}{name}"};
+                        log_warn {"    STATUS    : $rel->{_source}{status}"};
                         log_warn {
-                            "    AUTORIZED : $rel->{fields}{authorized}"
+                            "    AUTORIZED : $rel->{_source}{authorized}"
                         };
-                        log_warn {"    DATE      : $rel->{fields}{date}"};
+                        log_warn {"    DATE      : $rel->{_source}{date}"};
                     }
 
                     $error_count++;
@@ -123,13 +132,13 @@ while ( my $line = <$packages_fh> ) {
                     "Module $pkg doesn't have any releases in ElasticSearch!"
                 };
                 foreach my $file (@files) {
-                    log_warn {"  Found file $file->{fields}{name}"};
-                    log_warn {"    RELEASE    : $file->{fields}{release}"};
-                    log_warn {"    AUTHOR     : $file->{fields}{author}"};
+                    log_warn {"  Found file $file->{_source}{name}"};
+                    log_warn {"    RELEASE    : $file->{_source}{release}"};
+                    log_warn {"    AUTHOR     : $file->{_source}{author}"};
                     log_warn {
-                        "    AUTHORIZED : $file->{fields}{authorized}"
+                        "    AUTHORIZED : $file->{_source}{authorized}"
                     };
-                    log_warn {"    DATE       : $file->{fields}{date}"};
+                    log_warn {"    DATE       : $file->{_source}{date}"};
                 }
                 $error_count++;
             }
