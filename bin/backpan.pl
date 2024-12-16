@@ -38,14 +38,17 @@ sub build_release_status_map () {
     log_info {"find_releases"};
 
     my $scroll = $es_release->scroll(
-        fields => [qw< author archive name >],
-        body   => get_release_query(),
+        body => {
+            %{ get_release_query() },
+            size => 500,
+            _source => [qw< author archive name >],
+        },
     );
 
     while ( my $release = $scroll->next ) {
-        my $author  = $release->{fields}{author}[0];
-        my $archive = $release->{fields}{archive}[0];
-        my $name    = $release->{fields}{name}[0];
+        my $author  = $release->{_source}{author};
+        my $archive = $release->{_source}{archive};
+        my $name    = $release->{_source}{name};
         next unless $name;    # bypass some broken releases
 
         $release_status{$author}{$name} = [
@@ -64,8 +67,12 @@ sub get_release_query () {
     unless ($undo) {
         return +{
             query => {
-                not => { term => { status => 'backpan' } }
-            }
+                bool => {
+                    must_not => [
+                        { term => { status => 'backpan' } },
+                    ],
+                },
+            },
         };
     }
 
@@ -118,23 +125,24 @@ sub update_files_author ( $author, $author_releases ) {
 
     my $scroll_file = $es_file->scroll(
         scroll => '5m',
-        fields => [qw< release >],
         body   => {
             query => {
                 bool => {
                     must => [
                         { term  => { author  => $author } },
-                        { terms => { release => $author_releases } }
-                    ]
-                }
-            }
+                        { terms => { release => $author_releases } },
+                    ],
+                },
+            },
+            size => 500,
+            _source => [qw< release >],
         },
     );
 
     $bulk{file} ||= $es_file->bulk( timeout => '5m' );
 
     while ( my $file = $scroll_file->next ) {
-        my $release = $file->{fields}{release}[0];
+        my $release = $file->{_source}{release};
         $bulk{file}->update( {
             id  => $file->{_id},
             doc => {
