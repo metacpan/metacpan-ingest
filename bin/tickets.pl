@@ -103,8 +103,8 @@ sub _parse_tsv ($tsv) {
         next unless $row->{dist};
         $summary{ $row->{dist} }{'bugs'}{'rt'} = {
             source => _rt_dist_url( $row->{dist} ),
-            active => $row->{active},
-            closed => $row->{inactive},
+            active => $row->{active} + 0,
+            closed => $row->{inactive} + 0,
             map { $_ => $row->{$_} + 0 }
                 grep { not /^(dist|active|inactive)$/ }
                 keys %$row,
