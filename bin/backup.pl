@@ -33,7 +33,7 @@ GetOptions(
 );
 
 # setup
-my $home = path( home() );
+my $home = home();
 
 run_restore() if $restore;
 run_purge()   if $purge;

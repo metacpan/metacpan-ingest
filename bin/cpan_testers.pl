@@ -23,8 +23,6 @@ GetOptions(
 );
 
 # setup
-
-# XXX fix hardcoded path
 my $home = home();
 
 my $db

@@ -8,7 +8,8 @@ use Cpanel::JSON::XS;
 use Digest::SHA;
 use Encode qw< decode_utf8 >;
 use IO::Prompt::Tiny qw< prompt >;
-use IPC::Run3 ();
+use File::Basename ();
+use File::Spec ();
 use LWP::UserAgent;
 use Path::Tiny qw< path >;
 use PAUSE::Permissions ();
@@ -183,17 +184,14 @@ sub handle_error ( $exit_code, $error, $die_always ) {
 }
 
 sub home () {
-    IPC::Run3::run3(
-        [ qw< git rev-parse --show-toplevel > ], # TODO: use alternative persistent path that's accessible from the container
-        \undef, \my $stdout, \my $stderr
-    );
+    my $dir = Cwd::abs_path( File::Spec->catdir(
+        File::Basename::dirname(__FILE__),
+        ( File::Spec->updir ) x 2
+    ) );
 
-    die $stderr if ($?);
-
-    chomp $stdout;
-    die "Failed to find git dir: '$stdout'" unless -d $stdout;
-
-    return $stdout;
+    my $path = path($dir);
+    die "Failed to find git dir: '$path'" unless $path;
+    return $path;
 }
 
 # TODO: there must be a better way
