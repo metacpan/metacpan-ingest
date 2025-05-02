@@ -23,6 +23,7 @@ EOT
 
 COPY bin bin
 COPY lib lib
+COPY conf conf
 COPY *.conf .
 
 ENV PERL5LIB="/app/local/lib/perl5:/app/lib" PATH="/app/local/bin:${PATH}"
