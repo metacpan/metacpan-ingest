@@ -51,14 +51,17 @@ my @compare_fields = do {
 };
 
 # args
-my $pauseid;
-GetOptions( "pauseid=s" => \$pauseid );
+my ( $pauseid, $whois_file );
+GetOptions(
+    "whois_file=s" => \$whois_file,
+    "pauseid=s"    => \$pauseid,
+);
 
 # setup
 my $es = MetaCPAN::ES->new( type => "author" );
 
 log_info {'Reading 00whois'};
-my $authors_data = read_00whois();
+my $authors_data = $whois_file || read_00whois();
 
 if ($pauseid) {
     log_info {"Indexing 1 author"};
