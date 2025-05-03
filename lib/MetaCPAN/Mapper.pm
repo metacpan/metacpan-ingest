@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use v5.36;
 
+use Cpanel::JSON::XS qw< decode_json >;
 use Path::Tiny qw< path >;
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
@@ -44,9 +45,12 @@ sub index_put_mapping ($self, $index, $type, $mapping) {
     );
 }
 
-sub get_mapping ($self, $index) {
-#    my $home = home();
-#    my $file = $dir->child('');
+sub index_add_mapping ($self, $index, $type) {
+    my $home = home();
+    my $map_file = $home->child('conf/es/' . $index . '/mapping.json');
+    my $mapping = decode_json $map_file->slurp();
+
+    $self->index_put_mapping($index, $type, $mapping);
 }
 
 1;
