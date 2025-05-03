@@ -10,17 +10,23 @@ use Search::Elasticsearch;
 use MetaCPAN::Ingest qw< config handle_error >;
 
 sub new ( $class, %args ) {
+    my $mode  = $args{mode} // "local";
     my $node  = $args{node};
     my $index = $args{index} // "cpan";
 
     my $config = config;
-    $node ||= $config->{es_node};
-    $node or die "Cannot create an ES instance without a node\n";
+    my $config_node =
+        $node ? $node :
+        $mode eq 'local' ? $config->{es_node} :
+        $mode eq 'test'  ? $config->{es_test_node} :
+        $mode eq 'prod'  ? $config->{es_production_node} :
+        undef;
+    $config_node or die "Cannot create an ES instance without a node\n";
 
     return bless {
         es => Search::Elasticsearch->new(
             client => '2_0::Direct',
-            nodes  => [$node],
+            nodes  => [$config_node],
         ),
         index => $index,
         ( $args{type} ? ( type => $args{type} ) : () ),
