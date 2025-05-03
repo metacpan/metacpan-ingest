@@ -294,9 +294,9 @@ sub extract_section ( $pod, $section ) {
     return $out;
 }
 
-sub read_00whois () {
+sub read_00whois ( $file = undef ) {
     my $cpan         = cpan_dir();
-    my $authors_file = sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
+    my $authors_file = $file || sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
 
     my $data = XMLin(
         $authors_file,
@@ -330,10 +330,18 @@ sub read_00whois () {
 }
 
 # TODO: replace usage with read_02packages
-sub read_02packages_fh ( $log_meta = 0 ) {
-    my $cpan = cpan_dir();
-    my $fh   = $cpan->child(qw< modules 02packages.details.txt.gz >)
-        ->openr(':gzip');
+sub read_02packages_fh ( %args ) {
+    my $log_meta = $args{log_meta} // 0;
+    my $file = $args{file};
+
+    my $fh;
+    if ( $file ) {
+        $fh = path($file)->openr(':gzip');
+    } else {
+        my $cpan = cpan_dir();
+        $fh = $cpan->child(qw< modules 02packages.details.txt.gz >)
+            ->openr(':gzip');
+    }
 
     # read first 9 lines (meta info)
     my $meta = "Meta info:\n";
@@ -347,22 +355,36 @@ sub read_02packages_fh ( $log_meta = 0 ) {
     return $fh;
 }
 
-sub read_02packages () {
-    my $cpan = cpan_dir();
-    return Parse::CPAN::Packages::Fast->new(
-        $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify );
+sub read_02packages ( $file = undef ) {
+    my $content;
+    if ( $file ) {
+        $content = path($file)->stringify;
+    } else {
+        my $cpan = cpan_dir();
+        $content = $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify;
+    }
+
+    return Parse::CPAN::Packages::Fast->new($content);
 }
 
 # TODO: replace usage with unified read_06perms
-sub read_06perms_fh () {
+sub read_06perms_fh ( $file = undef ) {
+    return path($file)->openr if $file;
+
     my $cpan = cpan_dir();
     return $cpan->child(qw< modules 06perms.txt >)->openr;
 }
 
-sub read_06perms_iter () {
-    my $cpan      = cpan_dir();
-    my $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
-    my $pp        = PAUSE::Permissions->new( path => $file_path );
+sub read_06perms_iter ( $file = undef ) {
+    my $file_path;
+    if ( $file ) {
+        $file_path = path($file)->absolute;
+    } else {
+        my $cpan   = cpan_dir();
+        $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
+    }
+
+    my $pp = PAUSE::Permissions->new( path => $file_path );
     return $pp->module_iterator;
 }
 
