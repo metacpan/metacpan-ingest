@@ -368,7 +368,9 @@ sub read_02packages ( $file = undef ) {
 }
 
 # TODO: replace usage with unified read_06perms
-sub read_06perms_fh () {
+sub read_06perms_fh ( $file = undef ) {
+    return path($file)->openr if $file;
+
     my $cpan = cpan_dir();
     return $cpan->child(qw< modules 06perms.txt >)->openr;
 }
