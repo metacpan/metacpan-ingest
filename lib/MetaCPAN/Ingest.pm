@@ -294,9 +294,9 @@ sub extract_section ( $pod, $section ) {
     return $out;
 }
 
-sub read_00whois () {
+sub read_00whois ( $file = undef ) {
     my $cpan         = cpan_dir();
-    my $authors_file = sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
+    my $authors_file = $file || sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
 
     my $data = XMLin(
         $authors_file,
