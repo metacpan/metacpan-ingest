@@ -330,10 +330,18 @@ sub read_00whois ( $file = undef ) {
 }
 
 # TODO: replace usage with read_02packages
-sub read_02packages_fh ( $log_meta = 0 ) {
-    my $cpan = cpan_dir();
-    my $fh   = $cpan->child(qw< modules 02packages.details.txt.gz >)
-        ->openr(':gzip');
+sub read_02packages_fh ( %args ) {
+    my $log_meta = $args{log_meta} // 0;
+    my $file = $args{file};
+
+    my $fh;
+    if ( $file ) {
+        $fh = path($file)->openr(':gzip');
+    } else {
+        my $cpan = cpan_dir();
+        $fh = $cpan->child(qw< modules 02packages.details.txt.gz >)
+            ->openr(':gzip');
+    }
 
     # read first 9 lines (meta info)
     my $meta = "Meta info:\n";
