@@ -51,17 +51,18 @@ my @compare_fields = do {
 };
 
 # args
-my ( $pauseid, $whois_file );
+my ( $mode, $pauseid, $whois_file );
 GetOptions(
-    "whois_file=s" => \$whois_file,
+    "mode=s"       => \$mode,
     "pauseid=s"    => \$pauseid,
+    "whois_file=s" => \$whois_file,
 );
 
 # setup
-my $es = MetaCPAN::ES->new( type => "author" );
+my $es = MetaCPAN::ES->new( index => "author", ( $mode ? ( mode => $mode ) : () ) );
 
 log_info {'Reading 00whois'};
-my $authors_data = $whois_file || read_00whois();
+my $authors_data = read_00whois( $whois_file );
 
 if ($pauseid) {
     log_info {"Indexing 1 author"};
@@ -239,7 +240,7 @@ sub update_authors () {
 sub new_authors () {
     for my $id ( keys %$authors_data ) {
         my $whois_data = delete $authors_data->{$id} || next;
-        _update_author( $id, $whois_data );
+        _update_author( $id, $whois_data, {} );
     }
 }
 
