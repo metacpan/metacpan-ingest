@@ -375,10 +375,16 @@ sub read_06perms_fh ( $file = undef ) {
     return $cpan->child(qw< modules 06perms.txt >)->openr;
 }
 
-sub read_06perms_iter () {
-    my $cpan      = cpan_dir();
-    my $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
-    my $pp        = PAUSE::Permissions->new( path => $file_path );
+sub read_06perms_iter ( $file = undef ) {
+    my $file_path;
+    if ( $file ) {
+        $file_path = path($file)->absolute;
+    } else {
+        my $cpan   = cpan_dir();
+        $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
+    }
+
+    my $pp = PAUSE::Permissions->new( path => $file_path );
     return $pp->module_iterator;
 }
 
