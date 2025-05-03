@@ -27,7 +27,7 @@ log_info {'Reading 02packages.details'};
 
 # read the rest of the file line-by-line (too big to slurp)
 
-my $fh_packages = read_02packages_fh(1);
+my $fh_packages = read_02packages_fh( log_meta => 1 );
 while ( my $line = <$fh_packages> ) {
     next unless $line;
     chomp($line);

@@ -355,10 +355,16 @@ sub read_02packages_fh ( %args ) {
     return $fh;
 }
 
-sub read_02packages () {
-    my $cpan = cpan_dir();
-    return Parse::CPAN::Packages::Fast->new(
-        $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify );
+sub read_02packages ( $file = undef ) {
+    my $content;
+    if ( $file ) {
+        $content = path($file)->stringify;
+    } else {
+        my $cpan = cpan_dir();
+        $content = $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify;
+    }
+
+    return Parse::CPAN::Packages::Fast->new($content);
 }
 
 # TODO: replace usage with unified read_06perms
