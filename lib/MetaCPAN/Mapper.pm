@@ -26,7 +26,7 @@ sub new ( $class, %args ) {
     return bless {
         es => Search::Elasticsearch->new(
             client => '2_0::Direct',
-            nodes  => [$node],
+            nodes  => [$config_node],
         ),
     }, $class;
 }
