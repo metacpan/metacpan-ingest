@@ -29,7 +29,7 @@ sub new ( $class, %args ) {
             nodes  => [$config_node],
         ),
         index => $index,
-        ( $args{type} ? ( type => $args{type} ) : () ),
+        type  => ( $args{type} ? $args{type} : $index ),
     }, $class;
 }
 
