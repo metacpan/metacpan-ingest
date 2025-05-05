@@ -21,16 +21,19 @@ my $batch_size = 100;
 my $size       = 1000;
 my $index      = "cpan";
 
-my ( $type, $purge, $dry_run, $restore );
+my ( $dry_run, $mode, $purge, $restore );
 GetOptions(
     "batch_size=i" => \$batch_size,
-    "purge"        => \$purge,
     "dry_run"      => \$dry_run,
-    "size=i"       => \$size,
     "index=s"      => \$index,
-    "type=s"       => \$type,
+    "mode=s"       => \$mode,
+    "purge"        => \$purge,
     "restore=s"    => \$restore,
+    "size=i"       => \$size,
 );
+# TODO: find a better way
+my @es_mode = ( $mode ? mode => $mode : () );
+$mode eq 'test' and Log::Log4perl::init('log4perl_test.conf');
 
 # setup
 my $home = home();
@@ -69,14 +72,11 @@ sub run_restore () {
         };
 
         # Create our bulk_helper if we need,
-        # incase a backup has mixed _index or _type
+        # incase a backup has mixed _index
         # create a new bulk helper for each
-        my $key = $raw->{_index} . $raw->{_type};
+        my $key = $raw->{_index};
 
-        $es_store{$key} ||= MetaCPAN::ES->new(
-            index => $raw->{_index},
-            type  => $raw->{_type},
-        );
+        $es_store{$key} ||= MetaCPAN::ES->new( index => $key, @es_mode );
         my $es = $es_store{$key};
 
         $bulk_store{$key} ||= $es->bulk( max_count => $batch_size );
@@ -84,7 +84,7 @@ sub run_restore () {
 
         my $parent = $raw->{_parent};
 
-        if ( $raw->{_type} eq 'author' ) {
+        if ( $key eq 'author' ) {
 
             # Hack for dodgy lat / lon's
             if ( my $loc = $raw->{_source}{location} ) {
@@ -158,16 +158,13 @@ sub run_purge () {
 sub run_backup {
     my $filename = join( '-',
         DateTime->now->strftime('%F'),
-        grep {defined} $index, $type );
+        grep {defined} $index );
 
     my $file = $home->child( qw< var backup >, "$filename.json.gz" );
     $file->parent->mkpath unless ( -e $file->parent );
     my $fh = IO::Zlib->new( "$file", 'wb4' );
 
-    my $es = MetaCPAN::ES->new(
-        index => $index,
-        ( $type ? ( type => $type ) : () )
-    );
+    my $es = MetaCPAN::ES->new( index => $index, @es_mode );
     my $scroll = $es->scroll(
         scroll => '1m',
         body   => {
@@ -191,11 +188,11 @@ __END__
 
 =head1 NAME
 
-Backup indices and types
+Backup indices
 
 =head1 SYNOPSIS
 
- $ bin/backup --index user --type account
+ $ bin/backup --index author
 
  $ bin/backup --purge
 
