@@ -18,8 +18,8 @@ GetOptions(
 
 # setup
 my $cpan_file_map = cpan_file_map();
-my $es_release    = MetaCPAN::ES->new( type => "release" );
-my $es_file       = MetaCPAN::ES->new( type => "file" );
+my $es_release    = MetaCPAN::ES->new( index => "release" );
+my $es_file       = MetaCPAN::ES->new( index => "file" );
 
 my %bulk;
 my %release_status;
@@ -169,6 +169,6 @@ sub update_files_author ( $author, $author_releases ) {
 Sets "backpan" status on all BackPAN releases.
 
 --undo will set distributions' status back as 'cpan'
---file_only will only fix the 'file' type
+--file_only will only fix the 'file' index
 
 =cut
