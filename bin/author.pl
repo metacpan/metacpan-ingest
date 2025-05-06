@@ -51,15 +51,14 @@ my @compare_fields = do {
 };
 
 # args
-my ( $mode, $pauseid, $whois_file );
+my ( $pauseid, $whois_file );
 GetOptions(
-    "mode=s"       => \$mode,
     "pauseid=s"    => \$pauseid,
     "whois_file=s" => \$whois_file,
 );
 
 # setup
-my $es = MetaCPAN::ES->new( index => "author", ( $mode ? ( mode => $mode ) : () ) );
+my $es = MetaCPAN::ES->new( index => "author" );
 
 log_info {'Reading 00whois'};
 my $authors_data = read_00whois( $whois_file );
