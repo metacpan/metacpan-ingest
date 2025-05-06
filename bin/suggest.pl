@@ -9,11 +9,11 @@ use MetaCPAN::Logger qw< :log :dlog >;
 use MetaCPAN::ES;
 
 # args
-my $all;
 my $days = 1;
+my ( $all );
 GetOptions(
     "all"    => \$all,
-    "days=i" => \$days
+    "days=i" => \$days,
 );
 
 if ($all) {
@@ -60,7 +60,7 @@ sub update_days () {
 }
 
 sub _update_slice ($range) {
-    my $es = MetaCPAN::ES->new( type => "file" );
+    my $es = MetaCPAN::ES->new( index => "file" );
 
     my $files = $es->scroll(
         scroll => '5m',
