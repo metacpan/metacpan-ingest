@@ -7,12 +7,14 @@ use v5.36;
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
 
-use MetaCPAN::Ingest qw< config handle_error >;
+use MetaCPAN::Ingest qw< config handle_error is_dev >;
 
 sub new ( $class, %args ) {
-    my $mode  = $args{mode} // "local";
     my $node  = $args{node};
-    my $index = $args{index} // "cpan";
+    my $index = $args{index} // 'cpan';
+
+    my $mode  = is_dev() ? 'test' : 'local';
+    $mode eq 'test' and Log::Log4perl::init('log4perl_test.conf'); # TODO: find a better place
 
     my $config = config;
     my $config_node =
