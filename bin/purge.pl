@@ -12,23 +12,14 @@ use MetaCPAN::Ingest qw<
 >;
 
 # args
-my ( $author, $release, $force );
+my ( $author, $force, $release );
 GetOptions(
     "author=s"  => \$author,
-    "release=s" => \$release,
     "force"     => \$force,
+    "release=s" => \$release,
 );
 
 # setup
-my $type2index = {
-    release     => 'cpan',
-    file        => 'cpan',
-    author      => 'cpan',
-    favorite    => 'cpan',
-    permission  => 'cpan',
-    contributor => 'contributor',
-};
-
 purge_author() if $author;
 
 log_info {'Done'};
@@ -60,22 +51,17 @@ sub purge_author () {
         }
     };
 
-    purge_ids( type => 'favorite', query => $query );
-    purge_ids( type => 'file',     query => $query );
-    purge_ids( type => 'release',  query => $query );
+    purge_ids( index => 'favorite', query => $query );
+    purge_ids( index => 'file',     query => $query );
+    purge_ids( index => 'release',  query => $query );
     if ( !$release ) {
-        purge_ids( type => 'author',      id => $author );
-        purge_ids( type => 'contributor', id => $author );
+        purge_ids( index => 'author',      id => $author );
+        purge_ids( index => 'contributor', id => $author );
     }
 }
 
 sub purge_ids (%args) {
-    my $type = $args{type};
-    my $es   = MetaCPAN::ES->new(
-        index => $type2index->{$type},
-        type  => $type
-    );
-
+    my $es   = MetaCPAN::ES->new( index => $args{index} );
     my $bulk = $es->bulk;
 
     my $id = $args{id};
