@@ -17,16 +17,15 @@ GetOptions(
     "all"            => \$all,
     "distribution=s" => \$distribution,
     "release=s"      => \$release,
-
 );
 
 # setup
 my $author_mapping = {};
 my $email_mapping  = {};
 
-my $es_author      = MetaCPAN::ES->new( type => 'author' );
-my $es_release     = MetaCPAN::ES->new( type => "release" );
-my $es_contributor = MetaCPAN::ES->new( type => "contributor" );
+my $es_author      = MetaCPAN::ES->new( index => 'author' );
+my $es_release     = MetaCPAN::ES->new( index => "release" );
+my $es_contributor = MetaCPAN::ES->new( index => "contributor" );
 
 run();
 
@@ -296,6 +295,6 @@ __END__
 =head1 DESCRIPTION
 
 Update the list of contributors (CPAN authors only) of all/matching
-releases in the 'contributor' type (index).
+releases in the 'contributor' index.
 
 =cut
