@@ -8,11 +8,13 @@ use Cpanel::JSON::XS qw< decode_json >;
 use Path::Tiny qw< path >;
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
-use MetaCPAN::Ingest qw< config home >;
+use MetaCPAN::Ingest qw< config home is_dev >;
 
 sub new ( $class, %args ) {
-    my $mode  = $args{mode} // "local";
-    my $node  = $args{node};
+    my $node = $args{node};
+
+    my $mode = is_dev() ? 'test' : 'local';
+    $mode eq 'test' and Log::Log4perl::init('log4perl_test.conf'); # TODO: find a better place
 
     my $config = config;
     my $config_node =
