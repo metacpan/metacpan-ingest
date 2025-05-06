@@ -38,12 +38,14 @@ GetOptions(
     "json_file=s"   => \$json_file,
     "test"          => \$test,
 );
+
+# setup
 $cve_url     //= 'https://hackeriet.github.io/cpansa-feed/cpansa.json';
 $cve_dev_url //= 'https://hackeriet.github.io/cpansa-feed/cpansa_dev.json';
 
-# setup
-my $es   = MetaCPAN::ES->new( index => "cve", type => "cve" );
-my $bulk = $es->bulk();
+my $es_release = MetaCPAN::ES->new( index => "release" );
+my $es_cve   = MetaCPAN::ES->new( index => "cve" );
+my $bulk_cve = $es_cve->bulk();
 
 my $data = retrieve_cve_data();
 
@@ -140,9 +142,7 @@ for my $dist ( sort keys %{$data} ) {
                 }
             };
 
-            my $releases = $es->search(
-                index => 'cpan',
-                type  => 'release',
+            my $releases = $es_release->search(
                 body  => {
                     query   => $query,
                     _source => [qw< version name author >],
@@ -183,7 +183,7 @@ for my $dist ( sort keys %{$data} ) {
             delete $doc_data->{$k} unless exists $valid_keys{$k};
         }
 
-        $bulk->update( {
+        $bulk_cve->update( {
             id            => $cpansa->{cpansa_id},
             doc           => $doc_data,
             doc_as_upsert => 1,
@@ -191,7 +191,7 @@ for my $dist ( sort keys %{$data} ) {
     }
 }
 
-$bulk->flush;
+$bulk_cve->flush;
 
 sub retrieve_cve_data {
     return decode_json( path($json_file)->slurp ) if $json_file;
