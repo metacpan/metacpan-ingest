@@ -19,7 +19,7 @@ GetOptions(
 
 # setup
 my $cpan = cpan_dir();
-my $es   = MetaCPAN::ES->new( type => "mirror" );
+my $es   = MetaCPAN::ES->new( index => "mirror" );
 
 index_mirrors();
 
