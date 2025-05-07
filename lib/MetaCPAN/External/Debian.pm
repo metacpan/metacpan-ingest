@@ -74,7 +74,7 @@ sub dist_for_debian ( $source, $url ) {
         return $dist->dist;
     }
     elsif ( $source =~ /^lib(.*)-perl$/ ) {
-        my $es  = MetaCPAN::ES->new( type => 'release' );
+        my $es  = MetaCPAN::ES->new( index => 'release' );
         my $res = $es->scroll(
             body => {
                 query => {
