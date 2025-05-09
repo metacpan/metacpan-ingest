@@ -56,7 +56,8 @@ jobs:
       - run:
           command: |
             pushd metacpan-docker
-            docker-compose exec -T ingest_test env PLACK_ENV='dev' HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,^t/|^test-data/|^etc/" prove -lr --jobs 4 t
+            docker build . -t metacpan/metacpan-ingest && docker compose run ingest env PLACK_ENV=dev HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,^t/|^test-data/|^etc/" prove -lrv --jobs 4 t
+#            docker-compose exec -T ingest_test env PLACK_ENV=dev HARNESS_PERL_SWITCHES="-MDevel::Cover=+ignore,^t/|^test-data/|^etc/" prove -lr --jobs 4 t
           name: run tests with coverage
       # We are relying on environment variables from the host to be available when
       # we publish the report, so we publish from the host rather than trying
