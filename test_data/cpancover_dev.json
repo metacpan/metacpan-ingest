@@ -1,0 +1,16 @@
+{
+   "HTML-Parser" : {
+      "3.83": {
+         "coverage": {
+            "total": {
+               "branch": "73.96",
+               "condition": "75.93",
+               "pod": "82.86",
+               "statement": "93.29",
+               "subroutine": "94.44",
+               "total": "83.57"
+            }
+         }
+      }
+   }
+}

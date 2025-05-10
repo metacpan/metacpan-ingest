@@ -11,11 +11,6 @@ use MetaCPAN::ES;
 use MetaCPAN::External::Cygwin qw< run_cygwin >;
 use MetaCPAN::External::Debian qw< run_debian >;
 
-# with(
-#     'MetaCPAN::Script::Role::External::Cygwin',
-#     'MetaCPAN::Script::Role::External::Debian',
-# );
-
 # args
 my ( $email_to, $external_source );
 GetOptions(
@@ -28,7 +23,18 @@ die "wrong external source: $external\n"
     and grep { $_ eq $external_source } qw< cygwin debian >;
 
 # setup
-my $es = MetaCPAN::ES->new( type => "author" );
+my $es = MetaCPAN::ES->new( index => "distribution" );
+my $bulk = $es->bulk();
+my $scroll = $es->scroll(
+    scroll => '10m',
+    body   => {
+        query => {
+            exists => { field => "external_package." . $external_source }
+        }
+    },
+);
+
+
 
 my $ret;
 
@@ -54,16 +60,6 @@ if ( $email_to and $email_body ) {
     log_debug {$email_body};
 }
 
-my $scroll = $es->scroll(
-    type   => 'distribution',
-    scroll => '10m',
-    body   => {
-        query => {
-            exists => { field => "external_package." . $external_source }
-        }
-    },
-);
-
 my @to_remove;
 
 while ( my $s = $scroll->next ) {
@@ -79,8 +75,6 @@ while ( my $s = $scroll->next ) {
         push @to_remove => $name;
     }
 }
-
-my $bulk = $es->bulk( type => 'distribution' );
 
 for my $d ( keys %{$dist} ) {
     log_debug {"[$external_source] adding $d"};

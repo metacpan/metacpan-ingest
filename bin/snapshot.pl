@@ -12,7 +12,6 @@ use Try::Tiny;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
-use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
     are_you_sure
     config

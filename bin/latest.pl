@@ -32,17 +32,12 @@ log_info {'Dry run: updates will not be written to ES'} if $dry_run;
 my $minion;
 $minion = minion() if $queue;
 
-my $node = config->{es_test_node};
-
 run();
 
 sub run () {
     log_info {'Reading 02packages.details'};
 
-    my $es = MetaCPAN::ES->new(
-        type => "file",
-        node => $node
-    );
+    my $es = MetaCPAN::ES->new( index => "file" );
 
     my $packages = read_02packages();
 
@@ -157,7 +152,7 @@ sub run () {
         }
     }
 
-    my $bulk = $es->bulk( type => 'file' );
+    my $bulk = $es->bulk();
 
     my %to_purge;
 
@@ -289,10 +284,7 @@ sub _set_release_status ( $es, $release_id, $status ) {
 sub _reindex ( $bulk, $source, $status ) {
 
     # Update the status on the release.
-    my $es_release = MetaCPAN::ES->new(
-        type => "release",
-        node => $node
-    );
+    my $es_release = MetaCPAN::ES->new( index => "release" );
 
     my $release
         = _get_release( $es_release, $source->{author}, $source->{release} );
@@ -315,10 +307,7 @@ sub _reindex ( $bulk, $source, $status ) {
 
     # Get all the files for the release.
 
-    my $es_file = MetaCPAN::ES->new(
-        type => "file",
-        node => $node
-    );
+    my $es_file = MetaCPAN::ES->new( index => "file" );
 
     my $scroll = $es_file->scroll(
         body => {

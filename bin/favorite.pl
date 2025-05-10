@@ -51,7 +51,7 @@ sub index_favorites () {
         $query = { term => { distribution => $distribution } };
     }
     elsif ($age) {
-        my $es   = MetaCPAN::ES->new( type => "favorite" );
+        my $es   = MetaCPAN::ES->new( index => "favorite" );
         my $favs = $es->scroll(
             scroll => '5m',
             body   => {
@@ -84,7 +84,7 @@ sub index_favorites () {
         $dist_fav_count{$distribution} = $count;
     }
     else {
-        my $es   = MetaCPAN::ES->new( type => "favorite" );
+        my $es   = MetaCPAN::ES->new( index => "favorite" );
         my $favs = $es->scroll(
             scroll => '30s',
             body   => {
@@ -113,7 +113,7 @@ sub index_favorites () {
             @age_filter = ( must => [$age_filter] );
         }
 
-        my $es    = MetaCPAN::ES->new( type => "file" );
+        my $es    = MetaCPAN::ES->new( index => "file" );
         my $files = $es->scroll(
             scroll => '15m',
             body   => {
@@ -184,7 +184,7 @@ sub index_favorites () {
             );
         }
         else {
-            my $es    = MetaCPAN::ES->new( type => "file" );
+            my $es    = MetaCPAN::ES->new( index => "file" );
             my $bulk  = $es->bulk( timeout => '120m' );
             my $files = $es->scroll(
                 scroll => '15s',

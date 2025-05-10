@@ -26,6 +26,10 @@ COPY lib lib
 COPY conf conf
 COPY *.conf .
 
+# move the following to test only
+COPY t t
+COPY test_data test_data
+
 ENV PERL5LIB="/app/local/lib/perl5:/app/lib" PATH="/app/local/bin:${PATH}"
 
 USER metacpan

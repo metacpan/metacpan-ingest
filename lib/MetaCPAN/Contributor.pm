@@ -7,10 +7,7 @@ use v5.36;
 use Ref::Util qw< is_arrayref >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    config
-    digest
->;
+use MetaCPAN::Ingest qw< digest >;
 
 use Sub::Exporter -setup => {
     exports => [ qw<
@@ -20,6 +17,8 @@ use Sub::Exporter -setup => {
 };
 
 sub get_cpan_author_contributors ( $author, $release, $distribution ) {
+    my $es_contributor = MetaCPAN::ES->new( index => 'contributor' );
+
     my @ret;
 
     my $data;
@@ -33,11 +32,7 @@ sub get_cpan_author_contributors ( $author, $release, $distribution ) {
 
         # skip existing records
         my $id = digest( $d->{pauseid}, $release );
-        my $es = MetaCPAN::ES->new(
-            index => 'contributor',
-            type  => 'contributor'
-        );
-        my $exists = $es->exists( id => $id );
+        my $exists = $es_contributor->exists( id => $id );
         next if $exists;
 
         $d->{release_author} = $author;
@@ -54,13 +49,12 @@ sub update_release_contirbutors ( $document, $timeout = "5m" ) {
         @{$document}{qw< author name distribution >} );
     return unless $data and is_arrayref($data);
 
-    my $es
-        = MetaCPAN::ES->new( index => 'contributor', type => 'contributor' );
-    my $bulk = $es->bulk( timeout => $timeout );
+    my $es_contributor = MetaCPAN::ES->new( index => 'contributor' );
+    my $bulk_contributor = $es_contributor->bulk( timeout => $timeout );
 
     for my $d ( @{$data} ) {
         my $id = digest( $d->{pauseid}, $d->{release_name} );
-        $bulk->update( {
+        $bulk_contributor->update( {
             id  => $id,
             doc => {
                 pauseid        => $d->{pauseid},
@@ -72,13 +66,12 @@ sub update_release_contirbutors ( $document, $timeout = "5m" ) {
         } );
     }
 
-    $bulk->flush;
+    $bulk_contributor->flush;
 }
 
 sub get_contributors ( $author_name, $release_name ) {
-    my $config = config;
-    my $node   = $config->{es_test_node};
-    my $es     = MetaCPAN::ES->new( type => "release", node => $node );
+    my $es_release = MetaCPAN::ES->new( index => "release" );
+    my $es_author = MetaCPAN::ES->new( index => "author" );
 
     my $query = +{
         query => {
@@ -91,7 +84,7 @@ sub get_contributors ( $author_name, $release_name ) {
         }
     };
 
-    my $res = $es->search(
+    my $res = $es_release->search(
         body => {
             query   => $query,
             size    => 999,
@@ -115,17 +108,12 @@ sub get_contributors ( $author_name, $release_name ) {
     }
     $authors = [ grep { $_ ne 'unknown' } @$authors ];
 
+    # TODO: check if check is still needed -
     # this check is against a failure in tests (because fake author)
     return
-        unless $es->exists(
-        type => 'author',
-        id   => $author_name,
-        );
+        unless $es_author->exists( id => $author_name );
 
-    my $author = $es->get(
-        type => 'author',
-        id   => $author_name,
-    );
+    my $author = $es_author->get( id => $author_name );
 
     my $author_email        = $author->{_source}{email};
     my $author_gravatar_url = $author->{_source}{gravatar_url};
@@ -194,8 +182,7 @@ sub get_contributors ( $author_name, $release_name ) {
     }
 
     if (%want_email) {
-        my $check_author = $es->search(
-            type => 'author',
+        my $check_author = $es_author->search(
             body => {
                 query   => { term => { email => [ sort keys %want_email ] } },
                 _source => [ 'email', 'pauseid' ],
@@ -224,8 +211,7 @@ sub get_contributors ( $author_name, $release_name ) {
         }
     };
 
-    my $contrib_authors = $es->search(
-        type => 'author',
+    my $contrib_authors = $es_author->search(
         body => {
             query   => $contrib_query,
             size    => 999,
