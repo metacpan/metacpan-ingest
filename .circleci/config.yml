@@ -38,7 +38,8 @@ jobs:
           command: |
             pushd metacpan-docker
             ./bin/metacpan-docker init
-            docker-compose --verbose up -d ingest_test
+            #docker-compose --verbose up -d ingest_test
+            docker-compose --profile ingest-test up --build
           name: compose up
       - run:
           command: |
