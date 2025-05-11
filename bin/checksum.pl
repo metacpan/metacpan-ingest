@@ -11,7 +11,7 @@ use MetaCPAN::Ingest qw< cpan_dir >;
 
 # args
 my $limit = 1000;
-my ( $dry_run );
+my ($dry_run);
 GetOptions(
     "dry_run" => \$dry_run,
     "limit=i" => \$limit,

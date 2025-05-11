@@ -23,8 +23,8 @@ die "wrong external source: $external\n"
     and grep { $_ eq $external_source } qw< cygwin debian >;
 
 # setup
-my $es = MetaCPAN::ES->new( index => "distribution" );
-my $bulk = $es->bulk();
+my $es     = MetaCPAN::ES->new( index => "distribution" );
+my $bulk   = $es->bulk();
 my $scroll = $es->scroll(
     scroll => '10m',
     body   => {
@@ -33,8 +33,6 @@ my $scroll = $es->scroll(
         }
     },
 );
-
-
 
 my $ret;
 

@@ -152,15 +152,14 @@ sub run_purge () {
 }
 
 sub run_backup {
-    my $filename = join( '-',
-        DateTime->now->strftime('%F'),
-        grep {defined} $index );
+    my $filename
+        = join( '-', DateTime->now->strftime('%F'), grep {defined} $index );
 
     my $file = $home->child( qw< var backup >, "$filename.json.gz" );
     $file->parent->mkpath unless ( -e $file->parent );
     my $fh = IO::Zlib->new( "$file", 'wb4' );
 
-    my $es = MetaCPAN::ES->new( index => $index );
+    my $es     = MetaCPAN::ES->new( index => $index );
     my $scroll = $es->scroll(
         scroll => '1m',
         body   => {

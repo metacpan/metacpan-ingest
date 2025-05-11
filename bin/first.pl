@@ -8,10 +8,8 @@ use MetaCPAN::Logger qw< :log :dlog >;
 use MetaCPAN::ES;
 
 # args
-my ( $distribution );
-GetOptions(
-    "distribution=s" => \$distribution,
-);
+my ($distribution);
+GetOptions( "distribution=s" => \$distribution, );
 
 # setup
 my $es = MetaCPAN::ES->new( index => "distribution" );
@@ -40,7 +38,7 @@ while ( my $distribution = $scroll->next ) {
     $release
         ? log_debug {
         "@{[ $release->name ]} by @{[ $release->author ]} was first"
-        }
+    }
         : log_warn {
         "no release found for distribution @{[$distribution->name]}"
         };

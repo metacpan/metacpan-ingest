@@ -302,7 +302,7 @@ sub _reindex ( $bulk, $source, $status ) {
 
     log_info {
         $status eq 'latest' ? 'Upgrading ' : 'Downgrading ',
-        'release ', $release->{name}
+            'release ', $release->{name}
     };
 
     # Get all the files for the release.

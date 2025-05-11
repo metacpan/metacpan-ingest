@@ -10,7 +10,7 @@ use MetaCPAN::ES;
 
 # args
 my $days = 1;
-my ( $all );
+my ($all);
 GetOptions(
     "all"    => \$all,
     "days=i" => \$days,

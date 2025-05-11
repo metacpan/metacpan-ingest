@@ -61,7 +61,7 @@ GetOptions(
 my $es = MetaCPAN::ES->new( index => "author" );
 
 log_info {'Reading 00whois'};
-my $authors_data = read_00whois( $whois_file );
+my $authors_data = read_00whois($whois_file);
 
 if ($pauseid) {
     log_info {"Indexing 1 author"};

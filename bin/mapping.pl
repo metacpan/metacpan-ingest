@@ -22,5 +22,5 @@ $mapper->index_delete($index)
 
 if ( $cmd eq 'create' ) {
     $mapper->index_create($index);
-    $mapper->index_add_mapping($index, $type);
+    $mapper->index_add_mapping( $index, $type );
 }

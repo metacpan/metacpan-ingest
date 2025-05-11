@@ -31,7 +31,7 @@ sub get_cpan_author_contributors ( $author, $release, $distribution ) {
         next unless exists $d->{pauseid};
 
         # skip existing records
-        my $id = digest( $d->{pauseid}, $release );
+        my $id     = digest( $d->{pauseid}, $release );
         my $exists = $es_contributor->exists( id => $id );
         next if $exists;
 
@@ -49,7 +49,7 @@ sub update_release_contirbutors ( $document, $timeout = "5m" ) {
         @{$document}{qw< author name distribution >} );
     return unless $data and is_arrayref($data);
 
-    my $es_contributor = MetaCPAN::ES->new( index => 'contributor' );
+    my $es_contributor   = MetaCPAN::ES->new( index => 'contributor' );
     my $bulk_contributor = $es_contributor->bulk( timeout => $timeout );
 
     for my $d ( @{$data} ) {
@@ -71,7 +71,7 @@ sub update_release_contirbutors ( $document, $timeout = "5m" ) {
 
 sub get_contributors ( $author_name, $release_name ) {
     my $es_release = MetaCPAN::ES->new( index => "release" );
-    my $es_author = MetaCPAN::ES->new( index => "author" );
+    my $es_author  = MetaCPAN::ES->new( index => "author" );
 
     my $query = +{
         query => {

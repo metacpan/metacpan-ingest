@@ -88,7 +88,7 @@ my @always_no_index_dirs = (
 
 # args
 my ( $age, $bulk_size, $detect_backpan, $force_authorized, $latest,
-     $queue, $skip, $status );
+    $queue, $skip, $status );
 GetOptions(
     "age=i"            => \$age,
     "bulk_size=i"      => \$bulk_size,
@@ -121,7 +121,7 @@ for (@ARGV) {
         $find = $find->mtime( ">" . ( time - $age * 3600 ) )
             if $age;
         push( @files,
-            map { $_->{file} }
+            map      { $_->{file} }
                 sort { $a->{mtime} <=> $b->{mtime} }
                 map  { +{ file => $_, mtime => File::stat::stat($_)->mtime } }
                 $find->in($_) );

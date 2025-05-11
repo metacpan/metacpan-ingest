@@ -24,7 +24,7 @@ my $bulk = $es->bulk();
 my %seen;
 log_debug {"building permission data to add"};
 
-my $iterator = read_06perms_iter( $perms_file );
+my $iterator = read_06perms_iter($perms_file);
 while ( my $perms = $iterator->next_module ) {
 
     # This method does a "return sort @foo", so it can't be called in the

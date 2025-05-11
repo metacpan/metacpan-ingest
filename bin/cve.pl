@@ -44,8 +44,8 @@ $cve_url     //= 'https://hackeriet.github.io/cpansa-feed/cpansa.json';
 $cve_dev_url //= 'https://hackeriet.github.io/cpansa-feed/cpansa_dev.json';
 
 my $es_release = MetaCPAN::ES->new( index => "release" );
-my $es_cve   = MetaCPAN::ES->new( index => "cve" );
-my $bulk_cve = $es_cve->bulk();
+my $es_cve     = MetaCPAN::ES->new( index => "cve" );
+my $bulk_cve   = $es_cve->bulk();
 
 my $data = retrieve_cve_data();
 
@@ -143,7 +143,7 @@ for my $dist ( sort keys %{$data} ) {
             };
 
             my $releases = $es_release->search(
-                body  => {
+                body => {
                     query   => $query,
                     _source => [qw< version name author >],
                     size    => 2000,

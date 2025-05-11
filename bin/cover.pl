@@ -25,7 +25,7 @@ my %valid_keys
     = map { $_ => 1 } qw< branch condition statement subroutine total >;
 
 my $es_release = MetaCPAN::ES->new( index => "release" );
-my $es_cover = MetaCPAN::ES->new( index => "cover" );
+my $es_cover   = MetaCPAN::ES->new( index => "cover" );
 my $bulk_cover = $es_cover->bulk();
 
 my $data = retrieve_cover_data();
@@ -36,8 +36,8 @@ for my $dist ( sort keys %{$data} ) {
     for my $version ( keys %{ $data->{$dist} } ) {
         my $release   = $dist . '-' . $version;
         my $rel_check = $es_release->search(
-            size  => 0,
-            body  => {
+            size => 0,
+            body => {
                 query => { term => { name => $release } },
             },
         );

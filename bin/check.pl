@@ -9,7 +9,7 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw< read_02packages_fh >;
 
 # args
-my (  $errors_only, $max_errors, $module );
+my ( $errors_only, $max_errors, $module );
 GetOptions(
     "errors_only" => \$errors_only,
     "max_errors"  => \$max_errors,
