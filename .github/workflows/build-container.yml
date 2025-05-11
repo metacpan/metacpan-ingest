@@ -38,7 +38,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Run Perl tests
-        run: docker run -i ${{ steps.docker-build-test.outputs.imageid }}
+        run: docker build . -t metacpan/metacpan-ingest && docker compose run ingest env PLACK_ENV=dev prove -lv t
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
