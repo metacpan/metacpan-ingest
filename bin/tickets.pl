@@ -30,7 +30,7 @@ my $gh_token = $config->{github_token};    ### TODO: add to config
 my $gh_graphql = Net::GitHub::V4->new(
     ( $gh_token ? ( access_token => $gh_token ) : () ) );
 
-my $es   = MetaCPAN::ES->new( index => "cpan", type => "distribution" );
+my $es   = MetaCPAN::ES->new( index => "distribution" );
 my $bulk = $es->bulk();
 
 check_all_distributions();
@@ -43,7 +43,7 @@ index_github_bugs();
 
 # make sure all distributions have an entry
 sub check_all_distributions () {
-    my $es_release     = MetaCPAN::ES->new( type => "release" );
+    my $es_release     = MetaCPAN::ES->new( index => "release" );
     my $scroll_release = $es_release->scroll(
         body => {
             query => {
@@ -105,7 +105,7 @@ sub _parse_tsv ($tsv) {
             source => _rt_dist_url( $row->{dist} ),
             active => $row->{active} + 0,
             closed => $row->{inactive} + 0,
-            map { $_ => $row->{$_} + 0 }
+            map      { $_ => $row->{$_} + 0 }
                 grep { not /^(dist|active|inactive)$/ }
                 keys %$row,
         };
@@ -123,7 +123,7 @@ sub _rt_dist_url ($d) {
 sub index_github_bugs () {
     log_debug {'Fetching GitHub issues'};
 
-    my $es_release     = MetaCPAN::ES->new( type => "release" );
+    my $es_release     = MetaCPAN::ES->new( index => "release" );
     my $scroll_release = $es_release->scroll(
         body => {
             query => {

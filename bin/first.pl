@@ -12,7 +12,7 @@ my ($distribution);
 GetOptions( "distribution=s" => \$distribution, );
 
 # setup
-my $es = MetaCPAN::ES->new( type => "distribution" );
+my $es = MetaCPAN::ES->new( index => "distribution" );
 
 my $query
     = $distribution
@@ -38,7 +38,7 @@ while ( my $distribution = $scroll->next ) {
     $release
         ? log_debug {
         "@{[ $release->name ]} by @{[ $release->author ]} was first"
-        }
+    }
         : log_warn {
         "no release found for distribution @{[$distribution->name]}"
         };

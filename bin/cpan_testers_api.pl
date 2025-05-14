@@ -3,7 +3,6 @@ use warnings;
 use v5.36;
 
 use Cpanel::JSON::XS qw< decode_json >;
-use Getopt::Long;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
@@ -12,10 +11,6 @@ use MetaCPAN::Ingest qw<
     home
     ua
 >;
-
-# args
-my ();
-GetOptions();
 
 # setup
 my $home = home();
@@ -27,7 +22,7 @@ my $url
 
 my $ua = ua();
 
-my $es   = MetaCPAN::ES->new( type => "release" );
+my $es   = MetaCPAN::ES->new( index => "release" );
 my $bulk = $es->bulk();
 
 log_info { 'Fetching ' . $url };

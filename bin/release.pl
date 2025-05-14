@@ -87,8 +87,8 @@ my @always_no_index_dirs = (
 );
 
 # args
-my ( $age, $bulk_size, $detect_backpan, $force_authorized, $latest, $queue,
-    $skip, $status );
+my ( $age, $bulk_size, $detect_backpan, $force_authorized, $latest,
+    $queue, $skip, $status );
 GetOptions(
     "age=i"            => \$age,
     "bulk_size=i"      => \$bulk_size,
@@ -103,7 +103,7 @@ $status //= 'cpan';
 
 # setup
 my $ua = ua();
-my $es = MetaCPAN::ES->new( type => "release" );
+my $es = MetaCPAN::ES->new( index => "release" );
 
 my $minion;
 $minion = minion() if $queue;
@@ -121,7 +121,7 @@ for (@ARGV) {
         $find = $find->mtime( ">" . ( time - $age * 3600 ) )
             if $age;
         push( @files,
-            map { $_->{file} }
+            map      { $_->{file} }
                 sort { $a->{mtime} <=> $b->{mtime} }
                 map  { +{ file => $_, mtime => File::stat::stat($_)->mtime } }
                 $find->in($_) );
@@ -237,7 +237,7 @@ sub _index_release ($document) {
 }
 
 sub _index_files ($files) {
-    my $es   = MetaCPAN::ES->new( type => "file" );
+    my $es   = MetaCPAN::ES->new( index => "file" );
     my $bulk = $es->bulk( size => $bulk_size );
 
     log_debug { 'Indexing ', scalar(@$files), ' files' };
@@ -252,6 +252,7 @@ sub _index_files ($files) {
     }
 
     $bulk->flush;
+    $es->index_refresh unless $queue;
 }
 
 sub _detect_status ( $author, $archive ) {
