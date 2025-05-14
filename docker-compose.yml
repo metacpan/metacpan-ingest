@@ -1,0 +1,44 @@
+---
+services:
+  ingest:
+    build:
+      context: .
+      target: test
+    image: metacpan/metacpan-ingest:test
+    volumes:
+      # Mount everything except /app/local
+      - ./bin:/app/bin
+      - ./lib:/app/lib
+      - ./conf:/app/conf
+      - ./t:/app/t
+      - ./test_data:/app/test_data
+    environment:
+      - PERL5LIB=/app/local/lib/perl5:/app/lib
+      - PATH=/app/local/bin:$PATH
+    command: ["prove", "-lv", "t/"]
+    user: metacpan
+    depends_on:
+      elasticsearch_test:
+        condition: service_healthy
+    profiles:
+      - test
+      - ingest-test
+  elasticsearch_test:
+    profiles:
+      - test
+      - ingest-test
+    image: elasticsearch:2.4
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - type: volume
+        source: elasticsearch_test
+        target: /usr/share/elasticsearch/data
+    healthcheck:
+      timeout: 5s
+      start_period: 60s
+      test: ["CMD", "curl", "--fail", "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
+    ports:
+      - "9200"
+    networks:
+      - elasticsearch
