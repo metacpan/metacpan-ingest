@@ -23,6 +23,8 @@ services:
     profiles:
       - test
       - ingest-test
+    networks:
+      - elasticsearch
   elasticsearch_test:
     profiles:
       - test
@@ -42,3 +44,10 @@ services:
       - "9200"
     networks:
       - elasticsearch
+
+volumes:
+  elasticsearch_test:
+
+networks:
+  elasticsearch:
+    driver: bridge
