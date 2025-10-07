@@ -248,13 +248,13 @@ sub read_url ( $url ) {
     return $resp->decoded_content;
 }
 
-sub cpan_file_map () {
-    my $cpan = cpan_dir();
-
-    my $ls   = $cpan->child(qw< indices find-ls.gz >);
-    if ( !-e $ls ) {
-        warn "File $ls does not exist";
-        return {};
+sub cpan_file_map ( $ls = undef ) {
+    if (!$ls) {
+        my $cpan = cpan_dir();
+        $ls = $cpan->child(qw< indices find-ls.gz >);
+        if ( !-e $ls ) {
+            die "File $ls does not exist";
+        }
     }
 
     log_info {"Reading $ls"};

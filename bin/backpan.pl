@@ -9,15 +9,16 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw< cpan_file_map >;
 
 # args
-my ( $distribution, $files_only, $undo );
+my ( $distribution, $files_only, $findls_file, $undo );
 GetOptions(
     "distribution=s" => \$distribution,
     "files_only"     => \$files_only,
+    "findls_file=s"  => \$findls_file,
     "undo"           => \$undo,
 );
 
 # setup
-my $cpan_file_map = cpan_file_map();
+my $cpan_file_map = cpan_file_map( $findls_file );
 my $es_release    = MetaCPAN::ES->new( index => "release" );
 my $es_file       = MetaCPAN::ES->new( index => "file" );
 

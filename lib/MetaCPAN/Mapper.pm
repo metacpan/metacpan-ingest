@@ -35,6 +35,14 @@ sub new ( $class, %args ) {
     }, $class;
 }
 
+sub test ( $self ) {
+    return !!(
+        ref($self) eq __PACKAGE__
+        and ref($self->{es})
+        and ref($self->{es}) =~ /^Search::Elasticsearch/
+    );
+}
+
 sub index_exists ( $self, $index ) {
     $self->{es}->indices->exists( index => $index );
 }

@@ -8,8 +8,11 @@ use MetaCPAN::ES;
 use MetaCPAN::Mapper;
 use MetaCPAN::Ingest qw< home >;
 
-my $es     = MetaCPAN::ES->new();
+my $es = MetaCPAN::ES->new();
+ok( $es->test, 'es is valid' );
+
 my $mapper = MetaCPAN::Mapper->new();
+ok( $mapper->test, 'mapper is valid' );
 
 my $home       = home();
 my $d_bin      = $home->child('bin');
@@ -17,20 +20,16 @@ my $d_test     = $home->child('test_data');
 my $d_fakecpan = $d_test->child('fakecpan');
 my $d_authors  = $d_fakecpan->child('authors');
 my $d_modules  = $d_fakecpan->child('modules');
+my $d_indices  = $d_fakecpan->child('indices');
 
 # === Files
-
-my @files = qw<
-    00whois.xml
-    02packages.details.txt.gz
-    06perms.txt
->;
 
 subtest 'Check Files' => sub {
     ok( $d_authors->child('00whois.xml'), "Found 00whois.xml" );
     ok( $d_modules->child('02packages.details.txt.gz'),
         "Found 02packages.details.txt.gz" );
     ok( $d_modules->child('06perms.txt'), "Found 06perms.txt" );
+    ok( $d_indices->child('find-ls.gz'), "Found find-ls.gz" );
 };
 
 my @packages = qw<
@@ -73,9 +72,10 @@ subtest 'Check Index' => sub {
 subtest 'Author Indexing' => sub {
     my $author_script = $d_bin->child('author.pl');
     my $whois_file    = $d_authors->child('00whois.xml');
+    my $findls_file   = $d_indices->child('find-ls.gz');
 
     # run the author indexing script
-    `perl $author_script -whois_file $whois_file`;
+    `perl $author_script -whois_file $whois_file -findls_file $findls_file`;
 
     my $es_author = MetaCPAN::ES->new( index => 'author' );
     ok( $es_author->exists( index => 'author', id => 'OALDERS' ),
