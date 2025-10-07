@@ -250,9 +250,11 @@ sub read_url ( $url ) {
 
 sub cpan_file_map () {
     my $cpan = cpan_dir();
+
     my $ls   = $cpan->child(qw< indices find-ls.gz >);
     if ( !-e $ls ) {
-        die "File $ls does not exist";
+        warn "File $ls does not exist";
+        return {};
     }
 
     log_info {"Reading $ls"};
