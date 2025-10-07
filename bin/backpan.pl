@@ -18,7 +18,7 @@ GetOptions(
 );
 
 # setup
-my $cpan_file_map = cpan_file_map( $findls_file );
+my $cpan_file_map = cpan_file_map($findls_file);
 my $es_release    = MetaCPAN::ES->new( index => "release" );
 my $es_file       = MetaCPAN::ES->new( index => "file" );
 

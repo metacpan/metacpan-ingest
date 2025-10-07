@@ -199,7 +199,7 @@ sub _author_config ($id) {
     return undef
         unless $dir->is_dir;
 
-    my $cpan_file_map     = cpan_file_map( $findls_file );
+    my $cpan_file_map     = cpan_file_map($findls_file);
     my $author_cpan_files = $cpan_file_map->{$id}
         or return undef;
 

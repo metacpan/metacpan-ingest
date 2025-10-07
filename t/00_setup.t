@@ -29,7 +29,7 @@ subtest 'Check Files' => sub {
     ok( $d_modules->child('02packages.details.txt.gz'),
         "Found 02packages.details.txt.gz" );
     ok( $d_modules->child('06perms.txt'), "Found 06perms.txt" );
-    ok( $d_indices->child('find-ls.gz'), "Found find-ls.gz" );
+    ok( $d_indices->child('find-ls.gz'),  "Found find-ls.gz" );
 };
 
 my @packages = qw<
