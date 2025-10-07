@@ -27,6 +27,7 @@ requires 'PerlIO::gzip';
 requires 'Ref::Util';
 requires 'Regexp::Common';
 requires 'Regexp::Common::time';
+requires 'Regexp::IPv6';
 requires 'PerlIO::gzip';
 requires 'Search::Elasticsearch';
 requires 'Search::Elasticsearch::Client::2_0';
