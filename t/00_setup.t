@@ -8,6 +8,8 @@ use MetaCPAN::ES;
 use MetaCPAN::Mapper;
 use MetaCPAN::Ingest qw< home >;
 
+$ENV{INGEST_TEST} = 1;
+
 my $es = MetaCPAN::ES->new();
 ok( $es->test, 'es is valid' );
 

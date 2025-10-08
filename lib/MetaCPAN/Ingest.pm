@@ -107,7 +107,7 @@ sub author_dir ($pauseid) {
 
 sub cpan_dir () {
     my $config = config();
-    my $cpan   = $config->{cpan};
+    my $cpan   = $ENV{INGEST_TEST} ? $config->{cpan_test} : $config->{cpan};
 
     return path($cpan) if -d $cpan;
     die
