@@ -116,23 +116,22 @@ subtest 'Release Indexing' => sub {
     # run the release indexing script for a tarball
     `perl $release_script $release_file`;
 
-    my $es_file           = MetaCPAN::ES->new( index => 'file' );
-    my $file_search_total = $es_file->search(
+    my $es_file    = MetaCPAN::ES->new( index => 'file' );
+    my $file_count = $es_file->count(
         body => {
             query => { match => { release => 'HTML-Parser-3.83' } },
         }
-    )->{hits}{total};
-    ok( $file_search_total > 0, "Found files for HTML-Parser-3.83" );
+    )->{count};
+    ok( $file_count > 0, "Found ($file_count) files for HTML-Parser-3.83" );
 
-    my $es_release           = MetaCPAN::ES->new( index => 'release' );
-    my $release_search_total = $es_release->search(
+    my $es_release    = MetaCPAN::ES->new( index => 'release' );
+    my $release_count = $es_release->count(
         body => {
             query => { match => { name => 'HTML-Parser-3.83' } },
         }
-    )->{hits}{total};
+    )->{count};
 
-    ok( $release_search_total == 1,
-        "Found release entries for HTML-Parser-3.83" );
+    ok( $release_count == 1, "Found ($release_count) release entries for HTML-Parser-3.83" );
 };
 
 subtest 'Cover Indexing' => sub {
@@ -147,8 +146,22 @@ subtest 'Cover Indexing' => sub {
         "Found cover data for HTML-Parser-3.83" );
 };
 
+subtest 'Contributor Indexing' => sub {
+    my $contributor_script = $d_bin->child('contributor.pl');
+
+    # run the contributor indexing script
+    `perl $contributor_script -release OALDERS/HTML-Parser-3.83`;
+
+    my $es_contributor = MetaCPAN::ES->new( index => 'contributor' );
+    my $contributor_count = $es_contributor->count(
+        body => {
+            query => { match => { release_name => 'HTML-Parser-3.83' } },
+        }
+    )->{count};
+    ok( $contributor_count > 0, "Found ($contributor_count) contributors for HTML-Parser-3.83" );
+};
+
 # TODO:
-# contributor
 # cve
 # favorite
 

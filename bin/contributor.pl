@@ -29,6 +29,8 @@ my $es_contributor = MetaCPAN::ES->new( index => "contributor" );
 
 run();
 
+$es_contributor->index_refresh;
+
 log_info {"done"};
 
 ###
@@ -185,7 +187,7 @@ sub get_contributors ($release) {
     $authors = [ grep { $_ ne 'unknown' } @$authors ];
 
     my $author_email = $author_mapping->{$author_name}
-        //= eval { $es_author->get_source( id => $author_name )->{email}; }
+        //= eval { $es_author->get_source( $author_name )->{email}; }
         or return [];
 
     my $author_info = {

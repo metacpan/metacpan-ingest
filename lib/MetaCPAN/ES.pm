@@ -141,7 +141,11 @@ sub get_ids ( $self, %args ) {
 }
 
 sub get_source ( $self, $id ) {
-    return $self->{es}->get_source($id);
+    return $self->{es}->get_source(
+        index => $self->{index},
+        type  => $self->{type},
+        id    => $id,
+    );
 }
 
 sub delete_ids ( $self, $ids ) {

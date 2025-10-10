@@ -289,7 +289,6 @@ sub set_suggest ($self) {
 
     $self->{suggest} = +{
         input   => [$doc],
-        payload => { doc_name => $doc },
         weight  => $weight,
     };
 }
