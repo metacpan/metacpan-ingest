@@ -288,8 +288,8 @@ sub set_suggest ($self) {
     $weight = 0 if $weight < 0;
 
     $self->{suggest} = +{
-        input   => [$doc],
-        weight  => $weight,
+        input  => [$doc],
+        weight => $weight,
     };
 }
 

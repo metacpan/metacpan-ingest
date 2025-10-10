@@ -131,7 +131,8 @@ subtest 'Release Indexing' => sub {
         }
     )->{count};
 
-    ok( $release_count == 1, "Found ($release_count) release entries for HTML-Parser-3.83" );
+    ok( $release_count == 1,
+        "Found ($release_count) release entries for HTML-Parser-3.83" );
 };
 
 subtest 'Cover Indexing' => sub {
@@ -152,13 +153,14 @@ subtest 'Contributor Indexing' => sub {
     # run the contributor indexing script
     `perl $contributor_script -release OALDERS/HTML-Parser-3.83`;
 
-    my $es_contributor = MetaCPAN::ES->new( index => 'contributor' );
+    my $es_contributor    = MetaCPAN::ES->new( index => 'contributor' );
     my $contributor_count = $es_contributor->count(
         body => {
             query => { match => { release_name => 'HTML-Parser-3.83' } },
         }
     )->{count};
-    ok( $contributor_count > 0, "Found ($contributor_count) contributors for HTML-Parser-3.83" );
+    ok( $contributor_count > 0,
+        "Found ($contributor_count) contributors for HTML-Parser-3.83" );
 };
 
 # TODO:
