@@ -44,7 +44,6 @@ while true; do
     if [[ $COUNTER -gt $MAX_LOOPS ]]; then
         echo "Giving up after $COUNTER attempts"
         exit 1
-        break
     fi
     sleep 1
 done
