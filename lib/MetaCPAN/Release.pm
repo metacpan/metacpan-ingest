@@ -295,10 +295,10 @@ sub document_release ( $self, %args ) {
         stat     => $stat,
         status   => $self->{status},
 
-        # Call in scalar context to make sure we only get one value (building a hash).
-        resources => scalar $meta->resources,
-        version => scalar $meta->version,
-        version_numified => numify_version(scalar $meta->version),
+# Call in scalar context to make sure we only get one value (building a hash).
+        resources        => scalar $meta->resources,
+        version          => scalar $meta->version,
+        version_numified => numify_version( scalar $meta->version ),
     };
 
     return $document;

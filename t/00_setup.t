@@ -155,7 +155,7 @@ subtest 'River Indexing' => sub {
     `perl $river_script -json $river_file`;
 
     my $es_distribution = MetaCPAN::ES->new( index => 'distribution' );
-    my $dist = $es_distribution->get( id => 'HTML-Parser' );
+    my $dist            = $es_distribution->get( id => 'HTML-Parser' );
     ok( exists $dist->{_source}{river}, "Found River entry" );
 };
 
@@ -188,8 +188,7 @@ subtest 'CVE Indexing' => sub {
             query => { match => { distribution => 'HTML-Parser' } },
         }
     )->{count};
-    ok( $cve_count > 0,
-        "Found ($cve_count) test CVEs" );
+    ok( $cve_count > 0, "Found ($cve_count) test CVEs" );
 };
 
 # TODO:
