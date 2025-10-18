@@ -32,7 +32,7 @@ jobs:
       - run:
           command: |
             pushd metacpan-docker
-            docker-compose build --build-arg CPM_ARGS='--with-test' insgest_test
+            docker-compose build --build-arg CPM_ARGS='--with-test' ingest_test
           name: compose build
       - run:
           command: |
