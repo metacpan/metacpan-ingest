@@ -189,10 +189,10 @@ sub index_favorites () {
             my $files = $es->scroll(
                 scroll => '15s',
                 body   => {
-                    query => { term => { distribution => $dist } } _source =>
-                        false,
-                    size => 500,
-                    sort => '_doc',
+                    query   => { term => { distribution => $dist } },
+                    _source => false,
+                    size    => 500,
+                    sort    => '_doc',
                 },
             );
 
@@ -203,7 +203,7 @@ sub index_favorites () {
                 log_debug {"Updating file id $id with fav_count $cnt"};
 
                 $bulk->update( {
-                    id  => $file->{_id};
+                    id  => $file->{_id},
                     doc => { dist_fav_count => $cnt },
                 } );
             }
