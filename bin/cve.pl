@@ -40,8 +40,8 @@ GetOptions(
 );
 
 # setup
-$cve_url     //= 'https://hackeriet.github.io/cpansa-feed/cpansa.json';
-$cve_dev_url //= 'https://hackeriet.github.io/cpansa-feed/cpansa_dev.json';
+$cve_url     //= 'https://cpan-security.github.io/cpansa-feed/cpansa.json';
+$cve_dev_url //= 'https://cpan-security.github.io/cpansa-feed/cpansa_dev.json';
 
 my $es_release = MetaCPAN::ES->new( index => "release" );
 my $es_cve     = MetaCPAN::ES->new( index => "cve" );
