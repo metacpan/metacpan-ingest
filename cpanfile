@@ -11,6 +11,7 @@ requires 'Data::Printer';
 requires 'DBI';
 requires 'Digest::SHA';
 requires 'Email::Valid';
+requires 'Email::Sender::Simple';
 requires 'Encode';
 requires 'File::Find::Rule';
 requires 'Getopt::Long';

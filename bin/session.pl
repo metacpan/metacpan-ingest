@@ -24,6 +24,7 @@ while ( my $search = $scroll->next ) {
 }
 
 $bulk->flush;
+$es->index_refresh;
 
 log_info {'done'};
 

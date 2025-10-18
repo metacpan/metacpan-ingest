@@ -193,6 +193,11 @@ for my $dist ( sort keys %{$data} ) {
 }
 
 $bulk_cve->flush;
+$es_cve->index_refresh;
+
+log_info {"done."};
+
+###
 
 sub retrieve_cve_data {
     return decode_json( path($json_file)->slurp ) if $json_file;

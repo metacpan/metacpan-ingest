@@ -73,6 +73,7 @@ sub purge_ids (%args) {
     $bulk->delete_ids(@$ids);
 
     $bulk->flush;
+    $es->index_refresh;
 }
 
 1;

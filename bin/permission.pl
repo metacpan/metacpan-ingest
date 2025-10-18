@@ -54,6 +54,7 @@ while ( my $perms = $iterator->next_module ) {
 }
 
 $bulk->flush;
+$es->index_refresh;
 
 run_cleanup( \%seen ) if $cleanup;
 

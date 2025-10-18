@@ -18,7 +18,7 @@ GetOptions(
     "external_source=s" => \$external_source,
 );
 
-die "wrong external source: $external\n"
+die "wrong external source: $external_source\n"
     unless $external_source
     and grep { $_ eq $external_source } qw< cygwin debian >;
 
@@ -100,6 +100,9 @@ for my $d (@to_remove) {
 }
 
 $bulk->flush;
+$es->index_refresh;
+
+log_info {"done"};
 
 1;
 

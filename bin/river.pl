@@ -39,6 +39,9 @@ for my $data ( @{$river_data} ) {
 }
 
 $bulk->flush;
+$es->index_refresh;
+
+log_info {'done'};
 
 1;
 

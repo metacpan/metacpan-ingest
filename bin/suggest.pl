@@ -97,6 +97,7 @@ sub _update_slice ($range) {
     }
 
     $bulk->flush;
+    $es->index_refresh;
 }
 
 __END__

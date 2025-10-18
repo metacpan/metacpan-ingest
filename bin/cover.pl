@@ -69,6 +69,7 @@ for my $dist ( sort keys %{$data} ) {
 }
 
 $bulk_cover->flush;
+$es_cover->index_refresh;
 
 ###
 

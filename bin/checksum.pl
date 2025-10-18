@@ -80,6 +80,7 @@ while ( my $p = $scroll->next ) {
 }
 
 $bulk->flush unless $dry_run;
+$es->index_refresh;
 
 log_info {'Finished adding checksums'};
 

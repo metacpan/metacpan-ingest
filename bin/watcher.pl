@@ -49,6 +49,9 @@ while (1) {
     sleep(15);
 }
 
+$es_release->index_refresh;
+$es_file->index_refresh;
+
 1;
 
 ###

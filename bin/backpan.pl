@@ -30,6 +30,8 @@ update_releases() unless $files_only;
 update_files();
 
 $_->flush for values %bulk;
+$es_release->index_refresh;
+$es_file->index_refresh;
 
 log_info {"done"};
 
