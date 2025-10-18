@@ -175,15 +175,25 @@ subtest 'Contributor Indexing' => sub {
         "Found ($contributor_count) contributors for HTML-Parser-3.83" );
 };
 
-# TODO:
-# cve
-# favorite
+subtest 'CVE Indexing' => sub {
+    my $cve_script = $d_bin->child('cve.pl');
+    my $json       = $d_test->child('cve_dev.json');
 
-# check test data directory
-#       - check all distros for test are there
-#       - check all other data sources are there to test all indices
-# set ES object with (elasticsearch_test)
-#       - check object's config
+    # run the CVE indexing script
+    `perl $cve_script -json $json`;
+
+    my $es_cve    = MetaCPAN::ES->new( index => 'cve' );
+    my $cve_count = $es_cve->count(
+        body => {
+            query => { match => { distribution => 'HTML-Parser' } },
+        }
+    )->{count};
+    ok( $cve_count > 0,
+        "Found ($cve_count) test CVEs" );
+};
+
+# TODO:
+# favorite
 
 # $server->set_latest;
 # $server->set_first;

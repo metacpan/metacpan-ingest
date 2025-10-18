@@ -9,7 +9,7 @@
             "cves": null,
             "severity": null,
             "affected_versions": [
-                ">=1.25,<2.3.9"
+                ">=1.25,<4"
             ],
             "cpansa_id": "CPANSA-HTML-Parser-2025-0666",
             "reported": "2025-10-10"

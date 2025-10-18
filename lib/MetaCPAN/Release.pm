@@ -265,6 +265,8 @@ sub document_module ( $self, %args ) {
         version          => $version,
         version_numified => numify_version($version),
     };
+
+    return $document;
 }
 
 sub document_release ( $self, %args ) {
@@ -293,8 +295,10 @@ sub document_release ( $self, %args ) {
         stat     => $stat,
         status   => $self->{status},
 
-# Call in scalar context to make sure we only get one value (building a hash).
-        ( map { ( $_ => scalar $meta->$_ ) } qw< version resources > ),
+        # Call in scalar context to make sure we only get one value (building a hash).
+        resources => scalar $meta->resources,
+        version => scalar $meta->version,
+        version_numified => numify_version(scalar $meta->version),
     };
 
     return $document;
