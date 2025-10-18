@@ -3,15 +3,23 @@ use warnings;
 use v5.36;
 
 use Cpanel::JSON::XS qw< decode_json >;
+use Getopt::Long;
+use Path::Tiny qw< path >;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw< read_url >;
 
+# args
+my ( $json );
+GetOptions(
+    "json=s" => \$json,
+);
+
 # setup
 my $river_url //= 'https://neilb.org/river-of-cpan.json.gz';
-my $river_data = decode_json( read_url($river_url) );
+my $river_data = decode_json( $json ? path($json)->slurp : read_url($river_url) );
 
 my $es   = MetaCPAN::ES->new( index => "distribution" );
 my $bulk = $es->bulk();
