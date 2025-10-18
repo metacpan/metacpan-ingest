@@ -147,6 +147,18 @@ subtest 'Cover Indexing' => sub {
         "Found cover data for HTML-Parser-3.83" );
 };
 
+subtest 'River Indexing' => sub {
+    my $river_script = $d_bin->child('river.pl');
+    my $river_file   = $d_test->child('river-of-cpan.json');
+
+    # run the river indexing script
+    `perl $river_script -json $river_file`;
+
+    my $es_distribution = MetaCPAN::ES->new( index => 'distribution' );
+    my $dist = $es_distribution->get( id => 'HTML-Parser' );
+    ok( exists $dist->{_source}{river}, "Found River entry" );
+};
+
 subtest 'Contributor Indexing' => sub {
     my $contributor_script = $d_bin->child('contributor.pl');
 
