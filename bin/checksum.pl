@@ -11,14 +11,14 @@ use MetaCPAN::Ingest qw< cpan_dir >;
 
 # args
 my $limit = 1000;
-my $dry_run;
+my ($dry_run);
 GetOptions(
-    "limit=i" => \$limit,
     "dry_run" => \$dry_run,
+    "limit=i" => \$limit,
 );
 
 # setup
-my $es = MetaCPAN::ES->new( type => "release" );
+my $es = MetaCPAN::ES->new( index => "release" );
 my $bulk;
 $bulk = $es->bulk() unless $dry_run;
 
@@ -80,6 +80,7 @@ while ( my $p = $scroll->next ) {
 }
 
 $bulk->flush unless $dry_run;
+$es->index_refresh;
 
 log_info {'Finished adding checksums'};
 

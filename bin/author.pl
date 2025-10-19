@@ -51,18 +51,18 @@ my @compare_fields = do {
 };
 
 # args
-my ( $mode, $pauseid, $whois_file );
+my ( $findls_file, $pauseid, $whois_file );
 GetOptions(
-    "mode=s"       => \$mode,
-    "pauseid=s"    => \$pauseid,
-    "whois_file=s" => \$whois_file,
+    "findls_file=s" => \$findls_file,
+    "pauseid=s"     => \$pauseid,
+    "whois_file=s"  => \$whois_file,
 );
 
 # setup
-my $es = MetaCPAN::ES->new( index => "author", ( $mode ? ( mode => $mode ) : () ) );
+my $es = MetaCPAN::ES->new( index => "author" );
 
 log_info {'Reading 00whois'};
-my $authors_data = read_00whois( $whois_file );
+my $authors_data = read_00whois($whois_file);
 
 if ($pauseid) {
     log_info {"Indexing 1 author"};
@@ -199,7 +199,7 @@ sub _author_config ($id) {
     return undef
         unless $dir->is_dir;
 
-    my $cpan_file_map     = cpan_file_map();
+    my $cpan_file_map     = cpan_file_map($findls_file);
     my $author_cpan_files = $cpan_file_map->{$id}
         or return undef;
 

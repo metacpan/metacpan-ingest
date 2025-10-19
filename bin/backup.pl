@@ -21,19 +21,15 @@ my $batch_size = 100;
 my $size       = 1000;
 my $index      = "cpan";
 
-my ( $dry_run, $mode, $purge, $restore );
+my ( $dry_run, $purge, $restore );
 GetOptions(
     "batch_size=i" => \$batch_size,
     "dry_run"      => \$dry_run,
     "index=s"      => \$index,
-    "mode=s"       => \$mode,
     "purge"        => \$purge,
     "restore=s"    => \$restore,
     "size=i"       => \$size,
 );
-# TODO: find a better way
-my @es_mode = ( $mode ? mode => $mode : () );
-$mode eq 'test' and Log::Log4perl::init('log4perl_test.conf');
 
 # setup
 my $home = home();
@@ -76,7 +72,7 @@ sub run_restore () {
         # create a new bulk helper for each
         my $key = $raw->{_index};
 
-        $es_store{$key} ||= MetaCPAN::ES->new( index => $key, @es_mode );
+        $es_store{$key} ||= MetaCPAN::ES->new( index => $key );
         my $es = $es_store{$key};
 
         $bulk_store{$key} ||= $es->bulk( max_count => $batch_size );
@@ -156,15 +152,14 @@ sub run_purge () {
 }
 
 sub run_backup {
-    my $filename = join( '-',
-        DateTime->now->strftime('%F'),
-        grep {defined} $index );
+    my $filename
+        = join( '-', DateTime->now->strftime('%F'), grep {defined} $index );
 
     my $file = $home->child( qw< var backup >, "$filename.json.gz" );
     $file->parent->mkpath unless ( -e $file->parent );
     my $fh = IO::Zlib->new( "$file", 'wb4' );
 
-    my $es = MetaCPAN::ES->new( index => $index, @es_mode );
+    my $es     = MetaCPAN::ES->new( index => $index );
     my $scroll = $es->scroll(
         scroll => '1m',
         body   => {

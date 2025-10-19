@@ -26,8 +26,8 @@ GetOptions(
 
 # setup
 my $cpan       = cpan_dir();
-my $es_release = MetaCPAN::ES->new( type => "release" );
-my $es_file    = MetaCPAN::ES->new( type => "file" );
+my $es_release = MetaCPAN::ES->new( index => "release" );
+my $es_file    = MetaCPAN::ES->new( index => "file" );
 
 my $latest   = 0;
 my @segments = qw< 1h 6h 1d 1W 1M 1Q 1Y Z >;
@@ -48,6 +48,9 @@ while (1) {
     last if $backpan;
     sleep(15);
 }
+
+$es_release->index_refresh;
+$es_file->index_refresh;
 
 1;
 

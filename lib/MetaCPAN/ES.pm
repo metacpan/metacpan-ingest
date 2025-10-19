@@ -7,20 +7,24 @@ use v5.36;
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
 
-use MetaCPAN::Ingest qw< config handle_error >;
+use MetaCPAN::Ingest qw< config handle_error is_dev >;
 
 sub new ( $class, %args ) {
-    my $mode  = $args{mode} // "local";
     my $node  = $args{node};
-    my $index = $args{index} // "cpan";
+    my $index = $args{index} // 'cpan';
+
+    my $mode = is_dev() ? 'test' : 'local';
+    $mode eq 'test'
+        and Log::Log4perl::init('log4perl_test.conf')
+        ;    # TODO: find a better place
 
     my $config = config;
-    my $config_node =
-        $node ? $node :
-        $mode eq 'local' ? $config->{es_node} :
-        $mode eq 'test'  ? $config->{es_test_node} :
-        $mode eq 'prod'  ? $config->{es_production_node} :
-        undef;
+    my $config_node
+        = $node            ? $node
+        : $mode eq 'local' ? $config->{es_node}
+        : $mode eq 'test'  ? $config->{es_test_node}
+        : $mode eq 'prod'  ? $config->{es_production_node}
+        :                    undef;
     $config_node or die "Cannot create an ES instance without a node\n";
 
     return bless {
@@ -31,6 +35,12 @@ sub new ( $class, %args ) {
         index => $index,
         type  => ( $args{type} ? $args{type} : $index ),
     }, $class;
+}
+
+sub test ($self) {
+    return !!( ref($self) eq __PACKAGE__
+        and ref( $self->{es} )
+        and ref( $self->{es} ) =~ /^Search::Elasticsearch/ );
 }
 
 sub index ( $self, %args ) {
@@ -131,7 +141,11 @@ sub get_ids ( $self, %args ) {
 }
 
 sub get_source ( $self, $id ) {
-    return $self->{es}->get_source($id);
+    return $self->{es}->get_source(
+        index => $self->{index},
+        type  => $self->{type},
+        id    => $id,
+    );
 }
 
 sub delete_ids ( $self, $ids ) {

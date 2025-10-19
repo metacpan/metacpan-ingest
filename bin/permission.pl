@@ -11,17 +11,20 @@ use MetaCPAN::Ingest qw<
 >;
 
 # args
-my $cleanup;
-GetOptions( "cleanup" => \$cleanup );
+my ( $cleanup, $perms_file );
+GetOptions(
+    "cleanup"      => \$cleanup,
+    "perms_file=s" => \$perms_file,
+);
 
 # setup
-my $es   = MetaCPAN::ES->new( type => "permission" );
+my $es   = MetaCPAN::ES->new( index => "permission" );
 my $bulk = $es->bulk();
 
 my %seen;
 log_debug {"building permission data to add"};
 
-my $iterator = read_06perms_iter();
+my $iterator = read_06perms_iter($perms_file);
 while ( my $perms = $iterator->next_module ) {
 
     # This method does a "return sort @foo", so it can't be called in the
@@ -51,6 +54,7 @@ while ( my $perms = $iterator->next_module ) {
 }
 
 $bulk->flush;
+$es->index_refresh;
 
 run_cleanup( \%seen ) if $cleanup;
 

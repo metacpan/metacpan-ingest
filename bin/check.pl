@@ -9,19 +9,18 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw< read_02packages_fh >;
 
 # args
-my ( $module, $max_errors, $errors_only );
-
+my ( $errors_only, $max_errors, $module );
 GetOptions(
-    "module=s"    => \$module,
-    "max_errors"  => \$max_errors,
     "errors_only" => \$errors_only,
+    "max_errors"  => \$max_errors,
+    "module=s"    => \$module,
 );
 
 # setup
 my $error_count = 0;
 my $packages_fh = read_02packages_fh();
-my $es_file     = MetaCPAN::ES->new( type => "file" );
-my $es_release  = MetaCPAN::ES->new( type => "release" );
+my $es_file     = MetaCPAN::ES->new( index => "file" );
+my $es_release  = MetaCPAN::ES->new( index => "release" );
 
 my $modules_start = 0;
 while ( my $line = <$packages_fh> ) {

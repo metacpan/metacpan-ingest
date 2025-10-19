@@ -15,7 +15,7 @@ use MetaCPAN::Ingest qw< read_url >;
 my ( $json_file, $test );
 GetOptions(
     "json=s" => \$json_file,
-    "test"   => \$test
+    "test"   => \$test,
 );
 my $cover_url     //= 'http://cpancover.com/latest/cpancover.json';
 my $cover_dev_url //= 'http://cpancover.com/latest/cpancover_dev.json';
@@ -24,8 +24,9 @@ my $cover_dev_url //= 'http://cpancover.com/latest/cpancover_dev.json';
 my %valid_keys
     = map { $_ => 1 } qw< branch condition statement subroutine total >;
 
-my $es   = MetaCPAN::ES->new( index => "cover", type => "cover" );
-my $bulk = $es->bulk();
+my $es_release = MetaCPAN::ES->new( index => "release" );
+my $es_cover   = MetaCPAN::ES->new( index => "cover" );
+my $bulk_cover = $es_cover->bulk();
 
 my $data = retrieve_cover_data();
 
@@ -34,11 +35,9 @@ log_info {'Updating the cover index'};
 for my $dist ( sort keys %{$data} ) {
     for my $version ( keys %{ $data->{$dist} } ) {
         my $release   = $dist . '-' . $version;
-        my $rel_check = $es->search(
-            index => 'cpan',
-            type  => 'release',
-            size  => 0,
-            body  => {
+        my $rel_check = $es_release->search(
+            size => 0,
+            body => {
                 query => { term => { name => $release } },
             },
         );
@@ -56,7 +55,7 @@ for my $dist ( sort keys %{$data} ) {
             delete $doc_data{$k} unless exists $valid_keys{$k};
         }
 
-        $bulk->update( {
+        $bulk_cover->update( {
             id  => $release,
             doc => {
                 distribution => $dist,
@@ -69,7 +68,8 @@ for my $dist ( sort keys %{$data} ) {
     }
 }
 
-$bulk->flush;
+$bulk_cover->flush;
+$es_cover->index_refresh;
 
 ###
 

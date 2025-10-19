@@ -9,17 +9,18 @@ use MetaCPAN::ES;
 use MetaCPAN::Ingest qw< cpan_file_map >;
 
 # args
-my ( $distribution, $files_only, $undo );
+my ( $distribution, $files_only, $findls_file, $undo );
 GetOptions(
     "distribution=s" => \$distribution,
     "files_only"     => \$files_only,
+    "findls_file=s"  => \$findls_file,
     "undo"           => \$undo,
 );
 
 # setup
-my $cpan_file_map = cpan_file_map();
-my $es_release    = MetaCPAN::ES->new( type => "release" );
-my $es_file       = MetaCPAN::ES->new( type => "file" );
+my $cpan_file_map = cpan_file_map($findls_file);
+my $es_release    = MetaCPAN::ES->new( index => "release" );
+my $es_file       = MetaCPAN::ES->new( index => "file" );
 
 my %bulk;
 my %release_status;
@@ -29,6 +30,8 @@ update_releases() unless $files_only;
 update_files();
 
 $_->flush for values %bulk;
+$es_release->index_refresh;
+$es_file->index_refresh;
 
 log_info {"done"};
 
@@ -55,7 +58,7 @@ sub build_release_status_map () {
             (
                 $undo
                     or exists $cpan_file_map->{$author}{$archive}
-                )
+            )
             ? 'cpan'
             : 'backpan',
             $release->{_id}
@@ -169,6 +172,6 @@ sub update_files_author ( $author, $author_releases ) {
 Sets "backpan" status on all BackPAN releases.
 
 --undo will set distributions' status back as 'cpan'
---file_only will only fix the 'file' type
+--file_only will only fix the 'file' index
 
 =cut

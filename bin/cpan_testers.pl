@@ -36,7 +36,7 @@ my $mirror_file = $home->child( 'var', ( $ENV{HARNESS_ACTIVE} ? 't' : () ),
 
 my $ua = ua();
 
-my $es   = MetaCPAN::ES->new( type => "release" );
+my $es   = MetaCPAN::ES->new( index => "release" );
 my $bulk = $es->bulk();
 
 log_info { 'Mirroring ' . $db };

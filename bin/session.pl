@@ -9,7 +9,7 @@ use MetaCPAN::Logger qw< :log :dlog >;
 use MetaCPAN::ES;
 
 # setup
-my $es     = MetaCPAN::ES->new( index => "user", type => "session" );
+my $es     = MetaCPAN::ES->new( index => "session" );
 my $bulk   = $es->bulk( max_count => 10_000, );
 my $scroll = $es->scroll(
     size   => 10_000,
@@ -24,6 +24,7 @@ while ( my $search = $scroll->next ) {
 }
 
 $bulk->flush;
+$es->index_refresh;
 
 log_info {'done'};
 

@@ -13,11 +13,14 @@ use MetaCPAN::Ingest qw<
 >;
 
 # args
-my $cleanup;
-GetOptions( "cleanup" => \$cleanup );
+my ( $cleanup, $package_file );
+GetOptions(
+    "cleanup"        => \$cleanup,
+    "package_file=s" => \$package_file,
+);
 
 # setup
-my $es   = MetaCPAN::ES->new( type => "package" );
+my $es   = MetaCPAN::ES->new( index => "package" );
 my $bulk = $es->bulk();
 
 my %seen;
@@ -27,7 +30,10 @@ log_info {'Reading 02packages.details'};
 
 # read the rest of the file line-by-line (too big to slurp)
 
-my $fh_packages = read_02packages_fh( log_meta => 1 );
+my $fh_packages = read_02packages_fh(
+    log_meta => 1,
+    ( $package_file ? ( file => $package_file ) : () )
+);
 while ( my $line = <$fh_packages> ) {
     next unless $line;
     chomp($line);

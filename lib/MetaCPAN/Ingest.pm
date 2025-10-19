@@ -107,7 +107,7 @@ sub author_dir ($pauseid) {
 
 sub cpan_dir () {
     my $config = config();
-    my $cpan   = $config->{cpan};
+    my $cpan   = $ENV{INGEST_TEST} ? $config->{cpan_test} : $config->{cpan};
 
     return path($cpan) if -d $cpan;
     die
@@ -196,7 +196,7 @@ sub home () {
 
 # TODO: there must be a better way
 sub is_dev () {
-    return $ENV{PLACK_ENV} =~ /dev/;
+    return ( $ENV{PLACK_ENV} && $ENV{PLACK_ENV} =~ /dev/ );
 }
 
 sub minion () {
@@ -248,11 +248,13 @@ sub read_url ( $url ) {
     return $resp->decoded_content;
 }
 
-sub cpan_file_map () {
-    my $cpan = cpan_dir();
-    my $ls   = $cpan->child(qw< indices find-ls.gz >);
-    if ( !-e $ls ) {
-        die "File $ls does not exist";
+sub cpan_file_map ( $ls = undef ) {
+    if (!$ls) {
+        my $cpan = cpan_dir();
+        $ls = $cpan->child(qw< indices find-ls.gz >);
+        if ( !-e $ls ) {
+            die "File $ls does not exist";
+        }
     }
 
     log_info {"Reading $ls"};

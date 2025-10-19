@@ -1,0 +1,18 @@
+{
+    "HTML-Parser": [
+        {
+            "references": [
+                "http://secunia.com/advisories/18639",
+                "http://www.securityfocus.com/bid/13471"
+            ],
+            "description": "Test\n",
+            "cves": null,
+            "severity": null,
+            "affected_versions": [
+                ">=1.25,<4"
+            ],
+            "cpansa_id": "CPANSA-HTML-Parser-2025-0666",
+            "reported": "2025-10-10"
+        }
+    ]
+}
