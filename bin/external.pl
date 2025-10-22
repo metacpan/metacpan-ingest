@@ -38,6 +38,7 @@ my $ret;
 
 $ret = run_cygwin() if $external_source eq 'cygwin';
 $ret = run_debian() if $external_source eq 'debian';
+my $dist = $ret->{dist};
 
 my $email_body = $ret->{errors_email_body};
 if ( $email_to and $email_body ) {
