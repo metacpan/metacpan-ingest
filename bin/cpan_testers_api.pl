@@ -18,7 +18,7 @@ my $home = home();
 my $url
     = $ENV{HARNESS_ACTIVE}
     ? 'file:' . $home->child('t/var/cpantesters-release-api-fake.json')
-    : 'http://api-3.cpantesters.org/v3/release';
+    : 'http://api.cpantesters.org/v3/release';
 
 my $ua = ua();
 
