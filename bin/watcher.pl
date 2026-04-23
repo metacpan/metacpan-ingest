@@ -12,6 +12,7 @@ use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
 use MetaCPAN::Ingest qw<
+    author_dir
     cpan_dir
     read_recent_segment
     true
@@ -114,7 +115,7 @@ sub backpan_changes () {
         my $data = $release->{_source};
         my $path
             = $cpan->child( 'authors',
-            MetaCPAN::Util::author_dir( $data->{author} ),
+            author_dir( $data->{author} ),
             $data->{archive} );
 
         next if -e $path;

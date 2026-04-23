@@ -256,9 +256,9 @@ sub _get_release ( $es, $author, $name ) {
                         { term => { name   => $name } },
                     ]
                 },
-                size    => 500,
-                _source => [qw< id name >],
             },
+            size    => 500,
+            _source => [qw< id name >],
         },
     );
 

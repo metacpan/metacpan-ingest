@@ -106,11 +106,13 @@ sub bulk ( $self, %args ) {
 }
 
 sub scroll ( $self, %args ) {
+    my $body = $args{body} // { query => { match_all => {} } };
+    $body->{sort} = '_doc'; # optimize search in newer ES versions
+
     return $self->{es}->scroll_helper(
         index       => $self->{index},
         type        => $self->{type},
-        body        => ( $args{body} // { query => { match_all => {} } } ),
-        search_type => 'scan',
+        body        => $body,
         scroll      => ( $args{scroll} // '30m' ),
     );
 }
@@ -167,7 +169,7 @@ sub clear_type ($self) {
 sub await ($self) {
     my $timeout = 15;
     my $iready  = 0;
-    my $cluster_info;
+    my $cluster_info = {};
     my $es = $self->{es};
 
     if ( scalar( keys %$cluster_info ) == 0 ) {
