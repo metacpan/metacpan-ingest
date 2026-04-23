@@ -81,7 +81,7 @@ sub are_you_sure ( $msg, $force=0 ) {
             print "Operation will be interruped!\n";
 
             # System Error: 125 - ECANCELED - Operation canceled
-            exit_code(125);
+            handle_error(125, 'Operation canceled on User Request', 1);
         }
         else {
             log_info {'Operation confirmed.'};
