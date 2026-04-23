@@ -16,7 +16,9 @@ use MetaCPAN::Ingest qw<
     cpan_dir
     cpan_file_map
     diff_struct
+    false
     read_00whois
+    true
 >;
 
 # config
@@ -119,12 +121,13 @@ sub _update_author ( $id, $whois_data, $current_data ) {
         return;
     }
 
-    $data->{updated} = DateTime->now( time_zone => 'UTC' )->iso8601;
-
+    $data->{updated} = DateTime->now( time_zone => 'UTC' )->iso8601 . 'Z';
+    $data->{is_pause_custodial_account}
+        = $data->{is_pause_custodial_account} ? true : false;
     $bulk->update( {
         id            => $id,
         doc           => $data,
-        doc_as_upsert => 1,
+        doc_as_upsert => true,
     } );
 
     push @author_ids_to_purge, $id;

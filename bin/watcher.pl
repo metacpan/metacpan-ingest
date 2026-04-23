@@ -113,9 +113,7 @@ sub backpan_changes () {
     my @changes;
     while ( my $release = $scroll_release->next ) {
         my $data = $release->{_source};
-        my $path
-            = $cpan->child( 'authors',
-            author_dir( $data->{author} ),
+        my $path = $cpan->child( 'authors', author_dir( $data->{author} ),
             $data->{archive} );
 
         next if -e $path;

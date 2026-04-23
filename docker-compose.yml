@@ -1,53 +1,49 @@
----
 services:
-  ingest:
+  ingest-test:
+    profiles:
+      - test
+    depends_on:
+      elasticsearch-test:
+        condition: service_healthy
     build:
       context: .
       target: test
-    image: metacpan/metacpan-ingest:test
-    volumes:
-      # Mount everything except /app/local
-      - ./bin:/app/bin
-      - ./lib:/app/lib
-      - ./conf:/app/conf
-      - ./t:/app/t
-      - ./test_data:/app/test_data
     environment:
-      - PERL5LIB=/app/local/lib/perl5:/app/lib
-      - PATH=/app/local/bin:$PATH
-    command: ["prove", "-lv", "t/"]
-    user: metacpan
-    depends_on:
-      elasticsearch_test:
-        condition: service_healthy
-    profiles:
-      - test
-      - ingest-test
+      PLACK_ENV: development
+      INGEST_TEST: 1
+    volumes:
+      - ./lib:/app/lib
+      - ./bin:/app/bin
+      - ./t:/app/t
+      - ./conf:/app/conf
+      - ./test_data:/app/test_data
     networks:
       - elasticsearch
-  elasticsearch_test:
+
+  elasticsearch-test:
     profiles:
       - test
-      - ingest-test
-    image: elasticsearch:2.4
+    image: elasticsearch:8.19.9
     environment:
       - discovery.type=single-node
-    volumes:
-      - type: volume
-        source: elasticsearch_test
-        target: /usr/share/elasticsearch/data
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
     healthcheck:
       timeout: 5s
       start_period: 60s
       test: ["CMD", "curl", "--fail", "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
     ports:
       - "9200"
+    volumes:
+      - type: volume
+        source: elasticsearch-test
+        target: /usr/share/elasticsearch/data
     networks:
       - elasticsearch
 
-volumes:
-  elasticsearch_test:
-
 networks:
   elasticsearch:
-    driver: bridge
+
+volumes:
+  elasticsearch-test:

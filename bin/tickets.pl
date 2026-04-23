@@ -11,11 +11,7 @@ use Text::CSV_XS          ();
 use Net::GitHub::V4       ();
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    config
-    read_url
-    ua
->;
+use MetaCPAN::Ingest qw< config read_url true ua >;
 
 # setup
 my $rt_summary_url //= 'https://rt.cpan.org/Public/bugs-per-dist.tsv';
@@ -268,7 +264,7 @@ sub _bulk_update ($records) {
         $bulk->update( {
             id            => $d,
             doc           => $records->{$d},
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 }

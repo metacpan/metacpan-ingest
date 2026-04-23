@@ -35,6 +35,7 @@ requires 'Text::CSV_XS';
 requires 'Term::ANSIColor';
 requires 'URI';
 requires 'XML::Simple';
+requires 'YAML::XS';
 
 requires 'MetaCPAN::Common',
     git => 'https://github.com/metacpan/MetaCPAN-Common',

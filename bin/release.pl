@@ -19,11 +19,13 @@ use MetaCPAN::File;
 use MetaCPAN::Ingest qw<
     cpan_file_map
     digest
+    false
     handle_error
     minion
     read_02packages_fh
     read_06perms_fh
     tmp_dir
+    true
     ua
 >;
 
@@ -247,7 +249,7 @@ sub _index_files ($files) {
             id => digest( $f->{author}, $f->{release}, $f->{path} )
             ,    ### ???? file name
             doc           => $f->as_struct,
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 
@@ -296,7 +298,7 @@ sub _import_archive ( $archive_path, $dist ) {
             and $document->{abstract} =~ /DEPRECI?ATED/
     ) ? 1 : 0;
 
-    $document->{deprecated} = $deprecated;
+    $document->{deprecated} = $deprecated ? true : false;
 
     log_debug { sprintf( 'Indexing %d modules', scalar(@$modules) ) };
 
@@ -362,7 +364,7 @@ sub _import_archive ( $archive_path, $dist ) {
                 . " contains unauthorized modules: "
                 . join( ",", map { $_->{name} } @release_unauthorized );
         };
-        $document->{authorized} = 0;
+        $document->{authorized} = false;
     }
 
     # update 'first' value
@@ -425,7 +427,7 @@ sub _set_associated_pod ( $module, $associated_pod ) {
 
 sub _set_first ($document) {
     my $count = $es->search(
-        body        => {
+        body => {
             query => {
                 bool => {
                     must => [
@@ -450,7 +452,7 @@ sub _set_first ($document) {
     # currently, the "first" property is not computed on all releases
     # since this feature has not been around when last reindexed
 
-    $document->{first} = ( $count > 0 ? 0 : 1 );
+    $document->{first} = ( $count > 0 ? false : true );
 }
 
 sub queue_latest ( $dist, $delay, $job_id ) {

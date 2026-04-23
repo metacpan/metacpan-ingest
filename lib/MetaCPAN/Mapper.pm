@@ -8,30 +8,15 @@ use Cpanel::JSON::XS qw< decode_json >;
 use Path::Tiny       qw< path >;
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
-use MetaCPAN::Ingest qw< config home is_dev >;
+use MetaCPAN::Ingest qw< home es_config >;
 
 sub new ( $class, %args ) {
     my $node = $args{node};
 
-    my $mode = is_dev() ? 'test' : 'local';
-    $mode eq 'test'
-        and Log::Log4perl::init('log4perl_test.conf')
-        ;    # TODO: find a better place
-
-    my $config = config;
-    my $config_node
-        = $node            ? $node
-        : $mode eq 'local' ? $config->{es_node}
-        : $mode eq 'test'  ? $config->{es_test_node}
-        : $mode eq 'prod'  ? $config->{es_production_node}
-        :                    undef;
-    $config_node or die "Cannot create an ES instance without a node\n";
+    my $es_config = es_config($node);
 
     return bless {
-        es => Search::Elasticsearch->new(
-            client => '2_0::Direct',
-            nodes  => [$config_node],
-        ),
+        es => Search::Elasticsearch->new( %$es_config ),
     }, $class;
 }
 
@@ -67,7 +52,7 @@ sub index_create ( $self, %args ) {
         @body = (
             body => {
                 settings => $settings,
-                mappings => { $index => $mapping },
+                mappings => $mapping,
             }
         );
     }
@@ -83,7 +68,6 @@ sub index_delete ( $self, $index, $skip_exists ) {
 sub index_put_mapping ( $self, $index, $mapping ) {
     $self->{es}->indices->put_mapping(
         index => $index,
-        type  => $index,
         body  => $mapping,
     );
 }

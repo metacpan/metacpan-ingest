@@ -19,7 +19,7 @@ my $mapper = MetaCPAN::Mapper->new();
 
 if ( $mapper->index_exists($index) ) {
     are_you_sure("This action will delete index: $index");
-    $mapper->index_delete($index)
+    $mapper->index_delete($index);
 }
 
 if ( $cmd eq 'create' ) {

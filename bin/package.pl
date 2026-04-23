@@ -7,10 +7,7 @@ use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    fix_version
-    read_02packages_fh
->;
+use MetaCPAN::Ingest qw< fix_version read_02packages_fh true >;
 
 # args
 my ( $cleanup, $package_file );
@@ -53,7 +50,7 @@ while ( my $line = <$fh_packages> ) {
     $bulk->update( {
         id            => $name,
         doc           => $doc,
-        doc_as_upsert => 1,
+        doc_as_upsert => true,
     } );
 
     $seen{$name} = 1;

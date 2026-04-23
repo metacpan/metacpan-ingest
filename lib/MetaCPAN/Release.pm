@@ -281,7 +281,7 @@ sub document_release ( $self, %args ) {
         author          => $self->{author},
         checksum_md5    => $self->{archive}->file_digest_md5,
         checksum_sha256 => $self->{archive}->file_digest_sha256,
-        date         => DateTime->from_epoch( epoch => $stat->{mtime} ) . "",
+        date         => DateTime->from_epoch( epoch => $stat->{mtime} ) . 'Z',
         dependency   => $self->dependencies,
         distribution => $dist->dist,
 

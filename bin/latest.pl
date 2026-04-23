@@ -12,11 +12,7 @@ use Regexp::Common qw< time >;
 use Time::Local    qw< timelocal >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    config
-    minion
-    read_02packages
->;
+use MetaCPAN::Ingest qw< config minion read_02packages >;
 
 # args
 my ( $distribution, $dry_run, $force, $queue );

@@ -12,7 +12,7 @@ use File::Temp ();
 
 use Test::Code::TidyAll qw< tidyall_ok >;
 
-plan skip_all => 'files not yet tidy';
+#plan skip_all => 'files not yet tidy';
 
 my %opts = ( verbose => $ENV{TEST_TIDYALL_VERBOSE}, );
 

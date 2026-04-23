@@ -13,7 +13,8 @@ use File::Spec ();
 use LWP::UserAgent;
 use Path::Tiny qw< path >;
 use PAUSE::Permissions ();
-use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
+use Ref::Util    qw< is_ref is_plain_arrayref is_plain_hashref >;
+use Scalar::Util qw< blessed >;
 use Term::ANSIColor qw< colored >;
 use XML::Simple qw< XMLin >;
 
@@ -30,6 +31,7 @@ use Sub::Exporter -setup => {
         diff_struct
         digest
         download_url
+        es_config
         extract_section
         false
         fix_version
@@ -65,7 +67,26 @@ my $config //= do {
 };
 $config->init_logger;
 
+
 sub config () { $config->config(); }
+
+sub es_config ( $node = undef ) {
+    my $config = config;
+    my $es_servers = $config->{elasticsearch_servers};
+
+    my $config_node
+        = $node                         ? $node
+        : $ENV{METACPAN_INGEST_ES_PROD} ? $es_servers->{production_node}
+        : is_dev()                      ? $es_servers->{test_node}
+        :                                 $es_servers->{node};
+
+    $config_node or die "Cannot create an ES instance without a node\n";
+
+    return {
+        nodes  => $config_node,
+        client => $es_servers->{client},
+    };
+}
 
 sub are_you_sure ( $msg, $force=0 ) {
     return 1 if $force;
@@ -128,6 +149,14 @@ sub diff_struct ( $old_root, $new_root, $allow_extra ) {
                 if !defined $old
                 or is_ref($old)
                 or $new ne $old;
+        }
+        elsif ( ref($new) eq 'SCALAR' || ( blessed($new) && $new->isa('JSON::PP::Boolean') ) ) {
+            my $n = ref($new) eq 'SCALAR' ? !!$$new : !!$new;
+            my $o = !defined($old)        ? undef
+                  : ref($old) eq 'SCALAR' ? !!$$old
+                  : blessed($old)         ? !!$old
+                  :                         !!$old;
+            return [ $path, $old, $new ] if !defined $old or $n != $o;
         }
         elsif ( is_plain_arrayref($new) ) {
             return [ $path, $old, $new ]

@@ -9,7 +9,7 @@ use Path::Tiny qw< path >;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< read_url >;
+use MetaCPAN::Ingest qw< read_url true >;
 
 # args
 my ($json);
@@ -34,7 +34,7 @@ for my $data ( @{$river_data} ) {
             name  => $dist,
             river => $data,
         },
-        doc_as_upsert => 1,
+        doc_as_upsert => true,
     } );
 }
 

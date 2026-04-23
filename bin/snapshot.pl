@@ -12,11 +12,7 @@ use Try::Tiny;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 
-use MetaCPAN::Ingest qw<
-    are_you_sure
-    config
-    is_dev
->;
+use MetaCPAN::Ingest qw< are_you_sure config is_dev >;
 
 # setup
 my $config          = config();

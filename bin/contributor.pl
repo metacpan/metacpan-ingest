@@ -165,7 +165,7 @@ sub release_contributor_update_actions ( $release, $es_contributor ) {
             qw(pauseid name email)
         };
     } @$contribs;
-    push @actions, map +{ create => { _source => $_ } }, @docs;
+    push @actions, map +{ create => { source => $_ } }, @docs;
     return \@actions;
 }
 

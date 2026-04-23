@@ -24,7 +24,7 @@ EOT
 COPY bin bin
 COPY lib lib
 COPY conf conf
-COPY *.conf .
+COPY *.conf *.yaml .
 
 # move the following to test only
 COPY t t
@@ -40,7 +40,6 @@ CMD [ \
 
 ################### Test
 FROM base AS test
-ENV COLUMNS="${COLUMNS:-120}"
 
 USER root
 
@@ -53,6 +52,9 @@ EOT
 
 COPY .perlcriticrc .perltidyrc perlimports.toml tidyall.ini ./
 COPY t t
+
+COPY bin/install-precious /tmp/install-precious
+RUN /tmp/install-precious /usr/local/bin && rm /tmp/install-precious
 
 USER metacpan
 

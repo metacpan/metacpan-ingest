@@ -10,10 +10,7 @@ use Ref::Util  qw< is_arrayref >;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    numify_version
-    read_url
->;
+use MetaCPAN::Ingest qw< numify_version read_url true >;
 
 my %range_ops = qw( < lt <= lte > gt >= gte );
 
@@ -187,7 +184,7 @@ for my $dist ( sort keys %{$data} ) {
         $bulk_cve->update( {
             id            => $cpansa->{cpansa_id},
             doc           => $doc_data,
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 }

@@ -105,7 +105,7 @@ sub run_restore () {
             $bulk->update( {
                 id            => $raw->{_id},
                 doc           => $raw->{_source},
-                doc_as_upsert => 1,
+                doc_as_upsert => true,
             } );
         }
         else {

@@ -88,7 +88,9 @@ subtest 'Author Indexing' => sub {
     my $findls_file   = $d_indices->child('find-ls.gz');
 
     # run the author indexing script
-    `perl $author_script -whois_file $whois_file -findls_file $findls_file`;
+    my $script_cmd = "perl $author_script -whois_file $whois_file -findls_file $findls_file";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_author = MetaCPAN::ES->new( index => 'author' );
     ok( $es_author->exists( index => 'author', id => $t_author ),
@@ -100,7 +102,9 @@ subtest 'Package Indexing' => sub {
     my $package_file   = $d_modules->child('02packages.details.txt.gz');
 
     # run the package indexing script
-    `perl $package_script -package_file $package_file`;
+    my $script_cmd = "perl $package_script -package_file $package_file";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_package = MetaCPAN::ES->new( index => 'package' );
     ok( $es_package->exists( index => 'package', id => $t_distribution2 ),
@@ -112,7 +116,9 @@ subtest 'Permissions Indexing' => sub {
     my $perms_file   = $d_modules->child('06perms.txt');
 
     # run the permission indexing script
-    `perl $perms_script -perms_file $perms_file`;
+    my $script_cmd = "perl $perms_script -perms_file $perms_file";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_permission = MetaCPAN::ES->new( index => 'permission' );
     ok(
@@ -129,7 +135,9 @@ subtest 'Release Indexing' => sub {
     my $release_file   = $d_authors->child($t_full_path);
 
     # run the release indexing script for a tarball
-    `perl $release_script $release_file`;
+    my $script_cmd = "perl $release_script $release_file";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_file    = MetaCPAN::ES->new( index => 'file' );
     my $file_count = $es_file->count(
@@ -155,7 +163,9 @@ subtest 'Cover Indexing' => sub {
     my $cover_file   = $d_test->child('cpancover_dev.json');
 
     # run the cover indexing script
-    `perl $cover_script -json $cover_file`;
+    my $script_cmd = "perl $cover_script -json $cover_file";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_cover = MetaCPAN::ES->new( index => 'cover' );
     ok( $es_cover->exists( index => 'cover', id => $t_release ),
@@ -167,7 +177,9 @@ subtest 'River Indexing' => sub {
     my $river_file   = $d_test->child('river-of-cpan.json');
 
     # run the river indexing script
-    `perl $river_script -json $river_file`;
+    my $script_cmd = "perl $river_script -json $river_file";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_distribution = MetaCPAN::ES->new( index => 'distribution' );
     my $dist            = $es_distribution->get( id => $t_distribution );
@@ -178,7 +190,9 @@ subtest 'Contributor Indexing' => sub {
     my $contributor_script = $d_bin->child('contributor.pl');
 
     # run the contributor indexing script
-    `perl $contributor_script -release $t_full_release`;
+    my $script_cmd = "perl $contributor_script -release $t_full_release";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_contributor    = MetaCPAN::ES->new( index => 'contributor' );
     my $contributor_count = $es_contributor->count(
@@ -195,7 +209,9 @@ subtest 'CVE Indexing' => sub {
     my $json       = $d_test->child('cve_dev.json');
 
     # run the CVE indexing script
-    `perl $cve_script -json $json`;
+    my $script_cmd = "perl $cve_script -json $json";
+    print STDERR "Running: $script_cmd\n";
+    `$script_cmd`;
 
     my $es_cve    = MetaCPAN::ES->new( index => 'cve' );
     my $cve_count = $es_cve->count(

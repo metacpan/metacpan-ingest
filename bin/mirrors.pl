@@ -39,7 +39,7 @@ sub index_mirrors () {
 
     # Clear out everything in the index
     # so don't end up with old mirrors
-    $es->clear_type;
+    $es->clear_index;
 
     my $mirrors = Cpanel::JSON::XS::decode_json($json);
     foreach my $mirror (@$mirrors) {
