@@ -6,6 +6,7 @@ use v5.36;
 
 use MetaCPAN::Logger qw< :log :dlog >;
 use Search::Elasticsearch;
+use Ref::Util qw< is_hashref >;
 
 use MetaCPAN::Ingest qw< config handle_error is_dev >;
 
@@ -91,6 +92,31 @@ sub search ( $self, %args ) {
         type  => $type,
         body  => $body,
         @size,
+    );
+}
+
+sub update ( $self, %args ) {
+    my $index = $args{index} // $self->{index};
+    my $type  = $args{type}  // $self->{type};
+    my $id    = $args{id};
+    my $doc   = $args{doc};
+
+    if (!$id) {
+        log_warn { "ES update called with no 'id'" };
+        return;
+    }
+
+    if (!is_hashref($doc) or %$doc == 0) {
+        log_warn { "ES update called with no or empty 'doc'" };
+        return;
+    }
+
+    return $self->{es}->update(
+        index   => $index,
+        type    => $type,
+        id      => $id,
+        body    => { %$doc },
+        refresh => 1,
     );
 }
 

@@ -6,13 +6,16 @@ use Getopt::Long;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::ES;
+use MetaCPAN::Ingest qw< true >;
+
 
 # args
 my ($distribution);
 GetOptions( "distribution=s" => \$distribution, );
 
 # setup
-my $es = MetaCPAN::ES->new( index => "distribution" );
+my $es_dist = MetaCPAN::ES->new( index => "distribution" );
+my $es_release = MetaCPAN::ES->new( index => "release" );
 
 my $query
     = $distribution
@@ -24,7 +27,7 @@ my $size
     ? 1
     : 500;
 
-my $scroll = $es->scroll(
+my $scroll = $es_dist->scroll(
     body => {
         query => $query,
         size  => $size,
@@ -34,18 +37,32 @@ my $scroll = $es->scroll(
 log_info { "processing " . $scroll->total . " distributions" };
 
 while ( my $distribution = $scroll->next ) {
-    my $release = $distribution->set_first_release;
-    $release
-        ? log_debug {
-        "@{[ $release->name ]} by @{[ $release->author ]} was first"
-    }
-        : log_warn {
-        "no release found for distribution @{[$distribution->name]}"
-        };
-}
+    my $dist_name = $distribution->{_source}{name};
 
-# Everything changed - reboot the world!
-# cdn_purge_all;
+    # find the first release for the distribution
+    my $first_release = $es_release->search(
+        body => {
+            query   => { term => { distribution => $dist_name} },
+            _source => [ 'name' ],
+            sort    => [{ date => 'asc' }],
+            size    => 1,
+        }
+    );
+
+    if ( !$first_release ) {
+        log_warn { "No release found for $dist_name" };
+        next;
+    }
+
+    my $hits = $first_release->{hits}{hits}[0];
+    my $rel_name = $hits->{_source}{name};
+
+    # set the first flag
+    $es_release->update(
+        id => $rel_name,
+        doc => { first => true },
+    );
+}
 
 1;
 
