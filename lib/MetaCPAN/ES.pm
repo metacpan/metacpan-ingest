@@ -169,7 +169,7 @@ sub clear_type ($self) {
 sub await ($self) {
     my $timeout = 15;
     my $iready  = 0;
-    my $cluster_info;
+    my $cluster_info = {};
     my $es = $self->{es};
 
     if ( scalar( keys %$cluster_info ) == 0 ) {
