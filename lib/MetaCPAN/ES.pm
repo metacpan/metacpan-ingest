@@ -106,11 +106,13 @@ sub bulk ( $self, %args ) {
 }
 
 sub scroll ( $self, %args ) {
+    my $body = $args{body} // { query => { match_all => {} } };
+    $body->{sort} = '_doc'; # optimize search in newer ES versions
+
     return $self->{es}->scroll_helper(
         index       => $self->{index},
         type        => $self->{type},
-        body        => ( $args{body} // { query => { match_all => {} } } ),
-        search_type => 'scan',
+        body        => $body,
         scroll      => ( $args{scroll} // '30m' ),
     );
 }

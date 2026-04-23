@@ -425,7 +425,6 @@ sub _set_associated_pod ( $module, $associated_pod ) {
 
 sub _set_first ($document) {
     my $count = $es->search(
-        search_type => 'count',
         body        => {
             query => {
                 bool => {
