@@ -156,8 +156,6 @@ sub index_github_bugs () {
 
     log_debug { sprintf( "Found %s repos", $scroll_release->total ) };
 
-    my $json = JSON::MaybeXS->new( allow_nonref => 1 );
-
     my %summary;
 
 RELEASE: while ( my $r = $scroll_release->next ) {
