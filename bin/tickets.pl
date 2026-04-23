@@ -20,8 +20,6 @@ use MetaCPAN::Ingest qw<
 # setup
 my $rt_summary_url //= 'https://rt.cpan.org/Public/bugs-per-dist.tsv';
 
-$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-
 my $config   = config();
 my $gh_token = $config->{github_token};    ### TODO: add to config
 
