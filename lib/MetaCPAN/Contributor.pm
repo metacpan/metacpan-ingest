@@ -12,7 +12,7 @@ use MetaCPAN::Ingest qw< digest >;
 use Sub::Exporter -setup => {
     exports => [ qw<
         get_cpan_author_contributors
-        update_release_contirbutors
+        update_release_contributors
     > ]
 };
 
@@ -44,7 +44,7 @@ sub get_cpan_author_contributors ( $author, $release, $distribution ) {
     return \@ret;
 }
 
-sub update_release_contirbutors ( $document, $timeout = "5m" ) {
+sub update_release_contributors ( $document, $timeout = "5m" ) {
     my $data = get_cpan_author_contributors(
         @{$document}{qw< author name distribution >} );
     return unless $data and is_arrayref($data);

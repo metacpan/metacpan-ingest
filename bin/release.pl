@@ -13,7 +13,7 @@ use Try::Tiny  qw< catch try >;
 use MetaCPAN::Logger qw< :log :dlog >;
 
 use MetaCPAN::Archive;
-use MetaCPAN::Contributor qw< update_release_contirbutors >;
+use MetaCPAN::Contributor qw< update_release_contributors >;
 use MetaCPAN::ES;
 use MetaCPAN::File;
 use MetaCPAN::Ingest qw<
@@ -368,7 +368,7 @@ sub _import_archive ( $archive_path, $dist ) {
     # update 'first' value
     _set_first($document);
 
-    update_release_contirbutors($document);
+    update_release_contributors($document);
 
     _index_release($document);
     _index_files($files);
