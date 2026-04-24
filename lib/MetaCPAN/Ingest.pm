@@ -227,7 +227,7 @@ sub home () {
 
 # TODO: there must be a better way
 sub is_dev () {
-    return ( $ENV{PLACK_ENV} && $ENV{PLACK_ENV} =~ /dev/ );
+    return !!$ENV{HARNESS_ACTIVE};
 }
 
 sub minion () {
