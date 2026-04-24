@@ -1,7 +1,6 @@
 exclude = [
     "/.build/**",
     "/blib/**",
-    "/root/assets/**",
     "/local/**",
     "/test-data/**",
 ]
