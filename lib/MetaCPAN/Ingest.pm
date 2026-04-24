@@ -188,7 +188,7 @@ sub tmp_dir ( $cpanid, $distfile ) {
 sub digest (@params) {
     my $digest = join( "\0", @params );
     $digest = Digest::SHA::sha1_base64($digest);
-    $digest =~ tr/[+\/]/-_/;
+    $digest =~ tr{+/}{-_};
     return $digest;
 }
 
