@@ -215,3 +215,55 @@ sub index_favorites () {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+favorite - Ingest MetaCPAN user favourite counts into the distribution index
+
+=head1 SYNOPSIS
+
+ # scripts/favorite
+ # scripts/favorite --distribution Moose --count 42
+ # scripts/favorite --age 7
+ # scripts/favorite --all
+ # scripts/favorite --queue
+
+=head1 DESCRIPTION
+
+Reads favourite (star) counts from MetaCPAN user data and updates the
+Elasticsearch C<distribution> and C<release> indices. Can process a single
+distribution, distributions updated in the last N days, or all distributions.
+
+=head1 OPTIONS
+
+=head2 --distribution
+
+Only process this distribution.
+
+=head2 --count
+
+Set the favourite count directly (requires C<--distribution>).
+
+=head2 --age
+
+Only process distributions updated within this many days.
+
+=head2 --all
+
+Process all distributions.
+
+=head2 --limit
+
+Maximum number of records to process.
+
+=head2 --check_missing
+
+Report distributions with no favourite data. Cannot be combined with C<--distribution>.
+
+=head2 --queue
+
+Use the Minion job queue instead of processing inline.
+
+=cut

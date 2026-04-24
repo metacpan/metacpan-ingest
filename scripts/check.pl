@@ -170,6 +170,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+check - Validate MetaCPAN indexed modules against 02packages
+
 =head1 SYNOPSIS
 
 Performs checks on the MetaCPAN data store to make sure an

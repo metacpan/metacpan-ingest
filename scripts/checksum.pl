@@ -91,6 +91,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+checksum - Backfill missing MD5/SHA-256 checksums on release records
+
 =head1 SYNOPSIS
 
  # scripts/checksum --[no-]dry_run --limit X

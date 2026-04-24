@@ -57,3 +57,51 @@ sub _extract_dir ($self) {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MetaCPAN::Archive - Extract and inspect CPAN distribution archives
+
+=head1 SYNOPSIS
+
+    my $archive = MetaCPAN::Archive->new( file => '/path/to/Dist-1.0.tar.gz' );
+    my $dir = $archive->extract;
+
+=head1 DESCRIPTION
+
+Wraps L<Archive::Any> to extract CPAN distribution archives (tar.gz, zip, etc.)
+and compute file checksums. Extraction uses C</mnt/scratch_disk> when available,
+falling back to the system temp directory.
+
+=head1 METHODS
+
+=head2 new
+
+    my $archive = MetaCPAN::Archive->new( file => $path );
+
+Constructs an archive object. Logs warnings if the archive is impolite
+(files outside the top-level directory) or naughty (absolute paths).
+
+=head2 extract
+
+Extracts the archive to a temporary directory and returns the directory path.
+
+=head2 files
+
+Returns the list of member files in the archive.
+
+=head2 is_impolite
+
+Returns true if the archive escapes its top-level directory.
+
+=head2 file_digest_md5
+
+Returns the hex MD5 digest of the archive file itself.
+
+=head2 file_digest_sha256
+
+Returns the hex SHA-256 digest of the archive file itself.
+
+=cut

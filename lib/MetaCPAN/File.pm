@@ -369,3 +369,72 @@ sub set_authorized ( $self, $perms ) {
 1;
 
 __END__
+
+=head1 NAME
+
+MetaCPAN::File - Represent and index a file within a CPAN distribution
+
+=head1 SYNOPSIS
+
+    my $file = MetaCPAN::File->new( name => $path, release => $release );
+    $file->add_documentation;
+    $file->set_authorized( \%perms );
+    my $doc = $file->as_struct;
+
+=head1 DESCRIPTION
+
+Represents a single file extracted from a CPAN distribution archive. Handles
+MIME type detection, Perl file identification, POD extraction for the
+documentation name, PAUSE authorization checking, and serialisation to an
+Elasticsearch document structure.
+
+=head1 METHODS
+
+=head2 new
+
+    my $file = MetaCPAN::File->new( name => $abs_path, release => $release_obj );
+
+Returns a blessed file object, or C<undef> for broken/skipped files
+(pipes, missing symlink targets, the archive root directory itself).
+
+=head2 as_struct
+
+Returns a plain hashref of the file document suitable for Elasticsearch,
+with boolean fields coerced to JSON true/false values.
+
+=head2 add_module
+
+    $file->add_module( \%module_doc );
+
+Appends a module sub-document to this file's module list.
+
+=head2 add_documentation
+
+Derives the documentation name from the file's NAME POD section and attached
+modules, and stores it in C<< $self->{documentation} >>.
+
+=head2 set_suggest
+
+Populates C<< $self->{suggest} >> with autocomplete input and a weight
+inversely proportional to the documentation name length.
+
+=head2 set_authorized
+
+    my @unauthorized = $file->set_authorized( \%perms );
+
+Checks each module and the documentation name against C<06perms.txt> data.
+Returns a list of indexed modules that are not authorised for this author.
+
+=head2 set_deprecated
+
+Sets the deprecated flag on the file.
+
+=head2 empty_modules
+
+Clears the module list.
+
+=head2 full_path
+
+Returns the canonical C<author/release/path> string for this file.
+
+=cut

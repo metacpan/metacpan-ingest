@@ -49,6 +49,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+river - Ingest CPAN River of Code data into the distribution index
+
 =head1 SYNOPSIS
 
  # scripts/river

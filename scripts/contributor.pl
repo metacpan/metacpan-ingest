@@ -288,6 +288,10 @@ sub get_contributors ($release) {
 
 __END__
 
+=head1 NAME
+
+contributor - Index CPAN author contributors for distributions
+
 =head1 SYNOPSIS
 
  # scripts/contributor --all

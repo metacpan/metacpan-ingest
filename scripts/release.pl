@@ -495,6 +495,10 @@ sub _perms () {
 
 __END__
 
+=head1 NAME
+
+release - Index CPAN distribution releases into Elasticsearch
+
 =head1 SYNOPSIS
 
  # scripts/release ~/cpan/authors/id/A

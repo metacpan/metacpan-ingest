@@ -32,7 +32,17 @@ log_info {'done'};
 
 =pod
 
-Purges user sessions. we iterate over the sessions for the time being and
-perform bulk delete.
+=head1 NAME
+
+session - Purge expired MetaCPAN user sessions from Elasticsearch
+
+=head1 SYNOPSIS
+
+ # scripts/session
+
+=head1 DESCRIPTION
+
+Deletes user session documents from the C<session> index that have not been
+updated in the past month. Iterates via scroll and performs a bulk delete.
 
 =cut

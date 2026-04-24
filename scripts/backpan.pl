@@ -158,6 +158,10 @@ sub update_files_author ( $author, $author_releases ) {
 
 =pod
 
+=head1 NAME
+
+backpan - Mark deleted CPAN releases with BackPAN status
+
 =head1 SYNOPSIS
 
  $ scripts/backpan

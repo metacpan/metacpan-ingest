@@ -432,3 +432,164 @@ sub read_recent_segment ($segment) {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MetaCPAN::Ingest - Shared utilities for MetaCPAN ingestion scripts
+
+=head1 SYNOPSIS
+
+    use MetaCPAN::Ingest qw( config cpan_dir read_02packages );
+
+=head1 DESCRIPTION
+
+Provides configuration loading, CPAN file I/O, version normalisation, and
+miscellaneous helpers used across ingestion scripts and modules. All functions
+are exportable via L<Sub::Exporter>.
+
+=head1 FUNCTIONS
+
+=head2 config
+
+Returns the loaded configuration hashref from C<metacpan_ingest.yaml>.
+
+=head2 es_config
+
+    my $cfg = es_config( $node );
+
+Returns a hashref for L<Search::Elasticsearch>. Selects the production node
+when C<METACPAN_INGEST_ES_PROD> is set, the test node when C<PLACK_ENV=dev>,
+otherwise the default node.
+
+=head2 are_you_sure
+
+    are_you_sure( $message, $force );
+
+Prompts for C<YES> confirmation on a terminal. Skips the prompt when C<$force>
+is true or when stdout is not a TTY.
+
+=head2 author_dir
+
+    my $path = author_dir('PAUSEID');
+
+Returns the relative CPAN author path, e.g. C<id/P/PA/PAUSEID>.
+
+=head2 cpan_dir
+
+Returns a L<Path::Tiny> path to the local CPAN mirror. Uses the C<cpan_test>
+path from config when C<INGEST_TEST=1>.
+
+=head2 cpan_file_map
+
+    my $map = cpan_file_map( $find_ls_gz );
+
+Parses C<indices/find-ls.gz> and returns a hashref of
+C<< { author => { filename => 1 } } >>.
+
+=head2 download_url
+
+    my $url = download_url( $pauseid, $archive );
+
+Constructs the canonical C<cpan.metacpan.org> download URL for a distribution.
+
+=head2 tmp_dir
+
+    my $dir = tmp_dir( $cpanid, $distfile );
+
+Returns a C</tmp>-based path for temporary distribution extraction.
+
+=head2 digest
+
+    my $id = digest( @parts );
+
+Returns a URL-safe base64 SHA-1 digest of the joined parts, used as an
+Elasticsearch document id.
+
+=head2 fix_version
+
+Normalises a raw version string into a consistent form.
+
+=head2 numify_version
+
+Converts a version string to a numeric value suitable for range comparisons.
+
+=head2 handle_error
+
+    handle_error( $exit_code, $message, $die );
+
+Logs a fatal message and optionally croaks with the given exit code.
+
+=head2 home
+
+Returns the project root directory as a L<Path::Tiny> path.
+
+=head2 is_dev
+
+Returns true when C<PLACK_ENV> contains C<dev>.
+
+=head2 minion
+
+Returns the L<Minion> job queue instance from the MetaCPAN API application.
+
+=head2 ua
+
+    my $ua = ua( $proxy );
+
+Returns an L<LWP::UserAgent> with a C<MetaCPAN> agent string, optionally
+configured with a proxy.
+
+=head2 read_url
+
+Fetches a URL and returns the decoded response body. Dies on HTTP errors.
+
+=head2 strip_pod
+
+Strips POD markup from a string, returning plain text.
+
+=head2 extract_section
+
+    my $text = extract_section( $pod, 'NAME' );
+
+Extracts a named C<=head1> section from a POD string.
+
+=head2 read_00whois
+
+    my $data = read_00whois( $file );
+
+Parses C<authors/00whois.xml> and returns a hashref keyed by PAUSE ID.
+
+=head2 read_02packages
+
+    my $packages = read_02packages( $file );
+
+Returns a L<Parse::CPAN::Packages::Fast> object for
+C<modules/02packages.details.txt.gz>.
+
+=head2 read_02packages_fh
+
+    my $fh = read_02packages_fh( file => $path, log_meta => 1 );
+
+Opens C<02packages.details.txt.gz> and returns a filehandle positioned past
+the 9-line header block.
+
+=head2 read_06perms_fh
+
+Returns a filehandle for C<modules/06perms.txt>.
+
+=head2 read_06perms_iter
+
+Returns a L<PAUSE::Permissions> module iterator for C<modules/06perms.txt>.
+
+=head2 read_recent_segment
+
+    my $json = read_recent_segment('1h');
+
+Slurps a C<RECENT-*.json> file from the CPAN mirror.
+
+=head2 true / false / is_bool
+
+JSON boolean helpers re-exported from L<Cpanel::JSON::XS>.
+
+=cut

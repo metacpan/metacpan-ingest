@@ -210,6 +210,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+cve - Ingest CPAN security advisory (CVE) data
+
 =head1 SYNOPSIS
 
  # scripts/cve [--test] [json_file]

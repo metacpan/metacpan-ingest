@@ -77,3 +77,35 @@ sub purge_ids (%args) {
 1;
 
 __END__
+
+=head1 NAME
+
+purge - Remove an author's releases and files from Elasticsearch
+
+=head1 SYNOPSIS
+
+ # scripts/purge --author OALDERS
+ # scripts/purge --author OALDERS --release HTML-Restrict-2.2.2
+ # scripts/purge --author OALDERS --force
+
+=head1 DESCRIPTION
+
+Deletes all release and file documents for a given PAUSE author from
+Elasticsearch. If C<--release> is specified, only that release is removed.
+Prompts for confirmation unless C<--force> is given.
+
+=head1 OPTIONS
+
+=head2 --author
+
+PAUSE ID of the author whose data should be purged (required).
+
+=head2 --release
+
+Only purge this specific release (distribution version name).
+
+=head2 --force
+
+Skip the confirmation prompt.
+
+=cut

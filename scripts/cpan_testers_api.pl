@@ -103,3 +103,22 @@ $es->index_refresh;
 log_info {'done'};
 
 1;
+
+__END__
+
+=head1 NAME
+
+cpan_testers_api - Ingest CPAN Testers summary data into release records
+
+=head1 SYNOPSIS
+
+ # scripts/cpan_testers_api
+
+=head1 DESCRIPTION
+
+Fetches the CPAN Testers release summary from C<api.cpantesters.org/v3/release>
+and updates matching release documents in Elasticsearch with pass/fail/na/unknown
+test result counts. Uses a local fixture file when C<HARNESS_ACTIVE> is set
+(test mode).
+
+=cut

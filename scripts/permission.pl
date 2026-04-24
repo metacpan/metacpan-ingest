@@ -83,3 +83,32 @@ sub run_cleanup ($seen) {
 1;
 
 __END__
+
+=head1 NAME
+
+permission - Index PAUSE upload permissions from 06perms.txt
+
+=head1 SYNOPSIS
+
+ # scripts/permission
+ # scripts/permission --cleanup
+ # scripts/permission --perms_file /path/to/06perms.txt
+
+=head1 DESCRIPTION
+
+Reads C<modules/06perms.txt> and upserts permission records (owner and
+co-maintainers for each module) into the Elasticsearch C<permission> index.
+With C<--cleanup>, removes permission records that are no longer present in
+the file.
+
+=head1 OPTIONS
+
+=head2 --cleanup
+
+Remove stale permission records from the index after processing.
+
+=head2 --perms_file
+
+Path to an alternative C<06perms.txt> file.
+
+=cut
