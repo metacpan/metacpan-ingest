@@ -38,7 +38,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
       - name: Run Perl tests
-        run: docker compose build && docker compose run ingest env PLACK_ENV=dev prove -lv t
+        run: docker compose --profile test run --build ingest-test prove -v
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
