@@ -59,37 +59,6 @@ run_cleanup( \%seen ) if $cleanup;
 
 log_info {'done indexing 06perms'};
 
-sub _get_authors_data ($authors_file) {
-    my $data = XMLin(
-        $authors_file,
-        ForceArray    => 1,
-        SuppressEmpty => '',
-        NoAttr        => 1,
-        KeyAttr       => [],
-    );
-
-    my $whois_data = {};
-
-    for my $author ( @{ $data->{cpanid} } ) {
-        my $data = {
-            map {
-                my $content = $author->{$_};
-                @$content == 1
-                    && !ref $content->[0] ? ( $_ => $content->[0] ) : ();
-            } keys %$author
-        };
-
-        my $id       = $data->{id};
-        my $existing = $whois_data->{$id};
-        if (  !$existing
-            || $existing->{type} eq 'author' && $data->{type} eq 'list' )
-        {
-            $whois_data->{$id} = $data;
-        }
-    }
-
-    return $whois_data;
-}
 
 sub run_cleanup ($seen) {
     log_debug {"checking permission data to remove"};

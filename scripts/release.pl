@@ -377,10 +377,11 @@ sub _import_archive ( $archive_path, $dist ) {
     # update 'latest' (must be done _after_ last update of the document)
     #   flag for all releases of the distribution.
     if ( $document->{latest} and !$queue ) {
-        log_info {"Upding latest status"};
+        log_info {"Updating latest status"};
 
-#     local @ARGV = ( qw< latest --distribution >, $document->{distribution} );
-#     MetaCPAN::Script::Runner->run;
+        my $cmd = sprintf "perl scripts/latest --distribution %s",
+            $document->{distribution};
+        `$cmd`;
     }
 }
 
