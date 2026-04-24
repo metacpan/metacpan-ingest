@@ -233,3 +233,38 @@ sub get_contributors ( $author_name, $release_name ) {
 1;
 
 __END__
+
+=head1 NAME
+
+MetaCPAN::Contributor - Index distribution contributors in Elasticsearch
+
+=head1 SYNOPSIS
+
+    use MetaCPAN::Contributor qw( update_release_contributors );
+    update_release_contributors( $release_doc );
+
+=head1 DESCRIPTION
+
+Resolves contributor and author metadata for a release from Elasticsearch,
+deduplicates records by email address, attempts to match contributors to
+PAUSE IDs via the author index, and upserts records into the C<contributor>
+index.
+
+=head1 FUNCTIONS
+
+=head2 update_release_contributors
+
+    update_release_contributors( $release_doc, $timeout );
+
+Fetches contributors for the release described by C<$release_doc> (a hashref
+with C<author>, C<name>, and C<distribution> keys) and bulk-upserts them into
+the C<contributor> index.
+
+=head2 get_cpan_author_contributors
+
+    my $list = get_cpan_author_contributors( $author, $release, $distribution );
+
+Returns an arrayref of new contributor records (those not already present in
+Elasticsearch) for the given release.
+
+=cut

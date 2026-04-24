@@ -67,6 +67,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+mirrors - Index CPAN mirror list from mirrors.json
+
 =head1 SYNOPSIS
 
  $ scripts/mirrors.pl

@@ -251,3 +251,37 @@ sub new_authors () {
 1;
 
 __END__
+
+=head1 NAME
+
+author - Index CPAN author data from 00whois.xml
+
+=head1 SYNOPSIS
+
+ # scripts/author
+ # scripts/author --pauseid OALDERS
+ # scripts/author --whois_file /path/to/00whois.xml
+
+=head1 DESCRIPTION
+
+Reads author records from C<authors/00whois.xml> in the local CPAN mirror and
+upserts them into the Elasticsearch C<author> index. Existing records are
+compared field-by-field and only updated when changed. A file map from
+C<indices/find-ls.gz> is used to set the author's gravatar URL and upload
+directory.
+
+=head1 OPTIONS
+
+=head2 --pauseid
+
+Only process the author with this PAUSE ID.
+
+=head2 --whois_file
+
+Path to an alternative C<00whois.xml> file.
+
+=head2 --findls_file
+
+Path to an alternative C<find-ls.gz> file.
+
+=cut

@@ -273,6 +273,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+tickets - Ingest RT and GitHub issue counts into the distribution index
+
 =head1 SYNOPSIS
 
  # scripts/tickets

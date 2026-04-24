@@ -87,6 +87,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+cover - Ingest CPAN Cover test coverage data
+
 =head1 SYNOPSIS
 
  # scripts/cover [--test] [json_file]

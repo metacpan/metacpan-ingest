@@ -28,18 +28,15 @@ my %valid_keys = map { $_ => 1 } qw<
 >;
 
 # args
-my ( $cve_url, $cve_dev_url, $json_file, $test );
+my ( $cve_url, $json_file, $test );
 GetOptions(
     "cve_url=s"     => \$cve_url,
-    "cve_dev_url=s" => \$cve_dev_url,
     "json_file=s"   => \$json_file,
     "test"          => \$test,
 );
 
 # setup
-$cve_url //= 'https://cpan-security.github.io/cpansa-feed/cpansa.json';
-$cve_dev_url
-    //= 'https://cpan-security.github.io/cpansa-feed/cpansa_dev.json';
+$cve_url //= 'https://butterfly.cpansec.org/feed/cpansa.json';
 
 my $es_release = MetaCPAN::ES->new( index => "release" );
 my $es_cve     = MetaCPAN::ES->new( index => "cve" );
@@ -198,10 +195,7 @@ log_info {"done."};
 
 sub retrieve_cve_data {
     return decode_json( path($json_file)->slurp ) if $json_file;
-
-    my $url = $test ? $cve_dev_url : $cve_url;
-
-    return decode_json( read_url($url) );
+    return decode_json( read_url($cve_url) );
 }
 
 1;
@@ -209,6 +203,10 @@ sub retrieve_cve_data {
 __END__
 
 =pod
+
+=head1 NAME
+
+cve - Ingest CPAN security advisory (CVE) data
 
 =head1 SYNOPSIS
 

@@ -215,3 +215,96 @@ sub await ($self) {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MetaCPAN::ES - Elasticsearch client wrapper for MetaCPAN
+
+=head1 SYNOPSIS
+
+    my $es = MetaCPAN::ES->new( index => 'release' );
+    my $res = $es->search( body => { query => { match_all => {} } } );
+    my $bulk = $es->bulk;
+
+=head1 DESCRIPTION
+
+Thin wrapper around L<Search::Elasticsearch> that binds operations to a
+named index and provides helpers for searching, bulk indexing, scrolling,
+and waiting for cluster availability.
+
+=head1 METHODS
+
+=head2 new
+
+    my $es = MetaCPAN::ES->new( index => $name );
+
+Constructs a client bound to the given index. Node configuration is read via
+L<MetaCPAN::Ingest/es_config>. Defaults to the C<cpan> index.
+
+=head2 index
+
+Indexes a single document.
+
+=head2 update
+
+    $es->update( id => $id, doc => \%fields );
+
+Partially updates a document. Silently skips if C<id> or C<doc> are absent.
+
+=head2 get
+
+    my $doc = $es->get( id => $id );
+
+Retrieves a document by id.
+
+=head2 exists
+
+Returns true if a document with the given id exists.
+
+=head2 search
+
+    my $res = $es->search( body => \%query, size => $n );
+
+Executes a search against the bound index.
+
+=head2 scroll
+
+    my $scroller = $es->scroll( body => \%query, scroll => '30m' );
+
+Returns a scroll helper for iterating large result sets. Defaults to
+C<match_all> with a 30-minute scroll window.
+
+=head2 bulk
+
+    my $bulk = $es->bulk( max_count => 250, timeout => '25m' );
+
+Returns a bulk helper for batched index operations.
+
+=head2 count
+
+Returns the document count for a given query body.
+
+=head2 get_ids
+
+Returns an arrayref of all document IDs matching a query, collected via scroll.
+
+=head2 get_source
+
+Returns the C<_source> of a document by id.
+
+=head2 index_refresh
+
+Forces an index refresh.
+
+=head2 await
+
+Polls Elasticsearch until it responds or a 15-second timeout expires. Dies on
+timeout.
+
+=head2 test
+
+Returns true if this is a properly initialised MetaCPAN::ES instance.
+
+=cut

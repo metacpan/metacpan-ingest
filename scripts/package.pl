@@ -88,3 +88,31 @@ sub run_cleanup ($seen) {
 1;
 
 __END__
+
+=head1 NAME
+
+package - Index CPAN package data from 02packages.details.txt
+
+=head1 SYNOPSIS
+
+ # scripts/package
+ # scripts/package --cleanup
+ # scripts/package --package_file /path/to/02packages.details.txt.gz
+
+=head1 DESCRIPTION
+
+Reads C<modules/02packages.details.txt.gz> line by line and upserts records
+into the Elasticsearch C<package> index. With C<--cleanup>, removes package
+records that are no longer present in the packages file.
+
+=head1 OPTIONS
+
+=head2 --cleanup
+
+Remove stale package records from the index after processing.
+
+=head2 --package_file
+
+Path to an alternative C<02packages.details.txt.gz> file.
+
+=cut

@@ -243,6 +243,10 @@ __END__
 
 =pod
 
+=head1 NAME
+
+watcher - Watch CPAN RECENT files and trigger ingestion of new releases
+
 =head1 SYNOPSIS
 
  # scripts/watcher

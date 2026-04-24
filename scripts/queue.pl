@@ -53,6 +53,10 @@ if ($file) {
 
 __END__
 
+=head1 NAME
+
+queue - Enqueue CPAN distribution archives for ingestion via Minion
+
 =head1 SYNOPSIS
 
     scripts/queue --file https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTML-Restrict-2.2.2.tar.gz

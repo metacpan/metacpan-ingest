@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use lib 't/lib';
 
 use Test::More 0.96;
 
@@ -207,7 +206,7 @@ subtest 'Contributor Indexing' => sub {
 
 subtest 'CVE Indexing' => sub {
     my $cve_script = $d_scripts->child('cve.pl');
-    my $json       = $d_test->child('cve_dev.json');
+    my $json       = $d_test->child('cpansa.json');
 
     # run the CVE indexing script
     my $script_cmd = "perl $cve_script -json $json";
@@ -222,10 +221,5 @@ subtest 'CVE Indexing' => sub {
     )->{count};
     ok( $cve_count > 0, "Found ($cve_count) test CVEs" );
 };
-
-# TODO:
-# favorite
-# first?
-# last?
 
 done_testing;

@@ -370,3 +370,76 @@ sub hide_from_pause ( $self, $content, $filename, $pkg ) {
 1;
 
 __END__
+
+=head1 NAME
+
+MetaCPAN::Release - Parse and document a CPAN distribution release
+
+=head1 SYNOPSIS
+
+    my $release = MetaCPAN::Release->new(
+        author       => 'PAUSEID',
+        archive_path => '/path/to/Dist-1.0.tar.gz',
+        dist_info    => $dist_info,
+        status       => 'latest',
+    );
+    my $doc = $release->document_release;
+
+=head1 DESCRIPTION
+
+Extracts a CPAN distribution archive, loads its metadata (META.json or
+META.yml), discovers Perl modules within it, and builds document structures
+suitable for indexing in Elasticsearch.
+
+=head1 METHODS
+
+=head2 new
+
+    my $release = MetaCPAN::Release->new( %args );
+
+Required: C<author>, C<archive_path>, C<dist_info> (a L<CPAN::DistnameInfo>
+object), C<status>.
+
+=head2 files
+
+Returns an arrayref of L<MetaCPAN::File> objects for every file in the
+distribution. Populates module data via L</add_modules_from_meta> when the
+metadata C<provides> section is present, otherwise via L</add_modules_from_files>.
+
+=head2 modules
+
+Returns the arrayref of files that contain at least one indexed module.
+
+=head2 document_release
+
+Builds and returns the Elasticsearch document hashref for this release,
+including checksums, dependencies, license, metadata, and stat info.
+
+=head2 document_module
+
+    my $mod = $release->document_module( name => $name, version => $v, indexed => 1 );
+
+Builds a module sub-document hashref.
+
+=head2 dependencies
+
+Returns an arrayref of dependency hashrefs parsed from the distribution
+metadata prereqs.
+
+=head2 add_modules_from_meta
+
+Populates module data from the C<provides> section of the distribution
+metadata.
+
+=head2 add_modules_from_files
+
+Discovers modules by scanning C<.pm> and C<.pm.PL> files using
+L<Module::Metadata> and L<Parse::PMFile>. Module::Metadata calls are wrapped
+with a 50-second alarm to guard against hangs.
+
+=head2 hide_from_pause
+
+Returns true if the given package declaration is hidden from PAUSE indexing
+(e.g. inside a conditional or comment).
+
+=cut

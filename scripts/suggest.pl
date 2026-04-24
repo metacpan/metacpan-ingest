@@ -103,6 +103,10 @@ sub _update_slice ($range) {
 
 __END__
 
+=head1 NAME
+
+suggest - Populate Elasticsearch autocomplete suggestion data for documentation
+
 =head1 SYNOPSIS
 
  # scripts/suggest [--all] [--days N]

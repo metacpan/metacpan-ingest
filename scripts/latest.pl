@@ -349,6 +349,10 @@ sub compare_dates ( $d1, $d2 ) {
 
 __END__
 
+=head1 NAME
+
+latest - Mark the latest release for each CPAN distribution
+
 =head1 SYNOPSIS
 
  # scripts/latest

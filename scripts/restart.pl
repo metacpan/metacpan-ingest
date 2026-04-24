@@ -19,12 +19,17 @@ __END__
 
 =pod
 
+=head1 NAME
+
+restart - Request an Elasticsearch cluster rolling restart
+
 =head1 SYNOPSIS
 
  # scripts/restart
 
 =head1 DESCRIPTION
 
-kick the ES cluster
+Requests a rolling restart of the Elasticsearch cluster with a 5-second delay
+between node restarts.
 
 =cut
