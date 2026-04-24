@@ -75,7 +75,7 @@ Set the C<first> bit after a full reindex
 
 =head1 SYNOPSIS
 
- $ bin/first --distribution Moose
+ $ scripts/first --distribution Moose
 
 =head1 DESCRIPTION
 

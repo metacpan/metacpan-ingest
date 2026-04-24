@@ -92,7 +92,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/checksum --[no-]dry_run --limit X
+ # scripts/checksum --[no-]dry_run --limit X
 
 =head1 DESCRIPTION
 

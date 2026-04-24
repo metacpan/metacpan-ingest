@@ -187,11 +187,11 @@ Backup indices
 
 =head1 SYNOPSIS
 
- $ bin/backup --index author
+ $ scripts/backup --index author
 
- $ bin/backup --purge
+ $ scripts/backup --purge
 
- $ bin/backup --restore path
+ $ scripts/backup --restore path
 
 =head1 DESCRIPTION
 

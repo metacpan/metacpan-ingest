@@ -290,9 +290,9 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/contributor --all
- # bin/contributor --distribution Moose
- # bin/contributor --release ETHER/Moose-2.1806
+ # scripts/contributor --all
+ # scripts/contributor --distribution Moose
+ # scripts/contributor --release ETHER/Moose-2.1806
 
 =head1 DESCRIPTION
 

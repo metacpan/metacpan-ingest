@@ -212,7 +212,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/cve [--test] [json_file]
+ # scripts/cve [--test] [json_file]
 
 =head1 DESCRIPTION
 

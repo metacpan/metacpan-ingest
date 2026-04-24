@@ -497,11 +497,11 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/release ~/cpan/authors/id/A
- # bin/release ~/cpan/authors/id/A/AB/ABRAXXA/DBIx-Class-0.08127.tar.gz
- # bin/release http://cpan.cpantesters.org/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
+ # scripts/release ~/cpan/authors/id/A
+ # scripts/release ~/cpan/authors/id/A/AB/ABRAXXA/DBIx-Class-0.08127.tar.gz
+ # scripts/release http://cpan.cpantesters.org/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
 
- # bin/release ~/cpan --age 24 --latest
+ # scripts/release ~/cpan --age 24 --latest
 
 =head1 DESCRIPTION
 

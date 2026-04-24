@@ -17,7 +17,7 @@ my $mapper = MetaCPAN::Mapper->new();
 ok( $mapper->test, 'mapper is valid' );
 
 my $home       = home();
-my $d_bin      = $home->child('bin');
+my $d_scripts  = $home->child('scripts');
 my $d_test     = $home->child('test_data');
 my $d_fakecpan = $d_test->child('fakecpan');
 my $d_authors  = $d_fakecpan->child('authors');
@@ -83,7 +83,7 @@ subtest 'Check Index' => sub {
 # === Index
 
 subtest 'Author Indexing' => sub {
-    my $author_script = $d_bin->child('author.pl');
+    my $author_script = $d_scripts->child('author.pl');
     my $whois_file    = $d_authors->child('00whois.xml');
     my $findls_file   = $d_indices->child('find-ls.gz');
 
@@ -98,7 +98,7 @@ subtest 'Author Indexing' => sub {
 };
 
 subtest 'Package Indexing' => sub {
-    my $package_script = $d_bin->child('package.pl');
+    my $package_script = $d_scripts->child('package.pl');
     my $package_file   = $d_modules->child('02packages.details.txt.gz');
 
     # run the package indexing script
@@ -112,7 +112,7 @@ subtest 'Package Indexing' => sub {
 };
 
 subtest 'Permissions Indexing' => sub {
-    my $perms_script = $d_bin->child('permission.pl');
+    my $perms_script = $d_scripts->child('permission.pl');
     my $perms_file   = $d_modules->child('06perms.txt');
 
     # run the permission indexing script
@@ -131,7 +131,7 @@ subtest 'Permissions Indexing' => sub {
 };
 
 subtest 'Release Indexing' => sub {
-    my $release_script = $d_bin->child('release.pl');
+    my $release_script = $d_scripts->child('release.pl');
     my $release_file   = $d_authors->child($t_full_path);
 
     # run the release indexing script for a tarball
@@ -159,7 +159,7 @@ subtest 'Release Indexing' => sub {
 };
 
 subtest 'Cover Indexing' => sub {
-    my $cover_script = $d_bin->child('cover.pl');
+    my $cover_script = $d_scripts->child('cover.pl');
     my $cover_file   = $d_test->child('cpancover_dev.json');
 
     # run the cover indexing script
@@ -173,7 +173,7 @@ subtest 'Cover Indexing' => sub {
 };
 
 subtest 'River Indexing' => sub {
-    my $river_script = $d_bin->child('river.pl');
+    my $river_script = $d_scripts->child('river.pl');
     my $river_file   = $d_test->child('river-of-cpan.json');
 
     # run the river indexing script
@@ -187,7 +187,7 @@ subtest 'River Indexing' => sub {
 };
 
 subtest 'Contributor Indexing' => sub {
-    my $contributor_script = $d_bin->child('contributor.pl');
+    my $contributor_script = $d_scripts->child('contributor.pl');
 
     # run the contributor indexing script
     my $script_cmd = "perl $contributor_script -release $t_full_release";
@@ -205,7 +205,7 @@ subtest 'Contributor Indexing' => sub {
 };
 
 subtest 'CVE Indexing' => sub {
-    my $cve_script = $d_bin->child('cve.pl');
+    my $cve_script = $d_scripts->child('cve.pl');
     my $json       = $d_test->child('cve_dev.json');
 
     # run the CVE indexing script

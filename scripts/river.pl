@@ -51,7 +51,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/river
+ # scripts/river
 
 =head1 DESCRIPTION
 

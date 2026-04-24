@@ -104,7 +104,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/suggest [--all] [--days N]
+ # scripts/suggest [--all] [--days N]
 
 =head1 DESCRIPTION
 

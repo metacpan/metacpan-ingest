@@ -22,6 +22,7 @@ RUN \
 EOT
 
 COPY bin bin
+COPY scripts scripts
 COPY lib lib
 COPY conf conf
 COPY *.conf *.yaml .

@@ -67,7 +67,7 @@ __END__
 
 =head1 SYNOPSIS
 
- $ bin/mirrors.pl
+ $ scripts/mirrors.pl
 
 =head1 SOURCE
 

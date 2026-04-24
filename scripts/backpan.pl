@@ -159,13 +159,13 @@ sub update_files_author ( $author, $author_releases ) {
 
 =head1 SYNOPSIS
 
- $ bin/backpan
+ $ scripts/backpan
 
- $ bin/backpan --distribution DIST
+ $ scripts/backpan --distribution DIST
 
- $ bin/backpan --files_only
+ $ scripts/backpan --files_only
 
- $ bin/backpan --undo ...
+ $ scripts/backpan --undo ...
 
 =head1 DESCRIPTION
 

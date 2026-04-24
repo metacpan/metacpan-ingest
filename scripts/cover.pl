@@ -89,7 +89,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/cover [--test] [json_file]
+ # scripts/cover [--test] [json_file]
 
 =head1 DESCRIPTION
 

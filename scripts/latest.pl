@@ -350,9 +350,9 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/latest
+ # scripts/latest
 
- # bin/latest --dry_run
+ # scripts/latest --dry_run
 
 =head1 DESCRIPTION
 

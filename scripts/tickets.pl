@@ -275,7 +275,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/tickets
+ # scripts/tickets
 
 =head1 DESCRIPTION
 

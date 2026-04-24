@@ -245,7 +245,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/watcher
+ # scripts/watcher
 
 =head1 DESCRIPTION
 

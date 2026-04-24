@@ -21,7 +21,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/restart
+ # scripts/restart
 
 =head1 DESCRIPTION
 
