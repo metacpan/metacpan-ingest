@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use lib 't/lib';
 
 use Test::More 0.96;
 
@@ -222,10 +221,5 @@ subtest 'CVE Indexing' => sub {
     )->{count};
     ok( $cve_count > 0, "Found ($cve_count) test CVEs" );
 };
-
-# TODO:
-# favorite
-# first?
-# last?
 
 done_testing;
