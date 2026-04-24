@@ -51,7 +51,7 @@ RUN \
     chown -R metacpan:users ./
 EOT
 
-COPY .perlcriticrc .perltidyrc perlimports.toml tidyall.ini ./
+COPY .perlcriticrc .perltidyrc perlimports.toml tidyall.ini precious.toml ./
 COPY t t
 
 COPY bin/install-precious /tmp/install-precious

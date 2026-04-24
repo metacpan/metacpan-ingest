@@ -4,20 +4,16 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
-use Path::Tiny       qw< path >;
-use MetaCPAN::Logger qw< :log :dlog >;
-use Search::Elasticsearch;
-use MetaCPAN::Ingest qw< home es_config >;
+use Search::Elasticsearch ();
+use Cpanel::JSON::XS      qw< decode_json >;
+use MetaCPAN::Ingest      qw< es_config home >;
 
 sub new ( $class, %args ) {
     my $node = $args{node};
 
     my $es_config = es_config($node);
 
-    return bless {
-        es => Search::Elasticsearch->new( %$es_config ),
-    }, $class;
+    return bless { es => Search::Elasticsearch->new(%$es_config), }, $class;
 }
 
 sub test ($self) {

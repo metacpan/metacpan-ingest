@@ -4,8 +4,8 @@ use lib 't/lib';
 
 use Test::More 0.96;
 
-use MetaCPAN::ES;
-use MetaCPAN::Mapper;
+use MetaCPAN::ES     ();
+use MetaCPAN::Mapper ();
 use MetaCPAN::Ingest qw< home >;
 
 $ENV{INGEST_TEST} = 1;
@@ -88,7 +88,8 @@ subtest 'Author Indexing' => sub {
     my $findls_file   = $d_indices->child('find-ls.gz');
 
     # run the author indexing script
-    my $script_cmd = "perl $author_script -whois_file $whois_file -findls_file $findls_file";
+    my $script_cmd
+        = "perl $author_script -whois_file $whois_file -findls_file $findls_file";
     print STDERR "Running: $script_cmd\n";
     `$script_cmd`;
 

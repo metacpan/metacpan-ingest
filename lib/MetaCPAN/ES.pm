@@ -4,11 +4,11 @@ use strict;
 use warnings;
 use v5.36;
 
-use MetaCPAN::Logger qw< :log :dlog >;
-use Search::Elasticsearch;
-use Ref::Util qw< is_hashref >;
+use Search::Elasticsearch ();
+use MetaCPAN::Logger      qw< log_info log_warn >;
+use Ref::Util             qw< is_hashref >;
 
-use MetaCPAN::Ingest qw< handle_error es_config >;
+use MetaCPAN::Ingest qw< es_config handle_error >;
 
 sub new ( $class, %args ) {
     my $node  = $args{node};
@@ -17,7 +17,7 @@ sub new ( $class, %args ) {
     my $es_config = es_config($node);
 
     return bless {
-        es => Search::Elasticsearch->new( %$es_config ),
+        es    => Search::Elasticsearch->new(%$es_config),
         index => $index,
     }, $class;
 }
@@ -77,20 +77,20 @@ sub update ( $self, %args ) {
     my $id    = $args{id};
     my $doc   = $args{doc};
 
-    if (!$id) {
-        log_warn { "ES update called with no 'id'" };
+    if ( !$id ) {
+        log_warn {"ES update called with no 'id'"};
         return;
     }
 
-    if (!is_hashref($doc) or %$doc == 0) {
-        log_warn { "ES update called with no or empty 'doc'" };
+    if ( !is_hashref($doc) or %$doc == 0 ) {
+        log_warn {"ES update called with no or empty 'doc'"};
         return;
     }
 
     return $self->{es}->update(
         index   => $index,
         id      => $id,
-        body    => { %$doc },
+        body    => {%$doc},
         refresh => 1,
     );
 }
@@ -107,12 +107,12 @@ sub bulk ( $self, %args ) {
 
 sub scroll ( $self, %args ) {
     my $body = $args{body} // { query => { match_all => {} } };
-    $body->{sort} = '_doc'; # optimize search in newer ES versions
+    $body->{sort} = '_doc';    # optimize search in newer ES versions
 
     return $self->{es}->scroll_helper(
-        index       => $self->{index},
-        body        => $body,
-        scroll      => ( $args{scroll} // '30m' ),
+        index  => $self->{index},
+        body   => $body,
+        scroll => ( $args{scroll} // '30m' ),
     );
 }
 
@@ -155,15 +155,15 @@ sub clear_index ($self) {
                 match_all => {}
             }
         },
-        refresh => 1,   # optional
+        refresh => 1,    # optional
     );
 }
 
 sub await ($self) {
-    my $timeout = 15;
-    my $iready  = 0;
+    my $timeout      = 15;
+    my $iready       = 0;
     my $cluster_info = {};
-    my $es = $self->{es};
+    my $es           = $self->{es};
 
     if ( scalar( keys %$cluster_info ) == 0 ) {
         my $iseconds = 0;

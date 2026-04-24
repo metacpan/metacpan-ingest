@@ -4,17 +4,13 @@ use strict;
 use warnings;
 use v5.36;
 
+use Plack::MIME    ();
 use List::AllUtils qw< any >;
 use Path::Tiny     qw< path >;
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw< DlogS_trace >;
 
-use MetaCPAN::Ingest qw<
-    extract_section
-    false
-    strip_pod
-    true
->;
+use MetaCPAN::Ingest qw< extract_section false strip_pod true >;
 
 my @NOT_PERL_FILES = qw< SIGNATURE >;
 

@@ -5,10 +5,10 @@ use warnings;
 use v5.36;
 
 use Archive::Any ();
-use Path::Tiny;
+use Path::Tiny   ();
 use Digest::file qw< digest_file_hex >;
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw< log_error >;
 
 sub new ( $class, %args ) {
     my $file = $args{file}
