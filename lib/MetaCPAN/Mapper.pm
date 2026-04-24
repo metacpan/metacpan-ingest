@@ -5,8 +5,8 @@ use warnings;
 use v5.36;
 
 use Search::Elasticsearch ();
-use Cpanel::JSON::XS      qw< decode_json >;
-use MetaCPAN::Ingest      qw< es_config home >;
+use Cpanel::JSON::XS      qw( decode_json );
+use MetaCPAN::Ingest      qw( es_config home );
 
 sub new ( $class, %args ) {
     my $node = $args{node};

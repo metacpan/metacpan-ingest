@@ -2,13 +2,13 @@ use strict;
 use warnings;
 use v5.36;
 
-use MetaCPAN::Logger qw< :log :dlog >;
-use Ref::Util        qw< is_arrayref >;
-
 use Getopt::Long;
+use Ref::Util        qw( is_arrayref );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< false >;
+use MetaCPAN::Ingest qw( false );
 
 # args
 my ( $age, $all, $distribution, $release );

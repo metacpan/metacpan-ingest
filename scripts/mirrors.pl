@@ -3,11 +3,13 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
 use Cpanel::JSON::XS ();
 
+use MetaCPAN::Logger qw( :log :dlog );
+
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< cpan_dir >;
+use MetaCPAN::Ingest qw( cpan_dir );
+
 
 # args
 my ( $distribution, $files_only, $undo );

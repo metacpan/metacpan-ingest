@@ -2,15 +2,15 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
 use Getopt::Long;
-use Path::Tiny qw< path >;
-use Ref::Util  qw< is_arrayref >;
+use Cpanel::JSON::XS qw( decode_json );
+use Path::Tiny       qw( path );
+use Ref::Util        qw( is_arrayref );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< numify_version read_url true >;
+use MetaCPAN::Ingest qw( numify_version read_url true );
 
 my %range_ops = qw( < lt <= lte > gt >= gte );
 

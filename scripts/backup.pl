@@ -2,17 +2,18 @@ use strict;
 use warnings;
 use v5.36;
 
-use feature qw< state >;
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
-use Cpanel::JSON::XS qw< decode_json encode_json >;
 use DateTime         ();
 use IO::Zlib         ();
-use Path::Tiny       qw< path >;
-use Try::Tiny        qw< catch try >;
+use feature          qw( state );
+use Cpanel::JSON::XS qw( decode_json encode_json );
+use Path::Tiny       qw( path );
+use Try::Tiny        qw( catch try );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< home true >;
+use MetaCPAN::Ingest qw( home true );
 
 # config
 

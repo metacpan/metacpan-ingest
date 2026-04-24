@@ -2,12 +2,13 @@ use strict;
 use warnings;
 use v5.36;
 
-use CPAN::DistnameInfo ();
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+use CPAN::DistnameInfo ();
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< fix_version read_02packages_fh true >;
+use MetaCPAN::Ingest qw( fix_version read_02packages_fh true );
 
 # args
 my ( $cleanup, $package_file );

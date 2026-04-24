@@ -5,10 +5,11 @@ use warnings;
 use v5.36;
 
 use Search::Elasticsearch ();
-use MetaCPAN::Logger      qw< log_info log_warn >;
-use Ref::Util             qw< is_hashref >;
+use Ref::Util             qw( is_hashref );
 
-use MetaCPAN::Ingest qw< es_config handle_error >;
+use MetaCPAN::Logger qw( log_info log_warn );
+
+use MetaCPAN::Ingest qw( es_config handle_error );
 
 sub new ( $class, %args ) {
     my $node  = $args{node};

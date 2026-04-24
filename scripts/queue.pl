@@ -3,10 +3,10 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use Path::Tiny           qw< path >;
 use Path::Iterator::Rule ();
+use Path::Tiny qw( path );
 
-use MetaCPAN::Ingest qw< minion >;
+use MetaCPAN::Ingest qw( minion );
 
 # args
 my ( $dir, $file );

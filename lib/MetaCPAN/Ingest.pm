@@ -10,16 +10,16 @@ use File::Basename     ();
 use File::Spec         ();
 use LWP::UserAgent     ();
 use PAUSE::Permissions ();
-use Encode             qw< decode_utf8 >;
-use IO::Prompt::Tiny   qw< prompt >;
-use Path::Tiny         qw< path >;
-use Ref::Util          qw< is_plain_arrayref is_plain_hashref is_ref >;
-use Scalar::Util       qw< blessed >;
-use Term::ANSIColor    qw< colored >;
-use XML::Simple        qw< XMLin >;
+use Encode             qw( decode_utf8 );
+use IO::Prompt::Tiny   qw( prompt );
+use Path::Tiny         qw( path );
+use Ref::Util          qw( is_plain_arrayref is_plain_hashref is_ref );
+use Scalar::Util       qw( blessed );
+use Term::ANSIColor    qw( colored );
+use XML::Simple        qw( XMLin );
 
 use MetaCPAN::Config ();
-use MetaCPAN::Logger qw< log_debug log_error log_fatal log_info >;
+use MetaCPAN::Logger qw( log_debug log_error log_fatal log_info );
 
 use Sub::Exporter -setup => {
     exports => [ qw<

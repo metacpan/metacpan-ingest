@@ -2,12 +2,12 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
+use Cpanel::JSON::XS qw( decode_json );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< home true ua >;
+use MetaCPAN::Ingest qw( home true ua );
 
 # setup
 my $home = home();

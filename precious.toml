@@ -6,6 +6,8 @@ exclude = [
     "/test-data/**",
 ]
 
+include = ["**/*.pl", "**/*.pm", "**/*.t"]
+
 [commands.perlimports]
 type = "both"
 include = [ "**/*.{pl,pm,t}" ]

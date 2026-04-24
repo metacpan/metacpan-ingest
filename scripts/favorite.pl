@@ -3,10 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< false minion >;
+use MetaCPAN::Ingest qw( false minion );
 
 # args
 my ( $age, $check_missing, $count, $distribution, $limit, $queue );

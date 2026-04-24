@@ -3,10 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< read_06perms_iter true >;
+use MetaCPAN::Ingest qw( read_06perms_iter true );
 
 # args
 my ( $cleanup, $perms_file );

@@ -2,14 +2,14 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
 use Getopt::Long;
-use Path::Tiny qw< path >;
+use Cpanel::JSON::XS qw( decode_json );
+use Path::Tiny       qw( path );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< read_url true >;
+use MetaCPAN::Ingest qw( read_url true );
 
 # args
 my ( $json_file, $test );

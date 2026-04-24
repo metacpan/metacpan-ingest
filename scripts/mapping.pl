@@ -2,8 +2,9 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+
 use MetaCPAN::Mapper;
-use MetaCPAN::Ingest qw< are_you_sure >;
+use MetaCPAN::Ingest qw( are_you_sure );
 
 my ( $index, $cmd );
 GetOptions(

@@ -2,21 +2,21 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS   qw< decode_json >;
 use DateTime           ();
 use CPAN::DistnameInfo ();
 use FindBin            ();
 use Getopt::Long;
+use Cpanel::JSON::XS   qw( decode_json );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
+use MetaCPAN::Ingest qw(
     author_dir
     cpan_dir
     read_recent_segment
     true
->;
+);
 
 # args
 my ( $backpan, $dry_run );

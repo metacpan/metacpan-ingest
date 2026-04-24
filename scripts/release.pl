@@ -2,21 +2,22 @@ use strict;
 use warnings;
 use v5.36;
 
+use Getopt::Long;
 use CPAN::DistnameInfo ();
 use File::Find::Rule   ();
 use File::stat         ();
-use Getopt::Long;
-use List::Util qw< uniq >;
-use Path::Tiny qw< path >;
-use Try::Tiny  qw< catch try >;
+use List::Util qw( uniq );
+use Path::Tiny qw( path );
+use Try::Tiny  qw( catch try );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::Archive;
-use MetaCPAN::Contributor qw< update_release_contributors >;
+use MetaCPAN::Contributor qw( update_release_contributors );
 use MetaCPAN::ES;
 use MetaCPAN::File;
-use MetaCPAN::Ingest qw<
+use MetaCPAN::Release;
+use MetaCPAN::Ingest qw(
     cpan_file_map
     digest
     false
@@ -27,9 +28,7 @@ use MetaCPAN::Ingest qw<
     tmp_dir
     true
     ua
->;
-
-use MetaCPAN::Release;
+);
 
 my @skip_dists = (
 

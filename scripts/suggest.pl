@@ -2,9 +2,10 @@ use strict;
 use warnings;
 use v5.36;
 
-use DateTime ();
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+use DateTime ();
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
 

@@ -3,10 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< cpan_file_map >;
+use MetaCPAN::Ingest qw( cpan_file_map );
 
 # args
 my ( $distribution, $files_only, $findls_file, $undo );

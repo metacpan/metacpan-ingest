@@ -4,10 +4,10 @@ use strict;
 use warnings;
 use v5.36;
 
-use Ref::Util qw< is_arrayref >;
+use Ref::Util qw( is_arrayref );
 
-use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< digest true >;
+use MetaCPAN::ES     ();
+use MetaCPAN::Ingest qw( digest true );
 
 use Sub::Exporter -setup => {
     exports => [ qw<

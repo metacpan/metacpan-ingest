@@ -2,16 +2,17 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
+use Getopt::Long;
 use DateTime         ();
 use Email::Valid     ();
 use Encode           ();
-use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
 use URI              ();
+use Cpanel::JSON::XS qw( decode_json );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
+use MetaCPAN::Ingest qw(
     author_dir
     cpan_dir
     cpan_file_map
@@ -19,7 +20,7 @@ use MetaCPAN::Ingest qw<
     false
     read_00whois
     true
->;
+);
 
 # config
 my @author_config_fields = qw<

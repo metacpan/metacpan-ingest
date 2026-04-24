@@ -2,17 +2,17 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS          qw< decode_json encode_json >;
+use Getopt::Long;
+use Try::Tiny;
 use DateTime                  ();
 use DateTime::Format::ISO8601 ();
 use HTTP::Tiny                ();
-use Getopt::Long;
-use Sys::Hostname qw< hostname >;
-use Try::Tiny;
+use Cpanel::JSON::XS          qw( decode_json encode_json );
+use Sys::Hostname             qw( hostname );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
-use MetaCPAN::Ingest qw< are_you_sure config is_dev >;
+use MetaCPAN::Ingest qw( are_you_sure config is_dev );
 
 # setup
 my $config          = config();
