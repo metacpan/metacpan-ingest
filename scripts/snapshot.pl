@@ -137,8 +137,6 @@ sub run_purge_old () {
 }
 
 sub run_restore () {
-    my $snap_name = $snap_name;
-
     are_you_sure('Restoring... will NOT rename indices as ES::Model breaks');
 
     # IF we were not using ES::Model!..
