@@ -1,56 +1,40 @@
 # please alpha sort config items as you add them
-only = 1
+
+severity = 5
 verbose = 11
-program-extensions = .t
+theme = core
 
-[BuiltinFunctions::ProhibitSleepViaSelect]
+[-ControlStructures::ProhibitPostfixControls]
+[-Documentation::RequirePodSections]
+[-InputOutput::ProhibitInteractiveTest]
+[-Modules::RequireVersionVar]
+[-RegularExpressions::RequireDotMatchAnything]
+[-RegularExpressions::RequireExtendedFormatting]
+[-RegularExpressions::RequireLineBoundaryMatching]
+[-Subroutines::ProhibitExplicitReturnUndef]
+[-TestingAndDebugging::ProhibitNoStrict]
+[-ValuesAndExpressions::ProhibitNoisyQuotes]
+[-Variables::ProhibitPunctuationVars]
 
-[BuiltinFunctions::ProhibitStringyEval]
-
-[BuiltinFunctions::RequireGlobFunction]
-
-[ClassHierarchies::ProhibitOneArgBless]
-
-[CodeLayout::RequireTrailingCommas]
-
-[ControlStructures::ProhibitMutatingListFunctions]
-
-[InputOutput::ProhibitBarewordFileHandles]
-
-[InputOutput::ProhibitInteractiveTest]
-
-[InputOutput::ProhibitTwoArgOpen]
-
-[InputOutput::RequireEncodingWithUTF8Layer]
-
-[Modules::ProhibitEvilModules]
-
-[Modules::RequireBarewordIncludes]
-
-[Modules::RequireFilenameMatchesPackage]
-
-[Subroutines::ProhibitNestedSubs]
-
-[Subroutines::ProhibitReturnSort]
-
+# doesn't understand signatures
 [-Subroutines::ProhibitSubroutinePrototypes]
 
+[CodeLayout::RequireTrailingCommas]
+severity = 4
+
 [TestingAndDebugging::RequireUseStrict]
-equivalent_modules = MetaCPAN::Moose
+equivalent_modules = MetaCPAN::Moose Mojo::Base Test::Routine
 
 [TestingAndDebugging::RequireUseWarnings]
-equivalent_modules = MetaCPAN::Moose
+equivalent_modules = MetaCPAN::Moose Mojo::Base Test::Routine
 
 [ValuesAndExpressions::ProhibitEmptyQuotes]
+severity = 4
 
 [ValuesAndExpressions::ProhibitInterpolationOfLiterals]
 allow_if_string_contains_single_quote = 1
 allow = qq{} qq[]
-
-[ValuesAndExpressions::ProhibitLeadingZeros]
+severity = 4
 
 [ValuesAndExpressions::ProhibitNoisyQuotes]
-
-[Variables::ProhibitConditionalDeclarations]
-
-[Variables::RequireLexicalLoopIterators]
+severity = 4
