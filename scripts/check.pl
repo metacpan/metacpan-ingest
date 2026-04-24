@@ -3,10 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< read_02packages_fh >;
+use MetaCPAN::Ingest qw( read_02packages_fh );
 
 # args
 my ( $errors_only, $max_errors, $module );

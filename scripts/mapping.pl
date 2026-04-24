@@ -2,8 +2,9 @@ use strict;
 use warnings;
 
 use Getopt::Long;
+
 use MetaCPAN::Mapper;
-use MetaCPAN::Ingest qw< are_you_sure >;
+use MetaCPAN::Ingest qw( are_you_sure );
 
 my ( $index, $cmd );
 GetOptions(
@@ -19,7 +20,7 @@ my $mapper = MetaCPAN::Mapper->new();
 
 if ( $mapper->index_exists($index) ) {
     are_you_sure("This action will delete index: $index");
-    $mapper->index_delete($index)
+    $mapper->index_delete($index);
 }
 
 if ( $cmd eq 'create' ) {

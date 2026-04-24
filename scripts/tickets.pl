@@ -2,20 +2,16 @@ use strict;
 use warnings;
 use v5.36;
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
-use Ref::Util             qw< is_hashref is_ref >;
-use HTTP::Request::Common qw< GET >;
-use URI::Escape           qw< uri_escape >;
 use Text::CSV_XS          ();
 use Net::GitHub::V4       ();
+use Ref::Util             qw( is_hashref is_ref );
+use HTTP::Request::Common qw( GET );
+use URI::Escape           qw( uri_escape );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    config
-    read_url
-    ua
->;
+use MetaCPAN::Ingest qw( config read_url true ua );
 
 # setup
 my $rt_summary_url //= 'https://rt.cpan.org/Public/bugs-per-dist.tsv';
@@ -268,7 +264,7 @@ sub _bulk_update ($records) {
         $bulk->update( {
             id            => $d,
             doc           => $records->{$d},
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 }
@@ -279,7 +275,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/tickets
+ # scripts/tickets
 
 =head1 DESCRIPTION
 

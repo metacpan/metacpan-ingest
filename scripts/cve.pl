@@ -2,18 +2,15 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
 use Getopt::Long;
-use Path::Tiny qw< path >;
-use Ref::Util  qw< is_arrayref >;
+use Cpanel::JSON::XS qw( decode_json );
+use Path::Tiny       qw( path );
+use Ref::Util        qw( is_arrayref );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    numify_version
-    read_url
->;
+use MetaCPAN::Ingest qw( numify_version read_url true );
 
 my %range_ops = qw( < lt <= lte > gt >= gte );
 
@@ -187,7 +184,7 @@ for my $dist ( sort keys %{$data} ) {
         $bulk_cve->update( {
             id            => $cpansa->{cpansa_id},
             doc           => $doc_data,
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 }
@@ -215,7 +212,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/cve [--test] [json_file]
+ # scripts/cve [--test] [json_file]
 
 =head1 DESCRIPTION
 

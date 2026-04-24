@@ -2,21 +2,17 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS          qw< decode_json encode_json >;
+use Getopt::Long;
+use Try::Tiny;
 use DateTime                  ();
 use DateTime::Format::ISO8601 ();
 use HTTP::Tiny                ();
-use Getopt::Long;
-use Sys::Hostname qw< hostname >;
-use Try::Tiny;
+use Cpanel::JSON::XS          qw( decode_json encode_json );
+use Sys::Hostname             qw( hostname );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
-use MetaCPAN::Ingest qw<
-    are_you_sure
-    config
-    is_dev
->;
+use MetaCPAN::Ingest qw( are_you_sure config is_dev );
 
 # setup
 my $config          = config();
@@ -222,25 +218,25 @@ Snapshot (and restore) Elasticsearch indices
 =head1 SYNOPSIS
 
 # Setup
- $ bin/snapshot --setup (only needed once)
+ $ scripts/snapshot --setup (only needed once)
 
 # Snapshot all indexes daily
- $ bin/snapshot --snap --snap-stub full --date-format %Y-%m-%d
+ $ scripts/snapshot --snap --snap-stub full --date-format %Y-%m-%d
 
 # List what has been snapshotted
- $ bin/snapshot --list
+ $ scripts/snapshot --list
 
 # restore (indices are renamed from `foo` to `restored_foo`)
- $ bin/snapshot --restore --snap-name full_2016-12-01
+ $ scripts/snapshot --restore --snap-name full_2016-12-01
 
 # purge anything older than 30 days and not created on the 1st of a month
- $ bin/snapshot --purge-old
+ $ scripts/snapshot --purge-old
 
 Another example..
 
 # Snapshot just user* indexes hourly and restore
- $ bin/snapshot --snap --indices 'user*' --snap-stub user --date-format '%Y-%m-%d-%H'
- $ bin/snapshot --restore --snap-name user_2016-12-01-12
+ $ scripts/snapshot --snap --indices 'user*' --snap-stub user --date-format '%Y-%m-%d-%H'
+ $ scripts/snapshot --restore --snap-name user_2016-12-01-12
 
 Also useful:
 

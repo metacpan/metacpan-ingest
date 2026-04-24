@@ -4,10 +4,10 @@ use strict;
 use warnings;
 use v5.36;
 
-use Ref::Util qw< is_arrayref >;
+use Ref::Util qw( is_arrayref );
 
-use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< digest >;
+use MetaCPAN::ES     ();
+use MetaCPAN::Ingest qw( digest true );
 
 use Sub::Exporter -setup => {
     exports => [ qw<
@@ -62,7 +62,7 @@ sub update_release_contributors ( $document, $timeout = "5m" ) {
                 release_author => $d->{release_author},
                 distribution   => $d->{distribution},
             },
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 

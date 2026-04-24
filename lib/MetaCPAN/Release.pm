@@ -4,22 +4,22 @@ use strict;
 use warnings;
 use v5.36;
 
-use CPAN::Meta;
+use CPAN::Meta                ();
 use DateTime                  ();
 use File::Spec                ();
 use Module::Metadata 1.000012 ();                # Improved package detection.
-use Path::Tiny                qw< path >;
-use Plack::MIME               ();
-use Try::Tiny                 qw< catch try >;
+use Path::Tiny                qw( path );
+use Try::Tiny                 qw( catch try );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw(
+    Dlog_trace
+    DlogS_trace
+    log_debug
+    log_error
+    log_warn
+);
 
-use MetaCPAN::Ingest qw<
-    download_url
-    fix_version
-    numify_version
-    strip_pod
->;
+use MetaCPAN::Ingest qw( download_url fix_version numify_version strip_pod );
 
 sub new ( $class, %args ) {
     my $author       = $args{author}       or die "Missing author\n";
@@ -281,7 +281,7 @@ sub document_release ( $self, %args ) {
         author          => $self->{author},
         checksum_md5    => $self->{archive}->file_digest_md5,
         checksum_sha256 => $self->{archive}->file_digest_sha256,
-        date         => DateTime->from_epoch( epoch => $stat->{mtime} ) . "",
+        date         => DateTime->from_epoch( epoch => $stat->{mtime} ) . 'Z',
         dependency   => $self->dependencies,
         distribution => $dist->dist,
 

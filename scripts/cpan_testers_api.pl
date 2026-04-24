@@ -2,15 +2,12 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS qw< decode_json >;
+use Cpanel::JSON::XS qw( decode_json );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    home
-    ua
->;
+use MetaCPAN::Ingest qw( home true ua );
 
 # setup
 my $home = home();
@@ -94,9 +91,9 @@ for my $row (@$data) {
 
     my %tests = map { $_ => $row->{$_} } qw< fail pass na unknown >;
     $bulk->update( {
-        doc           => { tests => \%tests },
-        doc_as_upsert => 1,
         id            => $release_doc->{id},
+        doc           => { tests => \%tests },
+        doc_as_upsert => true,
     } );
 }
 

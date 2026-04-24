@@ -3,13 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    are_you_sure
-    author_dir
->;
+use MetaCPAN::Ingest qw( are_you_sure author_dir );
 
 # args
 my ( $author, $force, $release );

@@ -2,9 +2,10 @@ use strict;
 use warnings;
 use v5.36;
 
-use DateTime ();
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+use DateTime ();
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
 
@@ -104,7 +105,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/suggest [--all] [--days N]
+ # scripts/suggest [--all] [--days N]
 
 =head1 DESCRIPTION
 

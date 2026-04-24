@@ -24,6 +24,7 @@ requires 'Parse::CPAN::Packages::Fast';
 requires 'Path::Iterator::Rule';
 requires 'Path::Tiny', '0.076';
 requires 'PerlIO::gzip';
+requires 'Plack::MIME';
 requires 'Ref::Util';
 requires 'Regexp::Common';
 requires 'Regexp::Common::time';
@@ -35,17 +36,15 @@ requires 'Text::CSV_XS';
 requires 'Term::ANSIColor';
 requires 'URI';
 requires 'XML::Simple';
+requires 'YAML::XS';
 
 requires 'MetaCPAN::Common',
     git => 'https://github.com/metacpan/MetaCPAN-Common',
     ref => '0e5c2852178a47e98db291f613da2b96aca85f64';
 
 on test => sub {
-    requires 'Code::TidyAll',                     '>= 0.74';
+    requires 'App::perlimports';
+    requires 'Perl::Critic', '0.140';
+    requires 'Perl::Tidy' => '== 20260204';
     requires 'Code::TidyAll::Plugin::Test::Vars', '0.04';
-    requires 'Perl::Critic',                      '1.136';
-    requires 'Perl::Tidy' => '20230909';
-    requires 'Test::Code::TidyAll';
-    requires 'Test::More', '0.96';
-    requires 'Test::Perl::Critic';
 };

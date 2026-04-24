@@ -3,10 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< cpan_file_map >;
+use MetaCPAN::Ingest qw( cpan_file_map );
 
 # args
 my ( $distribution, $files_only, $findls_file, $undo );
@@ -159,13 +160,13 @@ sub update_files_author ( $author, $author_releases ) {
 
 =head1 SYNOPSIS
 
- $ bin/backpan
+ $ scripts/backpan
 
- $ bin/backpan --distribution DIST
+ $ scripts/backpan --distribution DIST
 
- $ bin/backpan --files_only
+ $ scripts/backpan --files_only
 
- $ bin/backpan --undo ...
+ $ scripts/backpan --undo ...
 
 =head1 DESCRIPTION
 

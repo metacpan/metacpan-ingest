@@ -4,21 +4,22 @@ use strict;
 use warnings;
 use v5.36;
 
-use Cpanel::JSON::XS;
-use Digest::SHA;
-use Encode qw< decode_utf8 >;
-use IO::Prompt::Tiny qw< prompt >;
-use File::Basename ();
-use File::Spec ();
-use LWP::UserAgent;
-use Path::Tiny qw< path >;
+use Cpanel::JSON::XS   ();
+use Digest::SHA        ();
+use File::Basename     ();
+use File::Spec         ();
+use LWP::UserAgent     ();
 use PAUSE::Permissions ();
-use Ref::Util qw< is_ref is_plain_arrayref is_plain_hashref >;
-use Term::ANSIColor qw< colored >;
-use XML::Simple qw< XMLin >;
+use Encode             qw( decode_utf8 );
+use IO::Prompt::Tiny   qw( prompt );
+use Path::Tiny         qw( path );
+use Ref::Util          qw( is_plain_arrayref is_plain_hashref is_ref );
+use Scalar::Util       qw( blessed );
+use Term::ANSIColor    qw( colored );
+use XML::Simple        qw( XMLin );
 
-use MetaCPAN::Config;
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Config ();
+use MetaCPAN::Logger qw( log_debug log_error log_fatal log_info );
 
 use Sub::Exporter -setup => {
     exports => [ qw<
@@ -30,6 +31,7 @@ use Sub::Exporter -setup => {
         diff_struct
         digest
         download_url
+        es_config
         extract_section
         false
         fix_version
@@ -67,7 +69,25 @@ $config->init_logger;
 
 sub config () { $config->config(); }
 
-sub are_you_sure ( $msg, $force=0 ) {
+sub es_config ( $node = undef ) {
+    my $config     = config;
+    my $es_servers = $config->{elasticsearch_servers};
+
+    my $config_node
+        = $node                         ? $node
+        : $ENV{METACPAN_INGEST_ES_PROD} ? $es_servers->{production_node}
+        : is_dev()                      ? $es_servers->{test_node}
+        :                                 $es_servers->{node};
+
+    $config_node or die "Cannot create an ES instance without a node\n";
+
+    return {
+        nodes  => $config_node,
+        client => $es_servers->{client},
+    };
+}
+
+sub are_you_sure ( $msg, $force = 0 ) {
     return 1 if $force;
 
     my $iconfirmed = 0;
@@ -81,7 +101,7 @@ sub are_you_sure ( $msg, $force=0 ) {
             print "Operation will be interruped!\n";
 
             # System Error: 125 - ECANCELED - Operation canceled
-            handle_error(125, 'Operation canceled on User Request', 1);
+            handle_error( 125, 'Operation canceled on User Request', 1 );
         }
         else {
             log_info {'Operation confirmed.'};
@@ -129,6 +149,17 @@ sub diff_struct ( $old_root, $new_root, $allow_extra ) {
                 or is_ref($old)
                 or $new ne $old;
         }
+        elsif ( ref($new) eq 'SCALAR'
+            || ( blessed($new) && $new->isa('JSON::PP::Boolean') ) )
+        {
+            my $n = ref($new) eq 'SCALAR' ? !!$$new : !!$new;
+            my $o
+                = !defined($old)        ? undef
+                : ref($old) eq 'SCALAR' ? !!$$old
+                : blessed($old)         ? !!$old
+                :                         !!$old;
+            return [ $path, $old, $new ] if !defined $old or $n != $o;
+        }
         elsif ( is_plain_arrayref($new) ) {
             return [ $path, $old, $new ]
                 if !is_plain_arrayref($old) || @$new != @$old;
@@ -173,7 +204,7 @@ sub fix_version ($version) {
     return ( ( $v ? 'v' : '' ) . $version );
 }
 
-sub handle_error ( $exit_code, $error, $die_always ) {
+sub handle_error ( $exit_code, $error, $die_always = 0 ) {
 
     # Always log.
     log_fatal {$error};
@@ -232,11 +263,11 @@ sub ua ( $proxy = undef ) {
     return $ua;
 }
 
-sub read_url ( $url ) {
+sub read_url ($url) {
     my $ua   = ua();
     my $resp = $ua->get($url);
 
-    handle_error(1, $resp->status_line, 1 ) unless $resp->is_success;
+    handle_error( 1, $resp->status_line, 1 ) unless $resp->is_success;
 
     # clean up headers if .json.gz is served as gzip type
     # rather than json encoded with gzip
@@ -249,7 +280,7 @@ sub read_url ( $url ) {
 }
 
 sub cpan_file_map ( $ls = undef ) {
-    if (!$ls) {
+    if ( !$ls ) {
         my $cpan = cpan_dir();
         $ls = $cpan->child(qw< indices find-ls.gz >);
         if ( !-e $ls ) {
@@ -297,8 +328,9 @@ sub extract_section ( $pod, $section ) {
 }
 
 sub read_00whois ( $file = undef ) {
-    my $cpan         = cpan_dir();
-    my $authors_file = $file || sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
+    my $cpan = cpan_dir();
+    my $authors_file
+        = $file || sprintf( "%s/%s", $cpan, 'authors/00whois.xml' );
 
     my $data = XMLin(
         $authors_file,
@@ -332,14 +364,15 @@ sub read_00whois ( $file = undef ) {
 }
 
 # TODO: replace usage with read_02packages
-sub read_02packages_fh ( %args ) {
+sub read_02packages_fh (%args) {
     my $log_meta = $args{log_meta} // 0;
-    my $file = $args{file};
+    my $file     = $args{file};
 
     my $fh;
-    if ( $file ) {
+    if ($file) {
         $fh = path($file)->openr(':gzip');
-    } else {
+    }
+    else {
         my $cpan = cpan_dir();
         $fh = $cpan->child(qw< modules 02packages.details.txt.gz >)
             ->openr(':gzip');
@@ -359,11 +392,13 @@ sub read_02packages_fh ( %args ) {
 
 sub read_02packages ( $file = undef ) {
     my $content;
-    if ( $file ) {
+    if ($file) {
         $content = path($file)->stringify;
-    } else {
+    }
+    else {
         my $cpan = cpan_dir();
-        $content = $cpan->child(qw< modules 02packages.details.txt.gz >)->stringify;
+        $content = $cpan->child(qw< modules 02packages.details.txt.gz >)
+            ->stringify;
     }
 
     return Parse::CPAN::Packages::Fast->new($content);
@@ -379,10 +414,11 @@ sub read_06perms_fh ( $file = undef ) {
 
 sub read_06perms_iter ( $file = undef ) {
     my $file_path;
-    if ( $file ) {
+    if ($file) {
         $file_path = path($file)->absolute;
-    } else {
-        my $cpan   = cpan_dir();
+    }
+    else {
+        my $cpan = cpan_dir();
         $file_path = $cpan->child(qw< modules 06perms.txt >)->absolute;
     }
 
@@ -390,7 +426,7 @@ sub read_06perms_iter ( $file = undef ) {
     return $pp->module_iterator;
 }
 
-sub read_recent_segment ( $segment ) {
+sub read_recent_segment ($segment) {
     my $cpan = cpan_dir();
     return $cpan->child("RECENT-$segment.json")->slurp;
 }

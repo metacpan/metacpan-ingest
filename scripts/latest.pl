@@ -3,20 +3,17 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
-
 use CPAN::DistnameInfo;
 use Parse::CPAN::Packages::Fast;
-use Ref::Util      qw< is_arrayref is_hashref >;
-use Regexp::Common qw< time >;
-use Time::Local    qw< timelocal >;
+use Ref::Util      qw( is_arrayref is_hashref );
+use Regexp::Common qw( time );
+use Time::Local    qw( timelocal );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    config
-    minion
-    read_02packages
->;
+use MetaCPAN::Ingest qw( config minion read_02packages );
+
 
 # args
 my ( $distribution, $dry_run, $force, $queue );
@@ -354,9 +351,9 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/latest
+ # scripts/latest
 
- # bin/latest --dry_run
+ # scripts/latest --dry_run
 
 =head1 DESCRIPTION
 

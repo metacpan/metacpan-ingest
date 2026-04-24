@@ -2,13 +2,13 @@ use strict;
 use warnings;
 use v5.36;
 
-use MetaCPAN::Logger qw< :log :dlog >;
-use Ref::Util        qw< is_arrayref >;
-
 use Getopt::Long;
+use Ref::Util        qw( is_arrayref );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< false >;
+use MetaCPAN::Ingest qw( false );
 
 # args
 my ( $age, $all, $distribution, $release );
@@ -165,7 +165,7 @@ sub release_contributor_update_actions ( $release, $es_contributor ) {
             qw(pauseid name email)
         };
     } @$contribs;
-    push @actions, map +{ create => { _source => $_ } }, @docs;
+    push @actions, map +{ create => { source => $_ } }, @docs;
     return \@actions;
 }
 
@@ -290,9 +290,9 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/contributor --all
- # bin/contributor --distribution Moose
- # bin/contributor --release ETHER/Moose-2.1806
+ # scripts/contributor --all
+ # scripts/contributor --distribution Moose
+ # scripts/contributor --release ETHER/Moose-2.1806
 
 =head1 DESCRIPTION
 

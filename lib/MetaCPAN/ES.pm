@@ -4,36 +4,22 @@ use strict;
 use warnings;
 use v5.36;
 
-use MetaCPAN::Logger qw< :log :dlog >;
-use Search::Elasticsearch;
+use Search::Elasticsearch ();
+use Ref::Util             qw( is_hashref );
 
-use MetaCPAN::Ingest qw< config handle_error is_dev >;
+use MetaCPAN::Logger qw( log_info log_warn );
+
+use MetaCPAN::Ingest qw( es_config handle_error );
 
 sub new ( $class, %args ) {
     my $node  = $args{node};
     my $index = $args{index} // 'cpan';
 
-    my $mode = is_dev() ? 'test' : 'local';
-    $mode eq 'test'
-        and Log::Log4perl::init('log4perl_test.conf')
-        ;    # TODO: find a better place
-
-    my $config = config;
-    my $config_node
-        = $node            ? $node
-        : $mode eq 'local' ? $config->{es_node}
-        : $mode eq 'test'  ? $config->{es_test_node}
-        : $mode eq 'prod'  ? $config->{es_production_node}
-        :                    undef;
-    $config_node or die "Cannot create an ES instance without a node\n";
+    my $es_config = es_config($node);
 
     return bless {
-        es => Search::Elasticsearch->new(
-            client => '2_0::Direct',
-            nodes  => [$config_node],
-        ),
+        es    => Search::Elasticsearch->new(%$es_config),
         index => $index,
-        type  => ( $args{type} ? $args{type} : $index ),
     }, $class;
 }
 
@@ -46,7 +32,6 @@ sub test ($self) {
 sub index ( $self, %args ) {
     $self->{es}->index(
         index => $self->{index},
-        type  => $self->{type},
         %args,
     );
 }
@@ -58,11 +43,9 @@ sub index_refresh ($self) {
 sub exists ( $self, %args ) {
     my $id    = $args{id} or die "Missing id\n";
     my $index = $args{index} // $self->{index};
-    my $type  = $args{type}  // $self->{type};
 
     return $self->{es}->exists(
         index => $index,
-        type  => $type,
         id    => $id,
     );
 }
@@ -70,11 +53,9 @@ sub exists ( $self, %args ) {
 sub get ( $self, %args ) {
     my $id    = $args{id} or die "Missing id\n";
     my $index = $args{index} // $self->{index};
-    my $type  = $args{type}  // $self->{type};
 
     return $self->{es}->get(
         index => $index,
-        type  => $type,
         id    => $id,
     );
 }
@@ -83,21 +64,41 @@ sub search ( $self, %args ) {
     my $body = $args{body} or die "Missing body\n";
 
     my $index = $args{index} // $self->{index};
-    my $type  = $args{type}  // $self->{type};
     my @size  = ( $args{size} ? ( size => $args{size} ) : () );
 
     return $self->{es}->search(
         index => $index,
-        type  => $type,
         body  => $body,
         @size,
+    );
+}
+
+sub update ( $self, %args ) {
+    my $index = $args{index} // $self->{index};
+    my $id    = $args{id};
+    my $doc   = $args{doc};
+
+    if ( !$id ) {
+        log_warn {"ES update called with no 'id'"};
+        return;
+    }
+
+    if ( !is_hashref($doc) or %$doc == 0 ) {
+        log_warn {"ES update called with no or empty 'doc'"};
+        return;
+    }
+
+    return $self->{es}->update(
+        index   => $index,
+        id      => $id,
+        body    => {%$doc},
+        refresh => 1,
     );
 }
 
 sub bulk ( $self, %args ) {
     return $self->{es}->bulk_helper(
         index     => $self->{index},
-        type      => $self->{type},
         max_count => ( $args{max_count} // 250 ),
         timeout   => ( $args{timeout}   // '25m' ),
         ( $args{on_success} ? ( on_success => $args{on_success} ) : () ),
@@ -107,20 +108,18 @@ sub bulk ( $self, %args ) {
 
 sub scroll ( $self, %args ) {
     my $body = $args{body} // { query => { match_all => {} } };
-    $body->{sort} = '_doc'; # optimize search in newer ES versions
+    $body->{sort} = '_doc';    # optimize search in newer ES versions
 
     return $self->{es}->scroll_helper(
-        index       => $self->{index},
-        type        => $self->{type},
-        body        => $body,
-        scroll      => ( $args{scroll} // '30m' ),
+        index  => $self->{index},
+        body   => $body,
+        scroll => ( $args{scroll} // '30m' ),
     );
 }
 
 sub count ( $self, %args ) {
     return $self->{es}->count(
         index => $self->{index},
-        type  => $self->{type},
         body  => $args{body},
     );
 }
@@ -145,32 +144,27 @@ sub get_ids ( $self, %args ) {
 sub get_source ( $self, $id ) {
     return $self->{es}->get_source(
         index => $self->{index},
-        type  => $self->{type},
         id    => $id,
     );
 }
 
-sub delete_ids ( $self, $ids ) {
-    my $bulk = $self->bulk;
-
-    while ( my @batch = splice( @$ids, 0, 500 ) ) {
-        $bulk->delete_ids(@batch);
-    }
-
-    $bulk->flush;
-}
-
-sub clear_type ($self) {
-    my $ids = $self->get_ids();
-
-    $self->delete_ids(@$ids);
+sub clear_index ($self) {
+    $self->{es}->delete_by_query(
+        index => 'my_index',
+        body  => {
+            query => {
+                match_all => {}
+            }
+        },
+        refresh => 1,    # optional
+    );
 }
 
 sub await ($self) {
-    my $timeout = 15;
-    my $iready  = 0;
+    my $timeout      = 15;
+    my $iready       = 0;
     my $cluster_info = {};
-    my $es = $self->{es};
+    my $es           = $self->{es};
 
     if ( scalar( keys %$cluster_info ) == 0 ) {
         my $iseconds = 0;

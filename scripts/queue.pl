@@ -3,10 +3,10 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use Path::Tiny           qw< path >;
 use Path::Iterator::Rule ();
+use Path::Tiny qw( path );
 
-use MetaCPAN::Ingest qw< minion >;
+use MetaCPAN::Ingest qw( minion );
 
 # args
 my ( $dir, $file );
@@ -55,10 +55,10 @@ __END__
 
 =head1 SYNOPSIS
 
-    bin/queue --file https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTML-Restrict-2.2.2.tar.gz
-    bin/queue --dir /home/metacpan/CPAN/
-    bin/queue --dir /home/metacpan/CPAN/authors/id
-    bin/queue --dir /home/metacpan/CPAN/authors/id/R/RW/RWSTAUNER
-    bin/queue --file /home/metacpan/CPAN/authors/id/R/RW/RWSTAUNER/Timer-Simple-1.006.tar.gz
+    scripts/queue --file https://cpan.metacpan.org/authors/id/O/OA/OALDERS/HTML-Restrict-2.2.2.tar.gz
+    scripts/queue --dir /home/metacpan/CPAN/
+    scripts/queue --dir /home/metacpan/CPAN/authors/id
+    scripts/queue --dir /home/metacpan/CPAN/authors/id/R/RW/RWSTAUNER
+    scripts/queue --file /home/metacpan/CPAN/authors/id/R/RW/RWSTAUNER/Timer-Simple-1.006.tar.gz
 
 =cut

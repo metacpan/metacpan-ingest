@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use v5.36;
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
 
@@ -21,7 +21,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/restart
+ # scripts/restart
 
 =head1 DESCRIPTION
 

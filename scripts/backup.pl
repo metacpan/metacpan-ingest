@@ -2,17 +2,18 @@ use strict;
 use warnings;
 use v5.36;
 
-use feature qw< state >;
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
-use Cpanel::JSON::XS qw< decode_json encode_json >;
 use DateTime         ();
 use IO::Zlib         ();
-use Path::Tiny       qw< path >;
-use Try::Tiny        qw< catch try >;
+use feature          qw( state );
+use Cpanel::JSON::XS qw( decode_json encode_json );
+use Path::Tiny       qw( path );
+use Try::Tiny        qw( catch try );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< home true >;
+use MetaCPAN::Ingest qw( home true );
 
 # config
 
@@ -105,7 +106,7 @@ sub run_restore () {
             $bulk->update( {
                 id            => $raw->{_id},
                 doc           => $raw->{_source},
-                doc_as_upsert => 1,
+                doc_as_upsert => true,
             } );
         }
         else {
@@ -187,11 +188,11 @@ Backup indices
 
 =head1 SYNOPSIS
 
- $ bin/backup --index author
+ $ scripts/backup --index author
 
- $ bin/backup --purge
+ $ scripts/backup --purge
 
- $ bin/backup --restore path
+ $ scripts/backup --restore path
 
 =head1 DESCRIPTION
 

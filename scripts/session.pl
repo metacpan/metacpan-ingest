@@ -4,7 +4,7 @@ use v5.36;
 
 use DateTime ();
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
 

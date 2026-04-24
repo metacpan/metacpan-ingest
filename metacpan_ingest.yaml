@@ -1,0 +1,10 @@
+log4perl_file: log4perl.conf
+
+cpan: /CPAN
+cpan_test: test_data/fakecpan/
+
+elasticsearch_servers:
+  client: "8_0::Direct"
+  node: "elasticsearch:9200"
+  test_node: "elasticsearch-test:9200"
+  production_node: "https://fastapi.metacpan.org/v1"

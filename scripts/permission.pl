@@ -3,12 +3,11 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use MetaCPAN::Logger qw< :log :dlog >;
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw<
-    read_06perms_iter
->;
+use MetaCPAN::Ingest qw( read_06perms_iter true );
 
 # args
 my ( $cleanup, $perms_file );
@@ -47,7 +46,7 @@ while ( my $perms = $iterator->next_module ) {
     $bulk->update( {
         id            => $name,
         doc           => $doc,
-        doc_as_upsert => 1,
+        doc_as_upsert => true,
     } );
 
     $seen{$name} = 1;

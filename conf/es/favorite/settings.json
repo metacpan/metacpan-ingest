@@ -1,6 +1,11 @@
 {
-    "mapper": {
-        "dynamic": "false"
+    "analysis": {
+        "normalizer": {
+            "lowercase": {
+                "type": "custom",
+                "filter": ["lowercase"]
+            }
+        }
     },
     "number_of_replicas": 1,
     "number_of_shards": 1,

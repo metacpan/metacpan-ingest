@@ -3,11 +3,12 @@ use warnings;
 use v5.36;
 
 use Getopt::Long;
-use Digest::file     qw< digest_file_hex >;
-use MetaCPAN::Logger qw< :log :dlog >;
+use Digest::file     qw( digest_file_hex );
+
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::ES;
-use MetaCPAN::Ingest qw< cpan_dir >;
+use MetaCPAN::Ingest qw( cpan_dir true );
 
 # args
 my $limit = 1000;
@@ -70,7 +71,7 @@ while ( my $p = $scroll->next ) {
                     checksum_md5    => $checksum_md5,
                     checksum_sha256 => $checksum_sha256
                 },
-                doc_as_upsert => 1,
+                doc_as_upsert => true,
             } );
         }
     }
@@ -92,7 +93,7 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/checksum --[no-]dry_run --limit X
+ # scripts/checksum --[no-]dry_run --limit X
 
 =head1 DESCRIPTION
 

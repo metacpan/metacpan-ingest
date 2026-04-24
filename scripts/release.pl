@@ -2,32 +2,33 @@ use strict;
 use warnings;
 use v5.36;
 
+use Getopt::Long;
 use CPAN::DistnameInfo ();
 use File::Find::Rule   ();
 use File::stat         ();
-use Getopt::Long;
-use List::Util qw< uniq >;
-use Path::Tiny qw< path >;
-use Try::Tiny  qw< catch try >;
+use List::Util qw( uniq );
+use Path::Tiny qw( path );
+use Try::Tiny  qw( catch try );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( :log :dlog );
 
 use MetaCPAN::Archive;
-use MetaCPAN::Contributor qw< update_release_contributors >;
+use MetaCPAN::Contributor qw( update_release_contributors );
 use MetaCPAN::ES;
 use MetaCPAN::File;
-use MetaCPAN::Ingest qw<
+use MetaCPAN::Release;
+use MetaCPAN::Ingest qw(
     cpan_file_map
     digest
+    false
     handle_error
     minion
     read_02packages_fh
     read_06perms_fh
     tmp_dir
+    true
     ua
->;
-
-use MetaCPAN::Release;
+);
 
 my @skip_dists = (
 
@@ -247,7 +248,7 @@ sub _index_files ($files) {
             id => digest( $f->{author}, $f->{release}, $f->{path} )
             ,    ### ???? file name
             doc           => $f->as_struct,
-            doc_as_upsert => 1,
+            doc_as_upsert => true,
         } );
     }
 
@@ -296,7 +297,7 @@ sub _import_archive ( $archive_path, $dist ) {
             and $document->{abstract} =~ /DEPRECI?ATED/
     ) ? 1 : 0;
 
-    $document->{deprecated} = $deprecated;
+    $document->{deprecated} = $deprecated ? true : false;
 
     log_debug { sprintf( 'Indexing %d modules', scalar(@$modules) ) };
 
@@ -362,7 +363,7 @@ sub _import_archive ( $archive_path, $dist ) {
                 . " contains unauthorized modules: "
                 . join( ",", map { $_->{name} } @release_unauthorized );
         };
-        $document->{authorized} = 0;
+        $document->{authorized} = false;
     }
 
     # update 'first' value
@@ -425,7 +426,7 @@ sub _set_associated_pod ( $module, $associated_pod ) {
 
 sub _set_first ($document) {
     my $count = $es->search(
-        body        => {
+        body => {
             query => {
                 bool => {
                     must => [
@@ -450,7 +451,7 @@ sub _set_first ($document) {
     # currently, the "first" property is not computed on all releases
     # since this feature has not been around when last reindexed
 
-    $document->{first} = ( $count > 0 ? 0 : 1 );
+    $document->{first} = ( $count > 0 ? false : true );
 }
 
 sub queue_latest ( $dist, $delay, $job_id ) {
@@ -495,11 +496,11 @@ __END__
 
 =head1 SYNOPSIS
 
- # bin/release ~/cpan/authors/id/A
- # bin/release ~/cpan/authors/id/A/AB/ABRAXXA/DBIx-Class-0.08127.tar.gz
- # bin/release http://cpan.cpantesters.org/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
+ # scripts/release ~/cpan/authors/id/A
+ # scripts/release ~/cpan/authors/id/A/AB/ABRAXXA/DBIx-Class-0.08127.tar.gz
+ # scripts/release http://cpan.cpantesters.org/authors/id/D/DA/DAGOLDEN/CPAN-Meta-2.110580.tar.gz
 
- # bin/release ~/cpan --age 24 --latest
+ # scripts/release ~/cpan --age 24 --latest
 
 =head1 DESCRIPTION
 

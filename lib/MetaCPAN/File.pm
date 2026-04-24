@@ -4,15 +4,13 @@ use strict;
 use warnings;
 use v5.36;
 
-use List::AllUtils qw< any >;
-use Path::Tiny     qw< path >;
+use Plack::MIME    ();
+use List::AllUtils qw( any );
+use Path::Tiny     qw( path );
 
-use MetaCPAN::Logger qw< :log :dlog >;
+use MetaCPAN::Logger qw( DlogS_trace );
 
-use MetaCPAN::Ingest qw<
-    extract_section
-    strip_pod
->;
+use MetaCPAN::Ingest qw( extract_section false strip_pod true );
 
 my @NOT_PERL_FILES = qw< SIGNATURE >;
 
@@ -48,7 +46,7 @@ sub new ( $class, %args ) {
         author  => $dist->cpanid,
         binary  => -B $child,
         content => $directory ? "" : ( scalar $child->slurp ),
-        date    => DateTime->from_epoch( epoch => $child->stat->mtime ) . "",
+        date    => DateTime->from_epoch( epoch => $child->stat->mtime ) . 'Z',
         directory    => $directory,
         distribution => $dist->dist,
         local_path   => $child . "",
@@ -74,7 +72,24 @@ sub new ( $class, %args ) {
 }
 
 sub as_struct ($self) {
-    return +{ map { $_ => $self->{$_} } keys %$self };
+    my %doc = %$self;
+
+    $doc{$_} = ( $doc{$_} ? true : false )
+        for grep { exists $doc{$_} }
+        qw< authorized binary deprecated directory indexed >;
+
+    if ( my $modules = $doc{modules} ) {
+        $doc{modules} = [
+            map {
+                my %m = %$_;
+                for my $f (qw< authorized indexed >) {
+                    $m{$f} = $m{$f} ? true : false if exists $m{$f};
+                }
+                \%m
+            } @$modules
+        ];
+    }
+    return \%doc;
 }
 
 sub _is_broken_file ( $self, $name ) {
