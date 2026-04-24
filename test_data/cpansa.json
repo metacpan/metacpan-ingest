@@ -1,0 +1,1880 @@
+{
+  "HTML-Parser": [
+    {
+      "affected_releases": [
+        "GAAS/HTML-Parser-2.14",
+        "GAAS/HTML-Parser-2.16",
+        "GAAS/HTML-Parser-2.17",
+        "GAAS/HTML-Parser-2.18",
+        "GAAS/HTML-Parser-2.19",
+        "GAAS/HTML-Parser-2.20",
+        "GAAS/HTML-Parser-2.21",
+        "GAAS/HTML-Parser-2.23",
+        "GAAS/HTML-Parser-2.24",
+        "GAAS/HTML-Parser-2.25",
+        "GAAS/HTML-Parser-3.00",
+        "GAAS/HTML-Parser-3.01",
+        "GAAS/HTML-Parser-3.02",
+        "GAAS/HTML-Parser-3.04",
+        "GAAS/HTML-Parser-3.05",
+        "GAAS/HTML-Parser-3.06",
+        "GAAS/HTML-Parser-3.07",
+        "GAAS/HTML-Parser-3.08",
+        "GAAS/HTML-Parser-3.09",
+        "GAAS/HTML-Parser-3.10",
+        "GAAS/HTML-Parser-3.11",
+        "GAAS/HTML-Parser-3.12",
+        "GAAS/HTML-Parser-3.13",
+        "GAAS/HTML-Parser-3.14",
+        "GAAS/HTML-Parser-3.15",
+        "GAAS/HTML-Parser-3.16",
+        "GAAS/HTML-Parser-3.17",
+        "GAAS/HTML-Parser-3.18",
+        "GAAS/HTML-Parser-3.19",
+        "GAAS/HTML-Parser-3.19_90",
+        "GAAS/HTML-Parser-3.19_91",
+        "GAAS/HTML-Parser-3.19_92",
+        "GAAS/HTML-Parser-3.19_93",
+        "GAAS/HTML-Parser-3.19_94",
+        "GAAS/HTML-Parser-3.20",
+        "GAAS/HTML-Parser-3.21",
+        "GAAS/HTML-Parser-3.22",
+        "GAAS/HTML-Parser-3.23",
+        "GAAS/HTML-Parser-3.24",
+        "GAAS/HTML-Parser-3.25",
+        "GAAS/HTML-Parser-3.26",
+        "GAAS/HTML-Parser-3.27",
+        "GAAS/HTML-Parser-3.28",
+        "GAAS/HTML-Parser-3.29",
+        "GAAS/HTML-Parser-3.30",
+        "GAAS/HTML-Parser-3.31",
+        "GAAS/HTML-Parser-3.32",
+        "GAAS/HTML-Parser-3.33",
+        "GAAS/HTML-Parser-3.34",
+        "GAAS/HTML-Parser-3.35",
+        "GAAS/HTML-Parser-3.36",
+        "GAAS/HTML-Parser-3.37",
+        "GAAS/HTML-Parser-3.38",
+        "GAAS/HTML-Parser-3.39_90",
+        "GAAS/HTML-Parser-3.39_91",
+        "GAAS/HTML-Parser-3.39_92",
+        "GAAS/HTML-Parser-3.40",
+        "GAAS/HTML-Parser-3.41",
+        "GAAS/HTML-Parser-3.42",
+        "GAAS/HTML-Parser-3.43",
+        "GAAS/HTML-Parser-3.44",
+        "GAAS/HTML-Parser-3.45",
+        "GAAS/HTML-Parser-3.46",
+        "GAAS/HTML-Parser-3.47",
+        "GAAS/HTML-Parser-3.48",
+        "GAAS/HTML-Parser-3.49",
+        "GAAS/HTML-Parser-3.50",
+        "GAAS/HTML-Parser-3.51",
+        "GAAS/HTML-Parser-3.52",
+        "GAAS/HTML-Parser-3.53",
+        "GAAS/HTML-Parser-3.54",
+        "GAAS/HTML-Parser-3.55",
+        "GAAS/HTML-Parser-3.56",
+        "GAAS/HTML-Parser-3.57",
+        "GAAS/HTML-Parser-3.58",
+        "GAAS/HTML-Parser-3.59",
+        "GAAS/HTML-Parser-3.60",
+        "GAAS/HTML-Parser-3.61",
+        "GAAS/HTML-Parser-3.62",
+        "KIMURA/HTML-Parser-3.19",
+        "KIMURA/HTML-Parser-3.23",
+        "KIMURA/HTML-Parser-3.25"
+      ],
+      "affected_versions": [
+        "<3.63"
+      ],
+      "cpansa_id": "CPANSA-HTML-Parser-2009-3627",
+      "cve": {
+        "containers": {
+          "adp": [
+            {
+              "providerMetadata": {
+                "dateUpdated": "2024-08-07T06:38:28.315Z",
+                "orgId": "af854a3a-2127-422b-91ae-364da2661108",
+                "shortName": "CVE"
+              },
+              "references": [
+                {
+                  "name": "ADV-2009-3022",
+                  "tags": [
+                    "vdb-entry",
+                    "x_refsource_VUPEN",
+                    "x_transferred"
+                  ],
+                  "url": "http://www.vupen.com/english/advisories/2009/3022"
+                },
+                {
+                  "name": "[oss-security] 20091023 CVE-2009-3627 assignment notification - HTML-Parser-3.63",
+                  "tags": [
+                    "mailing-list",
+                    "x_refsource_MLIST",
+                    "x_transferred"
+                  ],
+                  "url": "http://www.openwall.com/lists/oss-security/2009/10/23/9"
+                },
+                {
+                  "name": "htmlparser-decodeentities-dos(53941)",
+                  "tags": [
+                    "vdb-entry",
+                    "x_refsource_XF",
+                    "x_transferred"
+                  ],
+                  "url": "https://exchange.xforce.ibmcloud.com/vulnerabilities/53941"
+                },
+                {
+                  "tags": [
+                    "x_refsource_CONFIRM",
+                    "x_transferred"
+                  ],
+                  "url": "https://bugzilla.redhat.com/show_bug.cgi?id=530604"
+                },
+                {
+                  "name": "36807",
+                  "tags": [
+                    "vdb-entry",
+                    "x_refsource_BID",
+                    "x_transferred"
+                  ],
+                  "url": "http://www.securityfocus.com/bid/36807"
+                },
+                {
+                  "name": "37155",
+                  "tags": [
+                    "third-party-advisory",
+                    "x_refsource_SECUNIA",
+                    "x_transferred"
+                  ],
+                  "url": "http://secunia.com/advisories/37155"
+                },
+                {
+                  "tags": [
+                    "x_refsource_CONFIRM",
+                    "x_transferred"
+                  ],
+                  "url": "https://issues.apache.org/SpamAssassin/show_bug.cgi?id=6225"
+                },
+                {
+                  "tags": [
+                    "x_refsource_CONFIRM",
+                    "x_transferred"
+                  ],
+                  "url": "http://github.com/gisle/html-parser/commit/b9aae1e43eb2c8e989510187cff0ba3e996f9a4c"
+                }
+              ],
+              "title": "CVE Program Container"
+            }
+          ],
+          "cna": {
+            "affected": [
+              {
+                "product": "n/a",
+                "vendor": "n/a",
+                "versions": [
+                  {
+                    "status": "affected",
+                    "version": "n/a"
+                  }
+                ]
+              }
+            ],
+            "datePublic": "2009-10-23T00:00:00.000Z",
+            "descriptions": [
+              {
+                "lang": "en",
+                "value": "The decode_entities function in util.c in HTML-Parser before 3.63 allows context-dependent attackers to cause a denial of service (infinite loop) via an incomplete SGML numeric character reference, which triggers generation of an invalid UTF-8 character."
+              }
+            ],
+            "problemTypes": [
+              {
+                "descriptions": [
+                  {
+                    "description": "n/a",
+                    "lang": "en",
+                    "type": "text"
+                  }
+                ]
+              }
+            ],
+            "providerMetadata": {
+              "dateUpdated": "2017-08-16T14:57:01.000Z",
+              "orgId": "53f830b8-0a3f-465b-8143-3b8a9948e749",
+              "shortName": "redhat"
+            },
+            "references": [
+              {
+                "name": "ADV-2009-3022",
+                "tags": [
+                  "vdb-entry",
+                  "x_refsource_VUPEN"
+                ],
+                "url": "http://www.vupen.com/english/advisories/2009/3022"
+              },
+              {
+                "name": "[oss-security] 20091023 CVE-2009-3627 assignment notification - HTML-Parser-3.63",
+                "tags": [
+                  "mailing-list",
+                  "x_refsource_MLIST"
+                ],
+                "url": "http://www.openwall.com/lists/oss-security/2009/10/23/9"
+              },
+              {
+                "name": "htmlparser-decodeentities-dos(53941)",
+                "tags": [
+                  "vdb-entry",
+                  "x_refsource_XF"
+                ],
+                "url": "https://exchange.xforce.ibmcloud.com/vulnerabilities/53941"
+              },
+              {
+                "tags": [
+                  "x_refsource_CONFIRM"
+                ],
+                "url": "https://bugzilla.redhat.com/show_bug.cgi?id=530604"
+              },
+              {
+                "name": "36807",
+                "tags": [
+                  "vdb-entry",
+                  "x_refsource_BID"
+                ],
+                "url": "http://www.securityfocus.com/bid/36807"
+              },
+              {
+                "name": "37155",
+                "tags": [
+                  "third-party-advisory",
+                  "x_refsource_SECUNIA"
+                ],
+                "url": "http://secunia.com/advisories/37155"
+              },
+              {
+                "tags": [
+                  "x_refsource_CONFIRM"
+                ],
+                "url": "https://issues.apache.org/SpamAssassin/show_bug.cgi?id=6225"
+              },
+              {
+                "tags": [
+                  "x_refsource_CONFIRM"
+                ],
+                "url": "http://github.com/gisle/html-parser/commit/b9aae1e43eb2c8e989510187cff0ba3e996f9a4c"
+              }
+            ]
+          }
+        },
+        "cveMetadata": {
+          "assignerOrgId": "53f830b8-0a3f-465b-8143-3b8a9948e749",
+          "assignerShortName": "redhat",
+          "cveId": "CVE-2009-3627",
+          "datePublished": "2009-10-29T14:00:00.000Z",
+          "dateReserved": "2009-10-09T00:00:00.000Z",
+          "dateUpdated": "2024-08-07T06:38:28.315Z",
+          "state": "PUBLISHED"
+        },
+        "dataType": "CVE_RECORD",
+        "dataVersion": "5.1"
+      },
+      "cve_id": "CVE-2009-3627",
+      "cves": [
+        "CVE-2009-3627"
+      ],
+      "description": "The decode_entities function in util.c in HTML-Parser before 3.63 allows context-dependent attackers to cause a denial of service (infinite loop) via an incomplete SGML numeric character reference, which triggers generation of an invalid UTF-8 character.\n",
+      "distribution": "HTML-Parser",
+      "references": [
+        "https://issues.apache.org/SpamAssassin/show_bug.cgi?id=6225",
+        "http://www.openwall.com/lists/oss-security/2009/10/23/9",
+        "http://secunia.com/advisories/37155",
+        "http://www.securityfocus.com/bid/36807",
+        "https://bugzilla.redhat.com/show_bug.cgi?id=530604",
+        "http://www.vupen.com/english/advisories/2009/3022",
+        "http://github.com/gisle/html-parser/commit/b9aae1e43eb2c8e989510187cff0ba3e996f9a4c",
+        "https://exchange.xforce.ibmcloud.com/vulnerabilities/53941"
+      ],
+      "reported": "2009-10-29",
+      "title": "The decode_entities function in util.c in HTML-Parser before 3.63 allows context-dependent attackers to cause a denial of service (infinite loop) via an incomplete SGML numeric character reference, which triggers generation of an invalid UTF-8 character.\n",
+      "version_range": [
+        "<3.63"
+      ]
+    }
+  ],
+  "CryptX": [
+    {
+      "affected_releases": [
+        "MIK/CryptX-0.002",
+        "MIK/CryptX-0.003",
+        "MIK/CryptX-0.004",
+        "MIK/CryptX-0.005",
+        "MIK/CryptX-0.006",
+        "MIK/CryptX-0.007",
+        "MIK/CryptX-0.008",
+        "MIK/CryptX-0.009",
+        "MIK/CryptX-0.011",
+        "MIK/CryptX-0.012",
+        "MIK/CryptX-0.013",
+        "MIK/CryptX-0.013_1",
+        "MIK/CryptX-0.014",
+        "MIK/CryptX-0.014_1",
+        "MIK/CryptX-0.014_2",
+        "MIK/CryptX-0.015",
+        "MIK/CryptX-0.016",
+        "MIK/CryptX-0.016_1",
+        "MIK/CryptX-0.016_2",
+        "MIK/CryptX-0.016_3",
+        "MIK/CryptX-0.017",
+        "MIK/CryptX-0.018",
+        "MIK/CryptX-0.019",
+        "MIK/CryptX-0.019_1",
+        "MIK/CryptX-0.019_2",
+        "MIK/CryptX-0.019_3",
+        "MIK/CryptX-0.019_4",
+        "MIK/CryptX-0.020",
+        "MIK/CryptX-0.021",
+        "MIK/CryptX-0.021_1",
+        "MIK/CryptX-0.021_3",
+        "MIK/CryptX-0.021_4",
+        "MIK/CryptX-0.021_5",
+        "MIK/CryptX-0.021_6",
+        "MIK/CryptX-0.021_7",
+        "MIK/CryptX-0.021_8",
+        "MIK/CryptX-0.021_9",
+        "MIK/CryptX-0.022",
+        "MIK/CryptX-0.023",
+        "MIK/CryptX-0.023_1",
+        "MIK/CryptX-0.023_2",
+        "MIK/CryptX-0.024",
+        "MIK/CryptX-0.025",
+        "MIK/CryptX-0.025_01",
+        "MIK/CryptX-0.026",
+        "MIK/CryptX-0.026_01",
+        "MIK/CryptX-0.026_02",
+        "MIK/CryptX-0.026_05",
+        "MIK/CryptX-0.026_06",
+        "MIK/CryptX-0.026_08",
+        "MIK/CryptX-0.026_15",
+        "MIK/CryptX-0.026_16",
+        "MIK/CryptX-0.026_18",
+        "MIK/CryptX-0.026_19",
+        "MIK/CryptX-0.026_23",
+        "MIK/CryptX-0.026_24",
+        "MIK/CryptX-0.026_28",
+        "MIK/CryptX-0.026_29",
+        "MIK/CryptX-0.026_30",
+        "MIK/CryptX-0.026_31",
+        "MIK/CryptX-0.026_32",
+        "MIK/CryptX-0.026_33",
+        "MIK/CryptX-0.026_34",
+        "MIK/CryptX-0.026_35",
+        "MIK/CryptX-0.026_36",
+        "MIK/CryptX-0.026_39",
+        "MIK/CryptX-0.026_40",
+        "MIK/CryptX-0.026_41",
+        "MIK/CryptX-0.027",
+        "MIK/CryptX-0.027_01",
+        "MIK/CryptX-0.027_05",
+        "MIK/CryptX-0.027_06",
+        "MIK/CryptX-0.028",
+        "MIK/CryptX-0.028_01",
+        "MIK/CryptX-0.028_02",
+        "MIK/CryptX-0.028_03",
+        "MIK/CryptX-0.029",
+        "MIK/CryptX-0.030",
+        "MIK/CryptX-0.031",
+        "MIK/CryptX-0.032",
+        "MIK/CryptX-0.033",
+        "MIK/CryptX-0.034",
+        "MIK/CryptX-0.035",
+        "MIK/CryptX-0.036",
+        "MIK/CryptX-0.037",
+        "MIK/CryptX-0.038",
+        "MIK/CryptX-0.039",
+        "MIK/CryptX-0.040",
+        "MIK/CryptX-0.041",
+        "MIK/CryptX-0.041_001",
+        "MIK/CryptX-0.041_002",
+        "MIK/CryptX-0.041_003",
+        "MIK/CryptX-0.042",
+        "MIK/CryptX-0.043",
+        "MIK/CryptX-0.044",
+        "MIK/CryptX-0.044_001",
+        "MIK/CryptX-0.044_003",
+        "MIK/CryptX-0.044_004",
+        "MIK/CryptX-0.044_005",
+        "MIK/CryptX-0.044_006",
+        "MIK/CryptX-0.044_007",
+        "MIK/CryptX-0.044_008",
+        "MIK/CryptX-0.044_009",
+        "MIK/CryptX-0.044_010",
+        "MIK/CryptX-0.045",
+        "MIK/CryptX-0.046",
+        "MIK/CryptX-0.047",
+        "MIK/CryptX-0.047_001",
+        "MIK/CryptX-0.047_002",
+        "MIK/CryptX-0.047_003",
+        "MIK/CryptX-0.047_004",
+        "MIK/CryptX-0.047_005",
+        "MIK/CryptX-0.047_006",
+        "MIK/CryptX-0.048",
+        "MIK/CryptX-0.048_001",
+        "MIK/CryptX-0.048_002",
+        "MIK/CryptX-0.049",
+        "MIK/CryptX-0.050",
+        "MIK/CryptX-0.051",
+        "MIK/CryptX-0.053",
+        "MIK/CryptX-0.053_001",
+        "MIK/CryptX-0.053_002",
+        "MIK/CryptX-0.053_003",
+        "MIK/CryptX-0.053_004",
+        "MIK/CryptX-0.054",
+        "MIK/CryptX-0.054_001",
+        "MIK/CryptX-0.054_002",
+        "MIK/CryptX-0.054_003",
+        "MIK/CryptX-0.054_004",
+        "MIK/CryptX-0.054_005",
+        "MIK/CryptX-0.054_006",
+        "MIK/CryptX-0.054_007",
+        "MIK/CryptX-0.054_008",
+        "MIK/CryptX-0.054_009",
+        "MIK/CryptX-0.055",
+        "MIK/CryptX-0.055_001",
+        "MIK/CryptX-0.056",
+        "MIK/CryptX-0.056_001",
+        "MIK/CryptX-0.056_002",
+        "MIK/CryptX-0.056_003",
+        "MIK/CryptX-0.056_004",
+        "MIK/CryptX-0.056_005",
+        "MIK/CryptX-0.056_006",
+        "MIK/CryptX-0.056_007",
+        "MIK/CryptX-0.056_008",
+        "MIK/CryptX-0.056_009",
+        "MIK/CryptX-0.057",
+        "MIK/CryptX-0.058",
+        "MIK/CryptX-0.058_001",
+        "MIK/CryptX-0.058_002",
+        "MIK/CryptX-0.059",
+        "MIK/CryptX-0.059_001",
+        "MIK/CryptX-0.059_002",
+        "MIK/CryptX-0.059_003",
+        "MIK/CryptX-0.060",
+        "MIK/CryptX-0.060_001",
+        "MIK/CryptX-0.060_002",
+        "MIK/CryptX-0.060_003",
+        "MIK/CryptX-0.061",
+        "MIK/CryptX-0.061_001",
+        "MIK/CryptX-0.061_002",
+        "MIK/CryptX-0.061_003",
+        "MIK/CryptX-0.062",
+        "MIK/CryptX-0.062_001",
+        "MIK/CryptX-0.063",
+        "MIK/CryptX-0.063_001",
+        "MIK/CryptX-0.063_002",
+        "MIK/CryptX-0.063_003",
+        "MIK/CryptX-0.063_004",
+        "MIK/CryptX-0.063_005",
+        "MIK/CryptX-0.064"
+      ],
+      "affected_versions": [
+        ">=0.002,<0.065"
+      ],
+      "cpansa_id": "CPANSA-CryptX-2025-40912",
+      "cve": {
+        "containers": {
+          "adp": [
+            {
+              "metrics": [
+                {
+                  "cvssV3_1": {
+                    "attackComplexity": "LOW",
+                    "attackVector": "NETWORK",
+                    "availabilityImpact": "HIGH",
+                    "baseScore": 9.8,
+                    "baseSeverity": "CRITICAL",
+                    "confidentialityImpact": "HIGH",
+                    "integrityImpact": "HIGH",
+                    "privilegesRequired": "NONE",
+                    "scope": "UNCHANGED",
+                    "userInteraction": "NONE",
+                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "version": "3.1"
+                  }
+                },
+                {
+                  "other": {
+                    "content": {
+                      "id": "CVE-2025-40912",
+                      "options": [
+                        {
+                          "Exploitation": "poc"
+                        },
+                        {
+                          "Automatable": "no"
+                        },
+                        {
+                          "Technical Impact": "total"
+                        }
+                      ],
+                      "role": "CISA Coordinator",
+                      "timestamp": "2025-06-11T18:43:47.110889Z",
+                      "version": "2.0.3"
+                    },
+                    "type": "ssvc"
+                  }
+                }
+              ],
+              "providerMetadata": {
+                "dateUpdated": "2025-06-11T18:44:15.223Z",
+                "orgId": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "shortName": "CISA-ADP"
+              },
+              "title": "CISA ADP Vulnrichment"
+            }
+          ],
+          "cna": {
+            "affected": [
+              {
+                "collectionURL": "https://cpan.org/modules",
+                "defaultStatus": "unaffected",
+                "packageName": "CryptX",
+                "product": "CryptX",
+                "programFiles": [
+                  "src/ltc/pk/asn1/der/utf8/der_decode_utf8_string.c"
+                ],
+                "repo": "https://github.com/DCIT/perl-CryptX",
+                "vendor": "MIK",
+                "versions": [
+                  {
+                    "lessThan": "0.065",
+                    "status": "affected",
+                    "version": "0.002",
+                    "versionType": "custom"
+                  }
+                ]
+              }
+            ],
+            "descriptions": [
+              {
+                "lang": "en",
+                "supportingMedia": [
+                  {
+                    "base64": false,
+                    "type": "text/html",
+                    "value": "<div>CryptX for Perl before version 0.065 contains a dependency that may be susceptible to malformed unicode.</div><div>CryptX embeds the tomcrypt library. The versions of that library in CryptX before 0.065 may be susceptible to CVE-2019-17362.</div>"
+                  }
+                ],
+                "value": "CryptX for Perl before version 0.065 contains a dependency that may be susceptible to malformed unicode.\n\nCryptX embeds the tomcrypt library. The versions of that library in CryptX before 0.065 may be susceptible to CVE-2019-17362."
+              }
+            ],
+            "problemTypes": [
+              {
+                "descriptions": [
+                  {
+                    "cweId": "CWE-1395",
+                    "description": "CWE-1395 Dependency on Vulnerable Third-Party Component",
+                    "lang": "en",
+                    "type": "CWE"
+                  }
+                ]
+              }
+            ],
+            "providerMetadata": {
+              "dateUpdated": "2025-06-11T17:48:39.344Z",
+              "orgId": "9b29abf9-4ab0-4765-b253-1875cd9b441e",
+              "shortName": "CPANSec"
+            },
+            "references": [
+              {
+                "url": "https://github.com/libtom/libtomcrypt/issues/507"
+              }
+            ],
+            "solutions": [
+              {
+                "lang": "en",
+                "supportingMedia": [
+                  {
+                    "base64": false,
+                    "type": "text/html",
+                    "value": "Users should update to version 0.065 or later."
+                  }
+                ],
+                "value": "Users should update to version 0.065 or later."
+              }
+            ],
+            "source": {
+              "discovery": "UNKNOWN"
+            },
+            "title": "CryptX for Perl before version 0.065 contains a dependency that may be susceptible to malformed unicode",
+            "x_generator": {
+              "engine": "Vulnogram 0.2.0"
+            }
+          }
+        },
+        "cveMetadata": {
+          "assignerOrgId": "9b29abf9-4ab0-4765-b253-1875cd9b441e",
+          "assignerShortName": "CPANSec",
+          "cveId": "CVE-2025-40912",
+          "datePublished": "2025-06-11T17:48:39.344Z",
+          "dateReserved": "2025-04-16T09:05:34.361Z",
+          "dateUpdated": "2025-06-11T18:44:15.223Z",
+          "state": "PUBLISHED"
+        },
+        "dataType": "CVE_RECORD",
+        "dataVersion": "5.1"
+      },
+      "cve_id": "CVE-2025-40912",
+      "cves": [
+        "CVE-2025-40912"
+      ],
+      "description": "CryptX for Perl before version 0.065 contains a dependency that may be susceptible to malformed unicode.\n\nCryptX embeds the tomcrypt library. The versions of that library in CryptX before 0.065 may be susceptible to CVE-2019-17362.",
+      "distribution": "CryptX",
+      "references": [
+        "https://github.com/libtom/libtomcrypt/issues/507"
+      ],
+      "reported": "2025-06-11",
+      "severity": "critical",
+      "title": "CryptX for Perl before version 0.065 contains a dependency that may be susceptible to malformed unicode",
+      "version_range": [
+        ">=0.002,<0.065"
+      ]
+    },
+    {
+      "affected_releases": [
+        "MIK/CryptX-0.002",
+        "MIK/CryptX-0.003",
+        "MIK/CryptX-0.004",
+        "MIK/CryptX-0.005",
+        "MIK/CryptX-0.006",
+        "MIK/CryptX-0.007",
+        "MIK/CryptX-0.008",
+        "MIK/CryptX-0.009",
+        "MIK/CryptX-0.011",
+        "MIK/CryptX-0.012",
+        "MIK/CryptX-0.013",
+        "MIK/CryptX-0.013_1",
+        "MIK/CryptX-0.014",
+        "MIK/CryptX-0.014_1",
+        "MIK/CryptX-0.014_2",
+        "MIK/CryptX-0.015",
+        "MIK/CryptX-0.016",
+        "MIK/CryptX-0.016_1",
+        "MIK/CryptX-0.016_2",
+        "MIK/CryptX-0.016_3",
+        "MIK/CryptX-0.017",
+        "MIK/CryptX-0.018",
+        "MIK/CryptX-0.019",
+        "MIK/CryptX-0.019_1",
+        "MIK/CryptX-0.019_2",
+        "MIK/CryptX-0.019_3",
+        "MIK/CryptX-0.019_4",
+        "MIK/CryptX-0.020",
+        "MIK/CryptX-0.021",
+        "MIK/CryptX-0.021_1",
+        "MIK/CryptX-0.021_3",
+        "MIK/CryptX-0.021_4",
+        "MIK/CryptX-0.021_5",
+        "MIK/CryptX-0.021_6",
+        "MIK/CryptX-0.021_7",
+        "MIK/CryptX-0.021_8",
+        "MIK/CryptX-0.021_9",
+        "MIK/CryptX-0.022",
+        "MIK/CryptX-0.023",
+        "MIK/CryptX-0.023_1",
+        "MIK/CryptX-0.023_2",
+        "MIK/CryptX-0.024",
+        "MIK/CryptX-0.025",
+        "MIK/CryptX-0.025_01",
+        "MIK/CryptX-0.026",
+        "MIK/CryptX-0.026_01",
+        "MIK/CryptX-0.026_02",
+        "MIK/CryptX-0.026_05",
+        "MIK/CryptX-0.026_06",
+        "MIK/CryptX-0.026_08",
+        "MIK/CryptX-0.026_15",
+        "MIK/CryptX-0.026_16",
+        "MIK/CryptX-0.026_18",
+        "MIK/CryptX-0.026_19",
+        "MIK/CryptX-0.026_23",
+        "MIK/CryptX-0.026_24",
+        "MIK/CryptX-0.026_28",
+        "MIK/CryptX-0.026_29",
+        "MIK/CryptX-0.026_30",
+        "MIK/CryptX-0.026_31",
+        "MIK/CryptX-0.026_32",
+        "MIK/CryptX-0.026_33",
+        "MIK/CryptX-0.026_34",
+        "MIK/CryptX-0.026_35",
+        "MIK/CryptX-0.026_36",
+        "MIK/CryptX-0.026_39",
+        "MIK/CryptX-0.026_40",
+        "MIK/CryptX-0.026_41",
+        "MIK/CryptX-0.027",
+        "MIK/CryptX-0.027_01",
+        "MIK/CryptX-0.027_05",
+        "MIK/CryptX-0.027_06",
+        "MIK/CryptX-0.028",
+        "MIK/CryptX-0.028_01",
+        "MIK/CryptX-0.028_02",
+        "MIK/CryptX-0.028_03",
+        "MIK/CryptX-0.029",
+        "MIK/CryptX-0.030",
+        "MIK/CryptX-0.031",
+        "MIK/CryptX-0.032",
+        "MIK/CryptX-0.033",
+        "MIK/CryptX-0.034",
+        "MIK/CryptX-0.035",
+        "MIK/CryptX-0.036",
+        "MIK/CryptX-0.037",
+        "MIK/CryptX-0.038",
+        "MIK/CryptX-0.039",
+        "MIK/CryptX-0.040",
+        "MIK/CryptX-0.041",
+        "MIK/CryptX-0.041_001",
+        "MIK/CryptX-0.041_002",
+        "MIK/CryptX-0.041_003",
+        "MIK/CryptX-0.042",
+        "MIK/CryptX-0.043",
+        "MIK/CryptX-0.044",
+        "MIK/CryptX-0.044_001",
+        "MIK/CryptX-0.044_003",
+        "MIK/CryptX-0.044_004",
+        "MIK/CryptX-0.044_005",
+        "MIK/CryptX-0.044_006",
+        "MIK/CryptX-0.044_007",
+        "MIK/CryptX-0.044_008",
+        "MIK/CryptX-0.044_009",
+        "MIK/CryptX-0.044_010",
+        "MIK/CryptX-0.045",
+        "MIK/CryptX-0.046",
+        "MIK/CryptX-0.047",
+        "MIK/CryptX-0.047_001",
+        "MIK/CryptX-0.047_002",
+        "MIK/CryptX-0.047_003",
+        "MIK/CryptX-0.047_004",
+        "MIK/CryptX-0.047_005",
+        "MIK/CryptX-0.047_006",
+        "MIK/CryptX-0.048",
+        "MIK/CryptX-0.048_001",
+        "MIK/CryptX-0.048_002",
+        "MIK/CryptX-0.049",
+        "MIK/CryptX-0.050",
+        "MIK/CryptX-0.051",
+        "MIK/CryptX-0.053",
+        "MIK/CryptX-0.053_001",
+        "MIK/CryptX-0.053_002",
+        "MIK/CryptX-0.053_003",
+        "MIK/CryptX-0.053_004",
+        "MIK/CryptX-0.054",
+        "MIK/CryptX-0.054_001",
+        "MIK/CryptX-0.054_002",
+        "MIK/CryptX-0.054_003",
+        "MIK/CryptX-0.054_004",
+        "MIK/CryptX-0.054_005",
+        "MIK/CryptX-0.054_006",
+        "MIK/CryptX-0.054_007",
+        "MIK/CryptX-0.054_008",
+        "MIK/CryptX-0.054_009",
+        "MIK/CryptX-0.055",
+        "MIK/CryptX-0.055_001",
+        "MIK/CryptX-0.056",
+        "MIK/CryptX-0.056_001",
+        "MIK/CryptX-0.056_002",
+        "MIK/CryptX-0.056_003",
+        "MIK/CryptX-0.056_004",
+        "MIK/CryptX-0.056_005",
+        "MIK/CryptX-0.056_006",
+        "MIK/CryptX-0.056_007",
+        "MIK/CryptX-0.056_008",
+        "MIK/CryptX-0.056_009",
+        "MIK/CryptX-0.057",
+        "MIK/CryptX-0.058",
+        "MIK/CryptX-0.058_001",
+        "MIK/CryptX-0.058_002",
+        "MIK/CryptX-0.059",
+        "MIK/CryptX-0.059_001",
+        "MIK/CryptX-0.059_002",
+        "MIK/CryptX-0.059_003",
+        "MIK/CryptX-0.060",
+        "MIK/CryptX-0.060_001",
+        "MIK/CryptX-0.060_002",
+        "MIK/CryptX-0.060_003",
+        "MIK/CryptX-0.061",
+        "MIK/CryptX-0.061_001",
+        "MIK/CryptX-0.061_002",
+        "MIK/CryptX-0.061_003",
+        "MIK/CryptX-0.062",
+        "MIK/CryptX-0.062_001",
+        "MIK/CryptX-0.063",
+        "MIK/CryptX-0.063_001",
+        "MIK/CryptX-0.063_002",
+        "MIK/CryptX-0.063_003",
+        "MIK/CryptX-0.063_004",
+        "MIK/CryptX-0.063_005",
+        "MIK/CryptX-0.064",
+        "MIK/CryptX-0.065",
+        "MIK/CryptX-0.066",
+        "MIK/CryptX-0.066_001",
+        "MIK/CryptX-0.066_002",
+        "MIK/CryptX-0.067",
+        "MIK/CryptX-0.067_001",
+        "MIK/CryptX-0.068",
+        "MIK/CryptX-0.068_001",
+        "MIK/CryptX-0.069",
+        "MIK/CryptX-0.070",
+        "MIK/CryptX-0.071",
+        "MIK/CryptX-0.072",
+        "MIK/CryptX-0.072_001",
+        "MIK/CryptX-0.072_002",
+        "MIK/CryptX-0.072_003",
+        "MIK/CryptX-0.073",
+        "MIK/CryptX-0.073_001",
+        "MIK/CryptX-0.073_002",
+        "MIK/CryptX-0.073_003",
+        "MIK/CryptX-0.074",
+        "MIK/CryptX-0.075",
+        "MIK/CryptX-0.075_001",
+        "MIK/CryptX-0.075_002",
+        "MIK/CryptX-0.075_003",
+        "MIK/CryptX-0.076",
+        "MIK/CryptX-0.076_001",
+        "MIK/CryptX-0.076_002",
+        "MIK/CryptX-0.076_003",
+        "MIK/CryptX-0.077",
+        "MIK/CryptX-0.078",
+        "MIK/CryptX-0.078_001",
+        "MIK/CryptX-0.079",
+        "MIK/CryptX-0.079_002",
+        "MIK/CryptX-0.079_003",
+        "MIK/CryptX-0.079_004",
+        "MIK/CryptX-0.079_005",
+        "MIK/CryptX-0.079_006",
+        "MIK/CryptX-0.079_007",
+        "MIK/CryptX-0.080",
+        "MIK/CryptX-0.080_001",
+        "MIK/CryptX-0.080_003",
+        "MIK/CryptX-0.080_004",
+        "MIK/CryptX-0.080_005",
+        "MIK/CryptX-0.080_006",
+        "MIK/CryptX-0.080_007",
+        "MIK/CryptX-0.080_008",
+        "MIK/CryptX-0.080_009",
+        "MIK/CryptX-0.080_010",
+        "MIK/CryptX-0.080_011",
+        "MIK/CryptX-0.080_012",
+        "MIK/CryptX-0.081",
+        "MIK/CryptX-0.081_001",
+        "MIK/CryptX-0.082",
+        "MIK/CryptX-0.082_001",
+        "MIK/CryptX-0.083",
+        "MIK/CryptX-0.083_001",
+        "MIK/CryptX-0.084",
+        "MIK/CryptX-0.084_001",
+        "MIK/CryptX-0.085",
+        "MIK/CryptX-0.085_001",
+        "MIK/CryptX-0.085_002",
+        "MIK/CryptX-0.085_003",
+        "MIK/CryptX-0.086"
+      ],
+      "affected_versions": [
+        ">=0.002,<=0.086"
+      ],
+      "cpansa_id": "CPANSA-CryptX-2025-40914",
+      "cve": {
+        "containers": {
+          "adp": [
+            {
+              "metrics": [
+                {
+                  "cvssV3_1": {
+                    "attackComplexity": "LOW",
+                    "attackVector": "NETWORK",
+                    "availabilityImpact": "HIGH",
+                    "baseScore": 9.8,
+                    "baseSeverity": "CRITICAL",
+                    "confidentialityImpact": "HIGH",
+                    "integrityImpact": "HIGH",
+                    "privilegesRequired": "NONE",
+                    "scope": "UNCHANGED",
+                    "userInteraction": "NONE",
+                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "version": "3.1"
+                  }
+                },
+                {
+                  "other": {
+                    "content": {
+                      "id": "CVE-2025-40914",
+                      "options": [
+                        {
+                          "Exploitation": "none"
+                        },
+                        {
+                          "Automatable": "yes"
+                        },
+                        {
+                          "Technical Impact": "total"
+                        }
+                      ],
+                      "role": "CISA Coordinator",
+                      "timestamp": "2025-06-11T14:33:49.813767Z",
+                      "version": "2.0.3"
+                    },
+                    "type": "ssvc"
+                  }
+                }
+              ],
+              "providerMetadata": {
+                "dateUpdated": "2025-06-11T14:43:31.248Z",
+                "orgId": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "shortName": "CISA-ADP"
+              },
+              "title": "CISA ADP Vulnrichment"
+            }
+          ],
+          "cna": {
+            "affected": [
+              {
+                "collectionURL": "https://cpan.org/modules",
+                "defaultStatus": "unaffected",
+                "packageName": "CryptX",
+                "product": "CryptX",
+                "programFiles": [
+                  "src/ltm/bn_mp_grow.c"
+                ],
+                "repo": "https://github.com/DCIT/perl-CryptX",
+                "vendor": "MIK",
+                "versions": [
+                  {
+                    "lessThanOrEqual": "0.086",
+                    "status": "affected",
+                    "version": "0.002",
+                    "versionType": "custom"
+                  }
+                ]
+              }
+            ],
+            "descriptions": [
+              {
+                "lang": "en",
+                "supportingMedia": [
+                  {
+                    "base64": false,
+                    "type": "text/html",
+                    "value": "<div>Perl CryptX before version 0.087 contains a dependency that may be susceptible to an integer overflow.</div><div>CryptX embeds a version of the libtommath library that is susceptible to an integer overflow associated with CVE-2023-36328.</div>"
+                  }
+                ],
+                "value": "Perl CryptX before version 0.087 contains a dependency that may be susceptible to an integer overflow.\n\nCryptX embeds a version of the libtommath library that is susceptible to an integer overflow associated with CVE-2023-36328."
+              }
+            ],
+            "problemTypes": [
+              {
+                "descriptions": [
+                  {
+                    "cweId": "CWE-1395",
+                    "description": "CWE-1395 Dependency on Vulnerable Third-Party Component",
+                    "lang": "en",
+                    "type": "CWE"
+                  }
+                ]
+              }
+            ],
+            "providerMetadata": {
+              "dateUpdated": "2025-06-11T14:06:53.418Z",
+              "orgId": "9b29abf9-4ab0-4765-b253-1875cd9b441e",
+              "shortName": "CPANSec"
+            },
+            "references": [
+              {
+                "url": "https://www.cve.org/CVERecord?id=CVE-2023-36328"
+              },
+              {
+                "url": "https://github.com/libtom/libtommath/pull/546"
+              },
+              {
+                "url": "https://github.com/advisories/GHSA-j3xv-6967-cv88"
+              },
+              {
+                "url": "https://metacpan.org/release/MIK/CryptX-0.086/source/src/ltm/bn_mp_grow.c"
+              }
+            ],
+            "solutions": [
+              {
+                "lang": "en",
+                "supportingMedia": [
+                  {
+                    "base64": false,
+                    "type": "text/html",
+                    "value": "Users should update to version 0.087 or later"
+                  }
+                ],
+                "value": "Users should update to version 0.087 or later"
+              }
+            ],
+            "source": {
+              "discovery": "UNKNOWN"
+            },
+            "title": "Perl CryptX before version 0.087 contains a dependency that may be susceptible to an integer overflow",
+            "x_generator": {
+              "engine": "Vulnogram 0.2.0"
+            }
+          }
+        },
+        "cveMetadata": {
+          "assignerOrgId": "9b29abf9-4ab0-4765-b253-1875cd9b441e",
+          "assignerShortName": "CPANSec",
+          "cveId": "CVE-2025-40914",
+          "datePublished": "2025-06-11T14:06:53.418Z",
+          "dateReserved": "2025-04-16T09:05:34.361Z",
+          "dateUpdated": "2025-06-11T14:43:31.248Z",
+          "state": "PUBLISHED"
+        },
+        "dataType": "CVE_RECORD",
+        "dataVersion": "5.1"
+      },
+      "cve_id": "CVE-2025-40914",
+      "cves": [
+        "CVE-2025-40914"
+      ],
+      "description": "Perl CryptX before version 0.087 contains a dependency that may be susceptible to an integer overflow.\n\nCryptX embeds a version of the libtommath library that is susceptible to an integer overflow associated with CVE-2023-36328.",
+      "distribution": "CryptX",
+      "references": [
+        "https://www.cve.org/CVERecord?id=CVE-2023-36328",
+        "https://github.com/libtom/libtommath/pull/546",
+        "https://github.com/advisories/GHSA-j3xv-6967-cv88",
+        "https://metacpan.org/release/MIK/CryptX-0.086/source/src/ltm/bn_mp_grow.c"
+      ],
+      "reported": "2025-06-11",
+      "severity": "critical",
+      "title": "Perl CryptX before version 0.087 contains a dependency that may be susceptible to an integer overflow",
+      "version_range": [
+        ">=0.002,<=0.086"
+      ]
+    },
+    {
+      "affected_releases": [
+        "MIK/CryptX-0.002",
+        "MIK/CryptX-0.003",
+        "MIK/CryptX-0.004",
+        "MIK/CryptX-0.005",
+        "MIK/CryptX-0.006",
+        "MIK/CryptX-0.007",
+        "MIK/CryptX-0.008",
+        "MIK/CryptX-0.009",
+        "MIK/CryptX-0.011",
+        "MIK/CryptX-0.012",
+        "MIK/CryptX-0.013",
+        "MIK/CryptX-0.013_1",
+        "MIK/CryptX-0.014",
+        "MIK/CryptX-0.014_1",
+        "MIK/CryptX-0.014_2",
+        "MIK/CryptX-0.015",
+        "MIK/CryptX-0.016",
+        "MIK/CryptX-0.016_1",
+        "MIK/CryptX-0.016_2",
+        "MIK/CryptX-0.016_3",
+        "MIK/CryptX-0.017",
+        "MIK/CryptX-0.018",
+        "MIK/CryptX-0.019",
+        "MIK/CryptX-0.019_1",
+        "MIK/CryptX-0.019_2",
+        "MIK/CryptX-0.019_3",
+        "MIK/CryptX-0.019_4",
+        "MIK/CryptX-0.020",
+        "MIK/CryptX-0.021",
+        "MIK/CryptX-0.021_1",
+        "MIK/CryptX-0.021_3",
+        "MIK/CryptX-0.021_4",
+        "MIK/CryptX-0.021_5",
+        "MIK/CryptX-0.021_6",
+        "MIK/CryptX-0.021_7",
+        "MIK/CryptX-0.021_8",
+        "MIK/CryptX-0.021_9",
+        "MIK/CryptX-0.022",
+        "MIK/CryptX-0.023",
+        "MIK/CryptX-0.023_1",
+        "MIK/CryptX-0.023_2",
+        "MIK/CryptX-0.024",
+        "MIK/CryptX-0.025",
+        "MIK/CryptX-0.025_01",
+        "MIK/CryptX-0.026",
+        "MIK/CryptX-0.026_01",
+        "MIK/CryptX-0.026_02",
+        "MIK/CryptX-0.026_05",
+        "MIK/CryptX-0.026_06",
+        "MIK/CryptX-0.026_08",
+        "MIK/CryptX-0.026_15",
+        "MIK/CryptX-0.026_16",
+        "MIK/CryptX-0.026_18",
+        "MIK/CryptX-0.026_19",
+        "MIK/CryptX-0.026_23",
+        "MIK/CryptX-0.026_24",
+        "MIK/CryptX-0.026_28",
+        "MIK/CryptX-0.026_29",
+        "MIK/CryptX-0.026_30",
+        "MIK/CryptX-0.026_31",
+        "MIK/CryptX-0.026_32",
+        "MIK/CryptX-0.026_33",
+        "MIK/CryptX-0.026_34",
+        "MIK/CryptX-0.026_35",
+        "MIK/CryptX-0.026_36",
+        "MIK/CryptX-0.026_39",
+        "MIK/CryptX-0.026_40",
+        "MIK/CryptX-0.026_41",
+        "MIK/CryptX-0.027",
+        "MIK/CryptX-0.027_01",
+        "MIK/CryptX-0.027_05",
+        "MIK/CryptX-0.027_06",
+        "MIK/CryptX-0.028",
+        "MIK/CryptX-0.028_01",
+        "MIK/CryptX-0.028_02",
+        "MIK/CryptX-0.028_03",
+        "MIK/CryptX-0.029",
+        "MIK/CryptX-0.030",
+        "MIK/CryptX-0.031",
+        "MIK/CryptX-0.032",
+        "MIK/CryptX-0.033",
+        "MIK/CryptX-0.034",
+        "MIK/CryptX-0.035",
+        "MIK/CryptX-0.036",
+        "MIK/CryptX-0.037",
+        "MIK/CryptX-0.038",
+        "MIK/CryptX-0.039",
+        "MIK/CryptX-0.040",
+        "MIK/CryptX-0.041",
+        "MIK/CryptX-0.041_001",
+        "MIK/CryptX-0.041_002",
+        "MIK/CryptX-0.041_003",
+        "MIK/CryptX-0.042",
+        "MIK/CryptX-0.043",
+        "MIK/CryptX-0.044",
+        "MIK/CryptX-0.044_001",
+        "MIK/CryptX-0.044_003",
+        "MIK/CryptX-0.044_004",
+        "MIK/CryptX-0.044_005",
+        "MIK/CryptX-0.044_006",
+        "MIK/CryptX-0.044_007",
+        "MIK/CryptX-0.044_008",
+        "MIK/CryptX-0.044_009",
+        "MIK/CryptX-0.044_010",
+        "MIK/CryptX-0.045",
+        "MIK/CryptX-0.046",
+        "MIK/CryptX-0.047",
+        "MIK/CryptX-0.047_001",
+        "MIK/CryptX-0.047_002",
+        "MIK/CryptX-0.047_003",
+        "MIK/CryptX-0.047_004",
+        "MIK/CryptX-0.047_005",
+        "MIK/CryptX-0.047_006",
+        "MIK/CryptX-0.048",
+        "MIK/CryptX-0.048_001",
+        "MIK/CryptX-0.048_002",
+        "MIK/CryptX-0.049",
+        "MIK/CryptX-0.050",
+        "MIK/CryptX-0.051",
+        "MIK/CryptX-0.053",
+        "MIK/CryptX-0.053_001",
+        "MIK/CryptX-0.053_002",
+        "MIK/CryptX-0.053_003",
+        "MIK/CryptX-0.053_004",
+        "MIK/CryptX-0.054",
+        "MIK/CryptX-0.054_001",
+        "MIK/CryptX-0.054_002",
+        "MIK/CryptX-0.054_003",
+        "MIK/CryptX-0.054_004",
+        "MIK/CryptX-0.054_005",
+        "MIK/CryptX-0.054_006",
+        "MIK/CryptX-0.054_007",
+        "MIK/CryptX-0.054_008",
+        "MIK/CryptX-0.054_009",
+        "MIK/CryptX-0.055",
+        "MIK/CryptX-0.055_001",
+        "MIK/CryptX-0.056",
+        "MIK/CryptX-0.056_001",
+        "MIK/CryptX-0.056_002",
+        "MIK/CryptX-0.056_003",
+        "MIK/CryptX-0.056_004",
+        "MIK/CryptX-0.056_005",
+        "MIK/CryptX-0.056_006",
+        "MIK/CryptX-0.056_007",
+        "MIK/CryptX-0.056_008",
+        "MIK/CryptX-0.056_009",
+        "MIK/CryptX-0.057",
+        "MIK/CryptX-0.058",
+        "MIK/CryptX-0.058_001",
+        "MIK/CryptX-0.058_002",
+        "MIK/CryptX-0.059",
+        "MIK/CryptX-0.059_001",
+        "MIK/CryptX-0.059_002",
+        "MIK/CryptX-0.059_003",
+        "MIK/CryptX-0.060",
+        "MIK/CryptX-0.060_001",
+        "MIK/CryptX-0.060_002",
+        "MIK/CryptX-0.060_003",
+        "MIK/CryptX-0.061",
+        "MIK/CryptX-0.061_001",
+        "MIK/CryptX-0.061_002",
+        "MIK/CryptX-0.061_003",
+        "MIK/CryptX-0.062",
+        "MIK/CryptX-0.062_001",
+        "MIK/CryptX-0.063",
+        "MIK/CryptX-0.063_001",
+        "MIK/CryptX-0.063_002",
+        "MIK/CryptX-0.063_003",
+        "MIK/CryptX-0.063_004",
+        "MIK/CryptX-0.063_005",
+        "MIK/CryptX-0.064",
+        "MIK/CryptX-0.065",
+        "MIK/CryptX-0.066",
+        "MIK/CryptX-0.066_001",
+        "MIK/CryptX-0.066_002",
+        "MIK/CryptX-0.067",
+        "MIK/CryptX-0.067_001",
+        "MIK/CryptX-0.068",
+        "MIK/CryptX-0.068_001",
+        "MIK/CryptX-0.069",
+        "MIK/CryptX-0.070",
+        "MIK/CryptX-0.071",
+        "MIK/CryptX-0.072",
+        "MIK/CryptX-0.072_001",
+        "MIK/CryptX-0.072_002",
+        "MIK/CryptX-0.072_003",
+        "MIK/CryptX-0.073",
+        "MIK/CryptX-0.073_001",
+        "MIK/CryptX-0.073_002",
+        "MIK/CryptX-0.073_003",
+        "MIK/CryptX-0.074",
+        "MIK/CryptX-0.075",
+        "MIK/CryptX-0.075_001",
+        "MIK/CryptX-0.075_002",
+        "MIK/CryptX-0.075_003",
+        "MIK/CryptX-0.076",
+        "MIK/CryptX-0.076_001",
+        "MIK/CryptX-0.076_002",
+        "MIK/CryptX-0.076_003",
+        "MIK/CryptX-0.077",
+        "MIK/CryptX-0.078",
+        "MIK/CryptX-0.078_001",
+        "MIK/CryptX-0.079",
+        "MIK/CryptX-0.079_002",
+        "MIK/CryptX-0.079_003",
+        "MIK/CryptX-0.079_004",
+        "MIK/CryptX-0.079_005",
+        "MIK/CryptX-0.079_006",
+        "MIK/CryptX-0.079_007",
+        "MIK/CryptX-0.080",
+        "MIK/CryptX-0.080_001",
+        "MIK/CryptX-0.080_003",
+        "MIK/CryptX-0.080_004",
+        "MIK/CryptX-0.080_005",
+        "MIK/CryptX-0.080_006",
+        "MIK/CryptX-0.080_007",
+        "MIK/CryptX-0.080_008",
+        "MIK/CryptX-0.080_009",
+        "MIK/CryptX-0.080_010",
+        "MIK/CryptX-0.080_011",
+        "MIK/CryptX-0.080_012",
+        "MIK/CryptX-0.081",
+        "MIK/CryptX-0.081_001",
+        "MIK/CryptX-0.082",
+        "MIK/CryptX-0.082_001",
+        "MIK/CryptX-0.083",
+        "MIK/CryptX-0.083_001",
+        "MIK/CryptX-0.084",
+        "MIK/CryptX-0.084_001",
+        "MIK/CryptX-0.085",
+        "MIK/CryptX-0.085_001",
+        "MIK/CryptX-0.085_002",
+        "MIK/CryptX-0.085_003",
+        "MIK/CryptX-0.086",
+        "MIK/CryptX-0.086_001",
+        "MIK/CryptX-0.086_002",
+        "MIK/CryptX-0.086_003",
+        "MIK/CryptX-0.086_004",
+        "MIK/CryptX-0.086_005",
+        "MIK/CryptX-0.087",
+        "MIK/CryptX-0.087_001",
+        "MIK/CryptX-0.087_002",
+        "MIK/CryptX-0.087_003",
+        "MIK/CryptX-0.087_004",
+        "MIK/CryptX-0.087_005",
+        "MIK/CryptX-0.087_006",
+        "MIK/CryptX-0.087_007",
+        "MIK/CryptX-0.087_008"
+      ],
+      "affected_versions": [
+        "<0.088"
+      ],
+      "cve": {
+        "containers": {
+          "adp": [
+            {
+              "providerMetadata": {
+                "dateUpdated": "2026-04-23T09:33:41.857Z",
+                "orgId": "af854a3a-2127-422b-91ae-364da2661108",
+                "shortName": "CVE"
+              },
+              "references": [
+                {
+                  "url": "http://www.openwall.com/lists/oss-security/2026/04/23/2"
+                }
+              ],
+              "title": "CVE Program Container"
+            },
+            {
+              "metrics": [
+                {
+                  "cvssV3_1": {
+                    "attackComplexity": "LOW",
+                    "attackVector": "NETWORK",
+                    "availabilityImpact": "NONE",
+                    "baseScore": 7.5,
+                    "baseSeverity": "HIGH",
+                    "confidentialityImpact": "HIGH",
+                    "integrityImpact": "NONE",
+                    "privilegesRequired": "NONE",
+                    "scope": "UNCHANGED",
+                    "userInteraction": "NONE",
+                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "version": "3.1"
+                  }
+                },
+                {
+                  "other": {
+                    "content": {
+                      "id": "CVE-2026-41564",
+                      "options": [
+                        {
+                          "Exploitation": "poc"
+                        },
+                        {
+                          "Automatable": "yes"
+                        },
+                        {
+                          "Technical Impact": "partial"
+                        }
+                      ],
+                      "role": "CISA Coordinator",
+                      "timestamp": "2026-04-23T13:05:18.115917Z",
+                      "version": "2.0.3"
+                    },
+                    "type": "ssvc"
+                  }
+                }
+              ],
+              "providerMetadata": {
+                "dateUpdated": "2026-04-23T13:05:22.853Z",
+                "orgId": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "shortName": "CISA-ADP"
+              },
+              "references": [
+                {
+                  "tags": [
+                    "exploit"
+                  ],
+                  "url": "https://github.com/DCIT/perl-CryptX/security/advisories/GHSA-24c2-gp6c-24c6"
+                }
+              ],
+              "title": "CISA ADP Vulnrichment"
+            }
+          ],
+          "cna": {
+            "affected": [
+              {
+                "collectionURL": "https://cpan.org/modules",
+                "defaultStatus": "unaffected",
+                "packageName": "CryptX",
+                "product": "CryptX",
+                "programFiles": [
+                  "inc/CryptX_PK_RSA.xs.inc",
+                  "inc/CryptX_PK_DSA.xs.inc",
+                  "inc/CryptX_PK_DH.xs.inc",
+                  "inc/CryptX_PK_ECC.xs.inc",
+                  "inc/CryptX_PK_Ed25519.xs.inc",
+                  "inc/CryptX_PK_X25519.xs.inc"
+                ],
+                "repo": "https://github.com/DCIT/perl-CryptX",
+                "vendor": "MIK",
+                "versions": [
+                  {
+                    "lessThan": "0.088",
+                    "status": "affected",
+                    "version": "0",
+                    "versionType": "custom"
+                  }
+                ]
+              }
+            ],
+            "descriptions": [
+              {
+                "lang": "en",
+                "value": "CryptX versions before 0.088 for Perl do not reseed the Crypt::PK PRNG state after forking.\n\nThe Crypt::PK::RSA, Crypt::PK::DSA, Crypt::PK::DH, Crypt::PK::ECC, Crypt::PK::Ed25519 and Crypt::PK::X25519 modules seed a per-object PRNG state in their constructors and reuse it without fork detection. A Crypt::PK::* object created before `fork()` shares byte-identical PRNG state with every child process, and any randomized operation they perform can produce identical output, including key generation. Two ECDSA or DSA signatures from different processes are enough to recover the signing private key through nonce-reuse key recovery.\n\nThis affects preforking services such as the Starman web server, where a Crypt::PK::* object loaded at startup is inherited by every worker process."
+              }
+            ],
+            "problemTypes": [
+              {
+                "descriptions": [
+                  {
+                    "cweId": "CWE-335",
+                    "description": "CWE-335 Incorrect Usage of Seeds in Pseudo-Random Number Generator (PRNG)",
+                    "lang": "en",
+                    "type": "CWE"
+                  }
+                ]
+              },
+              {
+                "descriptions": [
+                  {
+                    "cweId": "CWE-338",
+                    "description": "CWE-338 Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)",
+                    "lang": "en",
+                    "type": "CWE"
+                  }
+                ]
+              }
+            ],
+            "providerMetadata": {
+              "dateUpdated": "2026-04-23T07:29:26.340Z",
+              "orgId": "9b29abf9-4ab0-4765-b253-1875cd9b441e",
+              "shortName": "CPANSec"
+            },
+            "references": [
+              {
+                "tags": [
+                  "vendor-advisory"
+                ],
+                "url": "https://github.com/DCIT/perl-CryptX/security/advisories/GHSA-24c2-gp6c-24c6"
+              },
+              {
+                "tags": [
+                  "patch"
+                ],
+                "url": "https://github.com/DCIT/perl-CryptX/commit/9a1dd3e0c27d68e32450be5538b864c2b115ee15.patch"
+              },
+              {
+                "tags": [
+                  "release-notes"
+                ],
+                "url": "https://metacpan.org/release/MIK/CryptX-0.088"
+              }
+            ],
+            "solutions": [
+              {
+                "lang": "en",
+                "value": "Upgrade to CryptX 0.088 or later, or apply the upstream patch.\n\nApplying the fix does not retroactively protect keys that may already have been exposed. On an affected version, any private key used with or generated by a Crypt::PK::* object created before `fork()` should be assessed for rotation."
+              }
+            ],
+            "source": {
+              "discovery": "UNKNOWN"
+            },
+            "timeline": [
+              {
+                "lang": "en",
+                "time": "2026-04-18T00:00:00.000Z",
+                "value": "Issue discovered."
+              },
+              {
+                "lang": "en",
+                "time": "2026-04-21T00:00:00.000Z",
+                "value": "Reported to upstream maintainer."
+              },
+              {
+                "lang": "en",
+                "time": "2026-04-23T00:00:00.000Z",
+                "value": "CryptX 0.088 released with fix."
+              }
+            ],
+            "title": "CryptX versions before 0.088 for Perl do not reseed the Crypt::PK PRNG state after forking",
+            "x_generator": {
+              "engine": "cpansec-cna-tool 0.1"
+            }
+          }
+        },
+        "cveMetadata": {
+          "assignerOrgId": "9b29abf9-4ab0-4765-b253-1875cd9b441e",
+          "assignerShortName": "CPANSec",
+          "cveId": "CVE-2026-41564",
+          "datePublished": "2026-04-23T07:29:26.340Z",
+          "dateReserved": "2026-04-21T12:45:20.132Z",
+          "dateUpdated": "2026-04-23T13:05:22.853Z",
+          "state": "PUBLISHED"
+        },
+        "dataType": "CVE_RECORD",
+        "dataVersion": "5.2"
+      },
+      "cve_id": "CVE-2026-41564",
+      "cves": [
+        "CVE-2026-41564"
+      ],
+      "description": "CryptX versions before 0.088 for Perl do not reseed the Crypt::PK PRNG state after forking.\n\nThe Crypt::PK::RSA, Crypt::PK::DSA, Crypt::PK::DH, Crypt::PK::ECC, Crypt::PK::Ed25519 and Crypt::PK::X25519 modules seed a per-object PRNG state in their constructors and reuse it without fork detection. A Crypt::PK::* object created before `fork()` shares byte-identical PRNG state with every child process, and any randomized operation they perform can produce identical output, including key generation. Two ECDSA or DSA signatures from different processes are enough to recover the signing private key through nonce-reuse key recovery.\n\nThis affects preforking services such as the Starman web server, where a Crypt::PK::* object loaded at startup is inherited by every worker process.",
+      "distribution": "CryptX",
+      "references": [
+        "https://github.com/DCIT/perl-CryptX/security/advisories/GHSA-24c2-gp6c-24c6",
+        "https://github.com/DCIT/perl-CryptX/commit/9a1dd3e0c27d68e32450be5538b864c2b115ee15.patch",
+        "https://metacpan.org/release/MIK/CryptX-0.088"
+      ],
+      "reported": "2026-04-23",
+      "severity": "high",
+      "title": "CryptX versions before 0.088 for Perl do not reseed the Crypt::PK PRNG state after forking",
+      "version_range": [
+        "<0.088"
+      ]
+    },
+    {
+      "affected_releases": [
+        "MIK/CryptX-0.002",
+        "MIK/CryptX-0.003",
+        "MIK/CryptX-0.004",
+        "MIK/CryptX-0.005",
+        "MIK/CryptX-0.006",
+        "MIK/CryptX-0.007",
+        "MIK/CryptX-0.008",
+        "MIK/CryptX-0.009",
+        "MIK/CryptX-0.011",
+        "MIK/CryptX-0.012",
+        "MIK/CryptX-0.013",
+        "MIK/CryptX-0.013_1",
+        "MIK/CryptX-0.014",
+        "MIK/CryptX-0.014_1",
+        "MIK/CryptX-0.014_2",
+        "MIK/CryptX-0.015",
+        "MIK/CryptX-0.016",
+        "MIK/CryptX-0.016_1",
+        "MIK/CryptX-0.016_2",
+        "MIK/CryptX-0.016_3",
+        "MIK/CryptX-0.017",
+        "MIK/CryptX-0.018",
+        "MIK/CryptX-0.019",
+        "MIK/CryptX-0.019_1",
+        "MIK/CryptX-0.019_2",
+        "MIK/CryptX-0.019_3",
+        "MIK/CryptX-0.019_4",
+        "MIK/CryptX-0.020",
+        "MIK/CryptX-0.021",
+        "MIK/CryptX-0.021_1",
+        "MIK/CryptX-0.021_3",
+        "MIK/CryptX-0.021_4",
+        "MIK/CryptX-0.021_5",
+        "MIK/CryptX-0.021_6",
+        "MIK/CryptX-0.021_7",
+        "MIK/CryptX-0.021_8",
+        "MIK/CryptX-0.021_9",
+        "MIK/CryptX-0.022",
+        "MIK/CryptX-0.023",
+        "MIK/CryptX-0.023_1",
+        "MIK/CryptX-0.023_2",
+        "MIK/CryptX-0.024",
+        "MIK/CryptX-0.025",
+        "MIK/CryptX-0.025_01",
+        "MIK/CryptX-0.026",
+        "MIK/CryptX-0.026_01",
+        "MIK/CryptX-0.026_02",
+        "MIK/CryptX-0.026_05",
+        "MIK/CryptX-0.026_06",
+        "MIK/CryptX-0.026_08",
+        "MIK/CryptX-0.026_15",
+        "MIK/CryptX-0.026_16",
+        "MIK/CryptX-0.026_18",
+        "MIK/CryptX-0.026_19",
+        "MIK/CryptX-0.026_23",
+        "MIK/CryptX-0.026_24",
+        "MIK/CryptX-0.026_28",
+        "MIK/CryptX-0.026_29",
+        "MIK/CryptX-0.026_30",
+        "MIK/CryptX-0.026_31",
+        "MIK/CryptX-0.026_32",
+        "MIK/CryptX-0.026_33",
+        "MIK/CryptX-0.026_34",
+        "MIK/CryptX-0.026_35",
+        "MIK/CryptX-0.026_36",
+        "MIK/CryptX-0.026_39",
+        "MIK/CryptX-0.026_40",
+        "MIK/CryptX-0.026_41",
+        "MIK/CryptX-0.027",
+        "MIK/CryptX-0.027_01",
+        "MIK/CryptX-0.027_05",
+        "MIK/CryptX-0.027_06",
+        "MIK/CryptX-0.028",
+        "MIK/CryptX-0.028_01",
+        "MIK/CryptX-0.028_02",
+        "MIK/CryptX-0.028_03",
+        "MIK/CryptX-0.029",
+        "MIK/CryptX-0.030",
+        "MIK/CryptX-0.031",
+        "MIK/CryptX-0.032",
+        "MIK/CryptX-0.033",
+        "MIK/CryptX-0.034",
+        "MIK/CryptX-0.035",
+        "MIK/CryptX-0.036",
+        "MIK/CryptX-0.037",
+        "MIK/CryptX-0.038",
+        "MIK/CryptX-0.039",
+        "MIK/CryptX-0.040",
+        "MIK/CryptX-0.041",
+        "MIK/CryptX-0.041_001",
+        "MIK/CryptX-0.041_002",
+        "MIK/CryptX-0.041_003",
+        "MIK/CryptX-0.042",
+        "MIK/CryptX-0.043",
+        "MIK/CryptX-0.044",
+        "MIK/CryptX-0.044_001",
+        "MIK/CryptX-0.044_003",
+        "MIK/CryptX-0.044_004",
+        "MIK/CryptX-0.044_005",
+        "MIK/CryptX-0.044_006",
+        "MIK/CryptX-0.044_007",
+        "MIK/CryptX-0.044_008",
+        "MIK/CryptX-0.044_009",
+        "MIK/CryptX-0.044_010",
+        "MIK/CryptX-0.045",
+        "MIK/CryptX-0.046",
+        "MIK/CryptX-0.047",
+        "MIK/CryptX-0.047_001",
+        "MIK/CryptX-0.047_002",
+        "MIK/CryptX-0.047_003",
+        "MIK/CryptX-0.047_004",
+        "MIK/CryptX-0.047_005",
+        "MIK/CryptX-0.047_006",
+        "MIK/CryptX-0.048",
+        "MIK/CryptX-0.048_001",
+        "MIK/CryptX-0.048_002",
+        "MIK/CryptX-0.049",
+        "MIK/CryptX-0.050",
+        "MIK/CryptX-0.051",
+        "MIK/CryptX-0.053",
+        "MIK/CryptX-0.053_001",
+        "MIK/CryptX-0.053_002",
+        "MIK/CryptX-0.053_003",
+        "MIK/CryptX-0.053_004",
+        "MIK/CryptX-0.054",
+        "MIK/CryptX-0.054_001",
+        "MIK/CryptX-0.054_002",
+        "MIK/CryptX-0.054_003",
+        "MIK/CryptX-0.054_004",
+        "MIK/CryptX-0.054_005",
+        "MIK/CryptX-0.054_006",
+        "MIK/CryptX-0.054_007",
+        "MIK/CryptX-0.054_008",
+        "MIK/CryptX-0.054_009",
+        "MIK/CryptX-0.055",
+        "MIK/CryptX-0.055_001",
+        "MIK/CryptX-0.056",
+        "MIK/CryptX-0.056_001",
+        "MIK/CryptX-0.056_002",
+        "MIK/CryptX-0.056_003",
+        "MIK/CryptX-0.056_004",
+        "MIK/CryptX-0.056_005",
+        "MIK/CryptX-0.056_006",
+        "MIK/CryptX-0.056_007",
+        "MIK/CryptX-0.056_008",
+        "MIK/CryptX-0.056_009",
+        "MIK/CryptX-0.057",
+        "MIK/CryptX-0.058",
+        "MIK/CryptX-0.058_001",
+        "MIK/CryptX-0.058_002",
+        "MIK/CryptX-0.059",
+        "MIK/CryptX-0.059_001",
+        "MIK/CryptX-0.059_002",
+        "MIK/CryptX-0.059_003",
+        "MIK/CryptX-0.060",
+        "MIK/CryptX-0.060_001",
+        "MIK/CryptX-0.060_002",
+        "MIK/CryptX-0.060_003",
+        "MIK/CryptX-0.061",
+        "MIK/CryptX-0.061_001",
+        "MIK/CryptX-0.061_002",
+        "MIK/CryptX-0.061_003"
+      ],
+      "affected_versions": [
+        "<0.062"
+      ],
+      "cpansa_id": "CPANSA-CryptX-2018-01",
+      "cve": {
+        "containers": {
+          "adp": [
+            {
+              "providerMetadata": {
+                "dateUpdated": "2024-08-05T12:33:48.679Z",
+                "orgId": "af854a3a-2127-422b-91ae-364da2661108",
+                "shortName": "CVE"
+              },
+              "references": [
+                {
+                  "tags": [
+                    "x_transferred"
+                  ],
+                  "url": "https://github.com/DCIT/perl-CryptX/issues/47"
+                },
+                {
+                  "tags": [
+                    "x_transferred"
+                  ],
+                  "url": "https://github.com/libtom/libtomcrypt/pull/451"
+                },
+                {
+                  "tags": [
+                    "x_transferred"
+                  ],
+                  "url": "https://metacpan.org/dist/CryptX/changes"
+                }
+              ],
+              "title": "CVE Program Container"
+            },
+            {
+              "affected": [
+                {
+                  "cpes": [
+                    "cpe:2.3:a:dcit:perl-cryptx:*:*:*:*:*:*:*:*"
+                  ],
+                  "defaultStatus": "unknown",
+                  "product": "perl-cryptx",
+                  "vendor": "dcit",
+                  "versions": [
+                    {
+                      "lessThan": "0.062",
+                      "status": "affected",
+                      "version": "0",
+                      "versionType": "custom"
+                    }
+                  ]
+                }
+              ],
+              "metrics": [
+                {
+                  "cvssV3_1": {
+                    "attackComplexity": "LOW",
+                    "attackVector": "NETWORK",
+                    "availabilityImpact": "HIGH",
+                    "baseScore": 9.8,
+                    "baseSeverity": "CRITICAL",
+                    "confidentialityImpact": "HIGH",
+                    "integrityImpact": "HIGH",
+                    "privilegesRequired": "NONE",
+                    "scope": "UNCHANGED",
+                    "userInteraction": "NONE",
+                    "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                    "version": "3.1"
+                  }
+                },
+                {
+                  "other": {
+                    "content": {
+                      "id": "CVE-2018-25099",
+                      "options": [
+                        {
+                          "Exploitation": "none"
+                        },
+                        {
+                          "Automatable": "yes"
+                        },
+                        {
+                          "Technical Impact": "partial"
+                        }
+                      ],
+                      "role": "CISA Coordinator",
+                      "timestamp": "2024-03-18T18:55:45.748260Z",
+                      "version": "2.0.3"
+                    },
+                    "type": "ssvc"
+                  }
+                }
+              ],
+              "problemTypes": [
+                {
+                  "descriptions": [
+                    {
+                      "cweId": "CWE-347",
+                      "description": "CWE-347 Improper Verification of Cryptographic Signature",
+                      "lang": "en",
+                      "type": "CWE"
+                    }
+                  ]
+                }
+              ],
+              "providerMetadata": {
+                "dateUpdated": "2025-03-14T18:17:30.958Z",
+                "orgId": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "shortName": "CISA-ADP"
+              },
+              "title": "CISA ADP Vulnrichment"
+            }
+          ],
+          "cna": {
+            "affected": [
+              {
+                "product": "n/a",
+                "vendor": "n/a",
+                "versions": [
+                  {
+                    "status": "affected",
+                    "version": "n/a"
+                  }
+                ]
+              }
+            ],
+            "descriptions": [
+              {
+                "lang": "en",
+                "value": "In the CryptX module before 0.062 for Perl, gcm_decrypt_verify() and chacha20poly1305_decrypt_verify() do not verify the tag."
+              }
+            ],
+            "problemTypes": [
+              {
+                "descriptions": [
+                  {
+                    "description": "n/a",
+                    "lang": "en",
+                    "type": "text"
+                  }
+                ]
+              }
+            ],
+            "providerMetadata": {
+              "dateUpdated": "2024-03-18T04:42:03.410Z",
+              "orgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+              "shortName": "mitre"
+            },
+            "references": [
+              {
+                "url": "https://github.com/DCIT/perl-CryptX/issues/47"
+              },
+              {
+                "url": "https://github.com/libtom/libtomcrypt/pull/451"
+              },
+              {
+                "url": "https://metacpan.org/dist/CryptX/changes"
+              }
+            ]
+          }
+        },
+        "cveMetadata": {
+          "assignerOrgId": "8254265b-2729-46b6-b9e3-3dfca2d5bfca",
+          "assignerShortName": "mitre",
+          "cveId": "CVE-2018-25099",
+          "datePublished": "2024-03-18T00:00:00.000Z",
+          "dateReserved": "2024-03-18T00:00:00.000Z",
+          "dateUpdated": "2025-03-14T18:17:30.958Z",
+          "state": "PUBLISHED"
+        },
+        "dataType": "CVE_RECORD",
+        "dataVersion": "5.1"
+      },
+      "cve_id": "CVE-2018-25099",
+      "cves": [
+        "CVE-2018-25099"
+      ],
+      "description": "A user can pass anything as the tag into gcm_decrypt_verify() and it will return decrypted plaintext.\n",
+      "distribution": "CryptX",
+      "references": [
+        "https://github.com/DCIT/perl-CryptX/issues/47",
+        "https://github.com/libtom/libtomcrypt/pull/451"
+      ],
+      "reported": "2018-10-26",
+      "title": "A user can pass anything as the tag into gcm_decrypt_verify() and it will return decrypted plaintext.\n",
+      "version_range": [
+        "<0.062"
+      ]
+    }
+  ]
+}

@@ -206,7 +206,7 @@ subtest 'Contributor Indexing' => sub {
 
 subtest 'CVE Indexing' => sub {
     my $cve_script = $d_scripts->child('cve.pl');
-    my $json       = $d_test->child('cve_dev.json');
+    my $json       = $d_test->child('cpansa.json');
 
     # run the CVE indexing script
     my $script_cmd = "perl $cve_script -json $json";
