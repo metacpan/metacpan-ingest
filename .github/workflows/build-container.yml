@@ -32,7 +32,7 @@ jobs:
         id: docker-build-test
         uses: docker/build-push-action@v5
         with:
-          target: test
+          target: ingest-dev
           push: false
           load: true
           cache-from: type=gha

@@ -7,13 +7,13 @@ services:
         condition: service_healthy
     build:
       context: .
-      target: test
+      target: ingest-dev
     environment:
-      PLACK_ENV: development
       INGEST_TEST: 1
     volumes:
       - ./lib:/app/lib
       - ./bin:/app/bin
+      - ./scripts:/app/scripts
       - ./t:/app/t
       - ./conf:/app/conf
       - ./test_data:/app/test_data
