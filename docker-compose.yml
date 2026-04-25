@@ -1,4 +1,20 @@
 services:
+  ingest:
+    profiles:
+      - local
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    build:
+      context: .
+      target: local
+    volumes:
+      - ./lib:/app/lib
+      - ./scripts:/app/scripts
+      - ./conf:/app/conf
+    networks:
+      - elasticsearch
+
   ingest-test:
     profiles:
       - test
@@ -17,6 +33,28 @@ services:
       - ./t:/app/t
       - ./conf:/app/conf
       - ./test_data:/app/test_data
+    networks:
+      - elasticsearch
+
+  elasticsearch:
+    profiles:
+      - local
+    image: elasticsearch:8.19.9
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+    healthcheck:
+      timeout: 5s
+      start_period: 60s
+      test: ["CMD", "curl", "--fail", "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
+    ports:
+      - "9200"
+    volumes:
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
     networks:
       - elasticsearch
 
@@ -46,4 +84,5 @@ networks:
   elasticsearch:
 
 volumes:
+  elasticsearch:
   elasticsearch-test:

@@ -127,11 +127,13 @@ sub author_dir ($pauseid) {
 
 sub cpan_dir () {
     my $config = config();
-    my $cpan   = $ENV{INGEST_TEST} ? $config->{cpan_test} : $config->{cpan};
+    my $cpan   = $ENV{INGEST_TEST}
+        ? $config->{cpan_test}
+        : $config->{cpan};
 
     return path($cpan) if -d $cpan;
     die
-        "Couldn't find a local cpan mirror. Please specify --cpan or set MINICPAN";
+        "Can't access $cpan (check config).";
 }
 
 sub diff_struct ( $old_root, $new_root, $allow_extra ) {

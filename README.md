@@ -28,19 +28,31 @@ Key Perl dependencies (see [cpanfile](cpanfile) for the full list):
 - Path::Tiny
 - Search::Elasticsearch
 
-## Installation
+## Usage
 
-Using Docker (recommended):
+First, start the environment (builds images and starts Elasticsearch):
 
 ```sh
-docker-compose build
-docker-compose run ingest env PLACK_ENV=dev prove -lv t/
+bin/dc --profile local up --build -d   # local development
+bin/dc --profile test  up --build -d   # test environment
 ```
 
-Without Docker, install dependencies with cpanm:
+Run a script against the local Elasticsearch instance:
 
 ```sh
-cpanm --installdeps .
+bin/dc --profile local run ingest perl scripts/author.pl
+```
+
+Run the test suite:
+
+```sh
+bin/dc --profile test run ingest-test prove -v
+```
+
+Build + run the test suite (test code changes):
+
+```sh
+bin/dc --profile test run --build ingest-test prove -v
 ```
 
 ## Configuration
@@ -68,17 +80,8 @@ elasticsearch_servers:
 
 ## Running Tests
 
-Against a running Elasticsearch instance (e.g. inside Docker):
-
 ```sh
-prove -lv t/
-```
-
-Via Docker (spins up Elasticsearch automatically):
-
-```sh
-docker-compose build
-docker-compose run ingest env PLACK_ENV=dev prove -lv t/
+bin/dc --profile test run --build ingest-test prove -v
 ```
 
 ## Linting and Formatting
