@@ -6,14 +6,17 @@ use v5.36;
 
 use Search::Elasticsearch ();
 use Cpanel::JSON::XS      qw( decode_json );
-use MetaCPAN::Ingest      qw( es_config home );
+use MetaCPAN::Ingest      qw( es_config mapping_config );
 
 sub new ( $class, %args ) {
     my $node = $args{node};
 
     my $es_config = es_config($node);
 
-    return bless { es => Search::Elasticsearch->new(%$es_config), }, $class;
+    return bless {
+        es             => Search::Elasticsearch->new(%$es_config),
+        mapping_config => mapping_config(),
+    }, $class;
 }
 
 sub test ($self) {
@@ -37,12 +40,11 @@ sub index_create ( $self, %args ) {
 
     my @body;
     if ($add_mapping) {
-        my $home = home();
         my $mapping_file
-            = $home->child( 'conf/es/' . $index . '/mapping.json' );
+            = $self->{mapping_config}->child( $index . '/mapping.json' );
         my $mapping = decode_json $mapping_file->slurp();
         my $settings_file
-            = $home->child( 'conf/es/' . $index . '/settings.json' );
+            = $self->{mapping_config}->child( $index . '/settings.json' );
         my $settings = decode_json $settings_file->slurp();
 
         @body = (
@@ -56,7 +58,7 @@ sub index_create ( $self, %args ) {
     $self->{es}->indices->create( index => $index, @body );
 }
 
-sub index_delete ( $self, $index, $skip_exists ) {
+sub index_delete ( $self, $index, $skip_exists = 0 ) {
     return if $skip_exists and !$self->index_exists($index);
     $self->{es}->indices->delete( index => $index );
 }
@@ -68,11 +70,19 @@ sub index_put_mapping ( $self, $index, $mapping ) {
     );
 }
 
-sub index_add_mapping ( $self, $index, $skip_exists ) {
+sub available_mappings ( $self ) {
+    my $mc = $self->{mapping_config};
+    return {
+        map  { $_->relative($mc) => 1 }
+        grep { $_->is_dir() }
+        $mc->children()
+    };
+}
+
+sub index_add_mapping ( $self, $index, $skip_exists = 0 ) {
     return if $skip_exists and !$self->index_exists($index);
 
-    my $home     = home();
-    my $map_file = $home->child( 'conf/es/' . $index . '/mapping.json' );
+    my $map_file = $self->{mapping_config}->child( $index . '/mapping.json' );
     my $mapping  = decode_json $map_file->slurp();
 
     $self->index_put_mapping( $index, $mapping );

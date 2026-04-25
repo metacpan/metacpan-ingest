@@ -4,6 +4,8 @@ use v5.36;
 
 use Getopt::Long;
 
+use MetaCPAN::Logger qw( :log :dlog );
+
 use MetaCPAN::Mapper;
 use MetaCPAN::Ingest qw( are_you_sure );
 
@@ -19,14 +21,41 @@ die "cmd can only be one of: 'create', 'delete'\n"
 
 my $mapper = MetaCPAN::Mapper->new();
 
-if ( $mapper->index_exists($index) ) {
+my $all_indices = $mapper->available_mappings();
+
+# check given index has a mapping file
+# TODO: support a given mapping file
+my @indices;
+if ( $index eq 'all' ) {
+    are_you_sure("This action will delete ALL indices");
+    push @indices, keys %$all_indices;
+}
+elsif ( exists $all_indices->{$index} ) {
     are_you_sure("This action will delete index: $index");
-    $mapper->index_delete($index);
+    push @indices, $index;
+} else {
+    die "Index mapping doesn't exist ($index)\n";
 }
 
-if ( $cmd eq 'create' ) {
-    $mapper->index_create($index);
-    $mapper->index_add_mapping($index);
+for my $i ( @indices ) {
+    if ( $mapper->index_exists($i) ) {
+        $mapper->index_delete($i);
+        log_info {"deleted index: $i"};
+    }
+
+    if ( $cmd eq 'create' ) {
+        $mapper->index_create(
+            index        => $i,
+            add_mapping  => 1,
+            delete_first => 1,
+        );
+        log_info {"created index: $i"};
+
+        $mapper->index_add_mapping($i);
+        log_info {"added mapping for index: $i"};
+    }
+
+    log_info {"done."};
 }
 
 __END__
