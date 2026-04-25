@@ -3,6 +3,8 @@ log4perl_file: log4perl.conf
 cpan: /CPAN
 cpan_test: test_data/fakecpan/
 
+mapping_config: conf/es
+
 elasticsearch_servers:
   client: "8_0::Direct"
   node: "elasticsearch:9200"

@@ -36,8 +36,8 @@ RUN mkdir -p var && chown metacpan var
 
 COPY --from=build-cpan-prereqs /app/local local
 
-ENV PERL5LIB="/app/local/lib/perl5" \
-    PATH="/app/local/bin:${PATH}" \
+ENV PERL5LIB="/app/lib:/app/local/lib/perl5" \
+    PATH="/app/local/scripts:/app/local/bin:${PATH}" \
     METACPAN_INGEST_HOME=/app
 
 VOLUME /CPAN
@@ -76,6 +76,3 @@ COPY test_data test_data
 USER root
 RUN chown -R metacpan /app/local
 USER metacpan
-
-ENV PERL5LIB="/app/lib:${PERL5LIB}" \
-    PATH="/app/local/scripts:${PATH}"

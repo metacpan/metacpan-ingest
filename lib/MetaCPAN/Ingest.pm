@@ -39,6 +39,7 @@ use Sub::Exporter -setup => {
         home
         is_bool
         is_dev
+        mapping_config
         minion
         numify_version
         read_00whois
@@ -85,6 +86,12 @@ sub es_config ( $node = undef ) {
         nodes  => $config_node,
         client => $es_servers->{client},
     };
+}
+
+sub mapping_config () {
+    my $config = config;
+    my $home = home();
+    return $home->child( $config->{mapping_config} );
 }
 
 sub are_you_sure ( $msg, $force = 0 ) {
@@ -464,6 +471,12 @@ Returns the loaded configuration hashref from C<metacpan_ingest.yaml>.
 Returns a hashref for L<Search::Elasticsearch>. Selects the production node
 when C<METACPAN_INGEST_ES_PROD> is set, the test node when C<PLACK_ENV=dev>,
 otherwise the default node.
+
+=head2 mapping_config
+
+    my $cfg = mapping_config();
+
+Returns a hashref with all the available indices that have config files.
 
 =head2 are_you_sure
 
