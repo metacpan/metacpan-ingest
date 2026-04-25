@@ -23,7 +23,7 @@ GetOptions(
 my $cpan = cpan_dir();
 my $es   = MetaCPAN::ES->new( index => "mirror" );
 
-index_mirrors();
+index_mirror();
 
 $es->index_refresh;
 
@@ -34,7 +34,7 @@ log_info {"done"};
 
 ###
 
-sub index_mirrors () {
+sub index_mirror () {
     log_info { 'Getting mirrors.json file from ' . $cpan };
 
     my $json = $cpan->child( 'indices', 'mirrors.json' )->slurp;
@@ -69,11 +69,11 @@ __END__
 
 =head1 NAME
 
-mirrors - Index CPAN mirror list from mirrors.json
+mirror - Index CPAN mirror list from mirrors.json
 
 =head1 SYNOPSIS
 
- $ scripts/mirrors.pl
+ $ scripts/mirror.pl
 
 =head1 SOURCE
 

@@ -150,7 +150,7 @@ sub get_source ( $self, $id ) {
 
 sub clear_index ($self) {
     $self->{es}->delete_by_query(
-        index => 'my_index',
+        index => $self->{index},
         body  => {
             query => {
                 match_all => {}
