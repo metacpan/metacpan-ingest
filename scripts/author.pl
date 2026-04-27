@@ -112,7 +112,10 @@ sub _update_author ( $id, $whois_data, $current_data ) {
         ) )
     };
 
-    ### validate data (previously ESX::Model)
+    ### validate data
+
+    $data->{is_pause_custodial_account}
+        = $data->{is_pause_custodial_account} ? true : false;
 
     if ( my $diff = diff_struct( $current_data, $data, 1 ) ) {
         Dlog_debug {"Found difference in $id: $_"} $diff
@@ -123,8 +126,7 @@ sub _update_author ( $id, $whois_data, $current_data ) {
     }
 
     $data->{updated} = DateTime->now( time_zone => 'UTC' )->iso8601 . 'Z';
-    $data->{is_pause_custodial_account}
-        = $data->{is_pause_custodial_account} ? true : false;
+
     $bulk->update( {
         id            => $id,
         doc           => $data,

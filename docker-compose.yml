@@ -12,6 +12,7 @@ services:
       - ./lib:/app/lib
       - ./scripts:/app/scripts
       - ./conf:/app/conf
+      - /CPAN:/CPAN
     networks:
       - elasticsearch
 
